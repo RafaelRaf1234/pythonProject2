@@ -1,21 +1,22 @@
 {
   "969984835": {
     "counters": {
-      "urls": 47,
-      "sessions": 10,
-      "active_days": 1,
-      "packs": 10,
-      "full_packs": 8,
-      "full_streak": 1,
+      "urls": 74,
+      "sessions": 16,
+      "active_days": 2,
+      "packs": 16,
+      "full_packs": 13,
+      "full_streak": 0,
       "full_best": 6,
-      "clean_streak": 10,
-      "clean_best": 10,
-      "matches": 12,
+      "clean_streak": 16,
+      "clean_best": 16,
+      "matches": 19,
       "burst_best": 2,
-      "votes": 12,
-      "fast_votes": 9,
-      "lightning_votes": 7,
-      "final_votes": 1
+      "votes": 19,
+      "fast_votes": 16,
+      "lightning_votes": 9,
+      "final_votes": 1,
+      "night_days": 1
     },
     "days": {
       "2026-08-06": {
@@ -32,35 +33,51 @@
         "hi_counted": 1,
         "h21": 4,
         "h22": 4
+      },
+      "2026-08-07": {
+        "skill_last": 92.0,
+        "skill_n": 6,
+        "skill_min": 92.0,
+        "skill_max": 92.0,
+        "sessions": 6,
+        "urls": 27,
+        "night": 1,
+        "counted_day": 1,
+        "h0": 4,
+        "hi_counted": 1,
+        "matches": 7,
+        "votes": 7,
+        "h1": 2
       }
     },
     "streak": {
-      "cur": 1,
-      "best": 1,
-      "last_day": "2026-08-06"
+      "cur": 2,
+      "best": 2,
+      "last_day": "2026-08-07"
     },
     "skill": {
       "peak": 94.0,
-      "hi_days": 1,
+      "hi_days": 2,
       "below": false,
-      "last": 94.0
+      "last": 92.0
     },
     "bests": {
-      "sessions_month": 10,
+      "sessions_month": 16,
       "sessions_hour": 4,
       "day_hours": 3,
       "weeks_active": 1,
-      "month_days": 1,
-      "skill90_streak": 1,
+      "month_days": 2,
+      "skill90_streak": 2,
       "matches_day": 12,
-      "partner_best": 3,
-      "tenure_days": 1,
+      "partner_best": 5,
+      "tenure_days": 2,
       "sessions_day": 10,
-      "sessions_week": 10,
+      "sessions_week": 16,
       "skill_nofall": 1,
-      "vote_streak_days": 1,
+      "vote_streak_days": 2,
       "votes_day": 12,
-      "votes_2d": 12
+      "votes_2d": 19,
+      "night_streak": 1
     },
     "partners": [
       "5073552155",
@@ -70,22 +87,26 @@
       "1467875376",
       "232143917",
       "576391595",
-      "596548043"
+      "596548043",
+      "1252967508"
     ],
     "hours": [
       20,
       21,
-      22
+      22,
+      0,
+      1
     ],
     "partner_counts": {
-      "5073552155": 2,
-      "6696208195": 3,
+      "5073552155": 3,
+      "6696208195": 5,
       "8476561679": 2,
       "239227549": 1,
-      "1467875376": 1,
+      "1467875376": 3,
       "232143917": 1,
-      "576391595": 1,
-      "596548043": 1
+      "576391595": 2,
+      "596548043": 1,
+      "1252967508": 1
     },
     "unlocked": {
       "skill_peak:90": "2026-08-06 20:35:04",
@@ -99,29 +120,32 @@
       "match_people:5": "2026-08-06 21:49:00",
       "vote_light:5": "2026-08-06 21:49:15",
       "match_total:10": "2026-08-06 22:05:04",
-      "match_day:10": "2026-08-06 22:05:04"
+      "match_day:10": "2026-08-06 22:05:04",
+      "vote_fast:10": "2026-08-07 00:28:50",
+      "sess_total:15": "2026-08-07 01:09:12"
     },
-    "xp": 405,
+    "xp": 425,
     "v": 2,
     "first_day": "2026-08-06"
   },
   "6696208195": {
     "counters": {
-      "urls": 40,
-      "sessions": 9,
-      "active_days": 1,
-      "packs": 9,
-      "full_packs": 7,
-      "full_streak": 1,
-      "full_best": 4,
-      "clean_streak": 9,
-      "clean_best": 9,
-      "matches": 9,
+      "urls": 65,
+      "sessions": 14,
+      "active_days": 2,
+      "packs": 14,
+      "full_packs": 12,
+      "full_streak": 6,
+      "full_best": 6,
+      "clean_streak": 14,
+      "clean_best": 14,
+      "matches": 14,
       "burst_best": 3,
-      "votes": 10,
-      "fast_votes": 9,
-      "lightning_votes": 7,
-      "final_votes": 1
+      "votes": 16,
+      "fast_votes": 15,
+      "lightning_votes": 10,
+      "final_votes": 2,
+      "night_days": 1
     },
     "days": {
       "2026-08-06": {
@@ -137,12 +161,26 @@
         "votes": 10,
         "h21": 3,
         "h22": 4
+      },
+      "2026-08-07": {
+        "skill_last": 84.0,
+        "skill_n": 5,
+        "skill_min": 84.0,
+        "skill_max": 84.0,
+        "sessions": 5,
+        "urls": 25,
+        "night": 1,
+        "counted_day": 1,
+        "h0": 4,
+        "matches": 5,
+        "votes": 6,
+        "h1": 1
       }
     },
     "streak": {
-      "cur": 1,
-      "best": 1,
-      "last_day": "2026-08-06"
+      "cur": 2,
+      "best": 2,
+      "last_day": "2026-08-07"
     },
     "skill": {
       "peak": 90.0,
@@ -151,40 +189,47 @@
       "last": 84.0
     },
     "bests": {
-      "sessions_month": 9,
+      "sessions_month": 14,
       "sessions_hour": 4,
       "day_hours": 3,
       "weeks_active": 1,
-      "month_days": 1,
+      "month_days": 2,
       "skill90_streak": 1,
-      "tenure_days": 1,
+      "tenure_days": 2,
       "sessions_day": 9,
-      "sessions_week": 9,
-      "skill_nofall": 1,
+      "sessions_week": 14,
+      "skill_nofall": 2,
       "matches_day": 9,
-      "partner_best": 3,
-      "vote_streak_days": 1,
+      "partner_best": 5,
+      "vote_streak_days": 2,
       "votes_day": 10,
-      "votes_2d": 10
+      "votes_2d": 16,
+      "night_streak": 1
     },
     "partners": [
       "969984835",
       "239227549",
       "8476561679",
       "1252967508",
-      "596548043"
+      "596548043",
+      "1467875376",
+      "5073552155"
     ],
     "hours": [
       20,
       21,
-      22
+      22,
+      0,
+      1
     ],
     "partner_counts": {
-      "969984835": 3,
+      "969984835": 5,
       "239227549": 1,
-      "8476561679": 1,
-      "1252967508": 1,
-      "596548043": 2
+      "8476561679": 3,
+      "1252967508": 3,
+      "596548043": 7,
+      "1467875376": 1,
+      "5073552155": 1
     },
     "unlocked": {
       "skill_peak:90": "2026-08-06 20:34:39",
@@ -197,29 +242,33 @@
       "sess_hour:3": "2026-08-06 21:28:48",
       "sess_day:6": "2026-08-06 22:03:36",
       "match_people:5": "2026-08-06 22:30:59",
-      "vote_light:5": "2026-08-06 22:38:52"
+      "vote_light:5": "2026-08-06 22:38:52",
+      "match_total:10": "2026-08-07 00:28:15",
+      "vote_fast:10": "2026-08-07 00:28:45"
     },
-    "xp": 380,
+    "xp": 400,
     "v": 2,
     "first_day": "2026-08-06"
   },
   "1252967508": {
     "counters": {
-      "urls": 23,
-      "sessions": 5,
-      "active_days": 1,
-      "packs": 5,
-      "full_packs": 4,
-      "full_streak": 3,
-      "full_best": 3,
-      "clean_streak": 5,
-      "clean_best": 5,
-      "matches": 8,
+      "urls": 43,
+      "sessions": 9,
+      "active_days": 2,
+      "packs": 9,
+      "full_packs": 8,
+      "full_streak": 7,
+      "full_best": 7,
+      "clean_streak": 9,
+      "clean_best": 9,
+      "matches": 12,
       "burst_best": 3,
-      "votes": 6,
-      "fast_votes": 4,
+      "votes": 9,
+      "fast_votes": 6,
       "final_votes": 1,
-      "lightning_votes": 1
+      "lightning_votes": 1,
+      "skill_ups": 1,
+      "night_days": 1
     },
     "days": {
       "2026-08-06": {
@@ -236,35 +285,51 @@
         "hi_counted": 1,
         "h21": 2,
         "h22": 1
+      },
+      "2026-08-07": {
+        "skill_last": 92.0,
+        "skill_n": 4,
+        "skill_min": 92.0,
+        "skill_max": 92.0,
+        "sessions": 4,
+        "urls": 20,
+        "night": 1,
+        "counted_day": 1,
+        "h0": 3,
+        "hi_counted": 1,
+        "matches": 4,
+        "votes": 3,
+        "h1": 1
       }
     },
     "streak": {
-      "cur": 1,
-      "best": 1,
-      "last_day": "2026-08-06"
+      "cur": 2,
+      "best": 2,
+      "last_day": "2026-08-07"
     },
     "skill": {
       "peak": 92.0,
-      "hi_days": 1,
+      "hi_days": 2,
       "below": false,
-      "last": 90.0
+      "last": 92.0
     },
     "bests": {
-      "sessions_month": 5,
-      "sessions_hour": 2,
+      "sessions_month": 9,
+      "sessions_hour": 3,
       "day_hours": 3,
       "weeks_active": 1,
-      "month_days": 1,
-      "skill90_streak": 1,
-      "tenure_days": 1,
+      "month_days": 2,
+      "skill90_streak": 2,
+      "tenure_days": 2,
       "sessions_day": 5,
-      "sessions_week": 5,
-      "skill_nofall": 1,
+      "sessions_week": 9,
+      "skill_nofall": 2,
       "matches_day": 8,
-      "partner_best": 3,
-      "vote_streak_days": 1,
+      "partner_best": 5,
+      "vote_streak_days": 2,
       "votes_day": 6,
-      "votes_2d": 6
+      "votes_2d": 9,
+      "night_streak": 1
     },
     "partners": [
       "576391595",
@@ -272,20 +337,24 @@
       "5073552155",
       "596548043",
       "8476561679",
-      "6696208195"
+      "6696208195",
+      "969984835"
     ],
     "hours": [
       20,
       21,
-      22
+      22,
+      0,
+      1
     ],
     "partner_counts": {
-      "576391595": 2,
+      "576391595": 3,
       "239227549": 1,
       "5073552155": 1,
-      "596548043": 3,
-      "8476561679": 1,
-      "6696208195": 1
+      "596548043": 5,
+      "8476561679": 2,
+      "6696208195": 3,
+      "969984835": 1
     },
     "unlocked": {
       "skill_peak:90": "2026-08-06 20:33:39",
@@ -295,29 +364,32 @@
       "skill_hi:1": "2026-08-06 20:55:15",
       "match_day:3": "2026-08-06 21:37:17",
       "match_people:5": "2026-08-06 22:24:33",
-      "match_burst:3": "2026-08-06 22:24:33"
+      "match_burst:3": "2026-08-06 22:24:33",
+      "match_total:10": "2026-08-07 00:40:56",
+      "sess_hour:3": "2026-08-07 00:55:26"
     },
-    "xp": 350,
+    "xp": 370,
     "v": 2,
     "first_day": "2026-08-06"
   },
   "596548043": {
     "counters": {
-      "urls": 45,
-      "sessions": 9,
-      "active_days": 1,
-      "packs": 9,
-      "full_packs": 9,
-      "full_streak": 9,
-      "full_best": 9,
-      "clean_streak": 9,
-      "clean_best": 9,
-      "matches": 14,
-      "burst_best": 3,
-      "votes": 20,
-      "fast_votes": 13,
-      "lightning_votes": 5,
-      "final_votes": 4
+      "urls": 62,
+      "sessions": 13,
+      "active_days": 2,
+      "packs": 13,
+      "full_packs": 12,
+      "full_streak": 0,
+      "full_best": 12,
+      "clean_streak": 13,
+      "clean_best": 13,
+      "matches": 24,
+      "burst_best": 4,
+      "votes": 23,
+      "fast_votes": 21,
+      "lightning_votes": 9,
+      "final_votes": 4,
+      "night_days": 1
     },
     "days": {
       "2026-08-06": {
@@ -334,12 +406,26 @@
         "h21": 4,
         "hi_counted": 1,
         "h22": 3
+      },
+      "2026-08-07": {
+        "votes": 16,
+        "skill_last": 92.0,
+        "skill_n": 1,
+        "skill_min": 92.0,
+        "skill_max": 92.0,
+        "sessions": 4,
+        "urls": 17,
+        "night": 1,
+        "counted_day": 1,
+        "h0": 3,
+        "matches": 10,
+        "h1": 1
       }
     },
     "streak": {
-      "cur": 1,
-      "best": 1,
-      "last_day": "2026-08-06"
+      "cur": 2,
+      "best": 2,
+      "last_day": "2026-08-07"
     },
     "skill": {
       "peak": 92.0,
@@ -348,21 +434,22 @@
       "last": 92.0
     },
     "bests": {
-      "sessions_month": 9,
+      "sessions_month": 13,
       "sessions_hour": 4,
       "day_hours": 3,
       "weeks_active": 1,
-      "month_days": 1,
-      "skill90_streak": 1,
-      "tenure_days": 1,
+      "month_days": 2,
+      "skill90_streak": 2,
+      "tenure_days": 2,
       "sessions_day": 9,
-      "sessions_week": 9,
-      "skill_nofall": 1,
+      "sessions_week": 13,
+      "skill_nofall": 2,
       "matches_day": 14,
-      "partner_best": 3,
-      "vote_streak_days": 1,
+      "partner_best": 5,
+      "vote_streak_days": 2,
       "votes_day": 20,
-      "votes_2d": 20
+      "votes_2d": 35,
+      "night_streak": 1
     },
     "partners": [
       "5073552155",
@@ -377,17 +464,19 @@
     "hours": [
       20,
       21,
-      22
+      22,
+      0,
+      1
     ],
     "partner_counts": {
-      "5073552155": 3,
-      "1467875376": 1,
-      "576391595": 1,
+      "5073552155": 4,
+      "1467875376": 3,
+      "576391595": 2,
       "239227549": 1,
-      "1252967508": 3,
+      "1252967508": 5,
       "969984835": 1,
-      "8476561679": 1,
-      "6696208195": 2
+      "8476561679": 8,
+      "6696208195": 7
     },
     "unlocked": {
       "skill_peak:90": "2026-08-06 20:34:43",
@@ -404,28 +493,32 @@
       "match_total:10": "2026-08-06 22:24:33",
       "match_day:10": "2026-08-06 22:24:33",
       "vote_day:15": "2026-08-06 22:28:38",
-      "match_burst:3": "2026-08-06 22:38:44"
+      "match_burst:3": "2026-08-06 22:38:44",
+      "pack_avg:10": "2026-08-07 00:37:11",
+      "vote_2d:30": "2026-08-07 00:46:24"
     },
-    "xp": 435,
+    "xp": 455,
     "v": 2,
     "first_day": "2026-08-06"
   },
   "5073552155": {
     "counters": {
-      "urls": 34,
-      "sessions": 8,
-      "active_days": 1,
-      "packs": 8,
-      "full_packs": 6,
-      "full_streak": 1,
+      "urls": 57,
+      "sessions": 13,
+      "active_days": 2,
+      "packs": 13,
+      "full_packs": 10,
+      "full_streak": 4,
       "full_best": 4,
-      "clean_streak": 8,
-      "clean_best": 8,
-      "matches": 14,
+      "clean_streak": 13,
+      "clean_best": 13,
+      "matches": 21,
       "burst_best": 2,
-      "votes": 12,
-      "fast_votes": 1,
-      "final_votes": 1
+      "votes": 20,
+      "fast_votes": 2,
+      "final_votes": 4,
+      "night_days": 1,
+      "lightning_votes": 1
     },
     "days": {
       "2026-08-06": {
@@ -442,12 +535,26 @@
         "h21": 4,
         "hi_counted": 1,
         "h22": 2
+      },
+      "2026-08-07": {
+        "skill_last": 92.0,
+        "skill_n": 1,
+        "skill_min": 92.0,
+        "skill_max": 92.0,
+        "sessions": 5,
+        "urls": 23,
+        "night": 1,
+        "counted_day": 1,
+        "h0": 4,
+        "matches": 7,
+        "votes": 8,
+        "h1": 1
       }
     },
     "streak": {
-      "cur": 1,
-      "best": 1,
-      "last_day": "2026-08-06"
+      "cur": 2,
+      "best": 2,
+      "last_day": "2026-08-07"
     },
     "skill": {
       "peak": 92.0,
@@ -456,21 +563,22 @@
       "last": 92.0
     },
     "bests": {
-      "sessions_month": 8,
+      "sessions_month": 13,
       "sessions_hour": 4,
       "day_hours": 3,
       "weeks_active": 1,
-      "month_days": 1,
-      "skill90_streak": 1,
+      "month_days": 2,
+      "skill90_streak": 2,
       "matches_day": 14,
-      "partner_best": 3,
-      "tenure_days": 1,
+      "partner_best": 6,
+      "tenure_days": 2,
       "sessions_day": 8,
-      "sessions_week": 8,
-      "skill_nofall": 1,
-      "vote_streak_days": 1,
+      "sessions_week": 13,
+      "skill_nofall": 2,
+      "vote_streak_days": 2,
       "votes_day": 12,
-      "votes_2d": 12
+      "votes_2d": 20,
+      "night_streak": 1
     },
     "partners": [
       "596548043",
@@ -479,21 +587,25 @@
       "576391595",
       "1252967508",
       "239227549",
-      "232143917"
+      "232143917",
+      "6696208195"
     ],
     "hours": [
       20,
       21,
-      22
+      22,
+      0,
+      1
     ],
     "partner_counts": {
-      "596548043": 3,
-      "969984835": 2,
-      "1467875376": 2,
-      "576391595": 3,
+      "596548043": 4,
+      "969984835": 3,
+      "1467875376": 3,
+      "576391595": 7,
       "1252967508": 1,
-      "239227549": 1,
-      "232143917": 1
+      "239227549": 2,
+      "232143917": 1,
+      "6696208195": 1
     },
     "unlocked": {
       "skill_peak:90": "2026-08-06 20:34:51",
@@ -514,19 +626,22 @@
   },
   "8476561679": {
     "counters": {
-      "urls": 44,
-      "sessions": 9,
-      "active_days": 1,
-      "packs": 9,
-      "full_packs": 8,
-      "full_streak": 3,
-      "full_best": 5,
-      "clean_streak": 9,
-      "clean_best": 9,
-      "matches": 10,
-      "burst_best": 1,
-      "votes": 11,
-      "final_votes": 3
+      "urls": 69,
+      "sessions": 14,
+      "active_days": 2,
+      "packs": 14,
+      "full_packs": 13,
+      "full_streak": 8,
+      "full_best": 8,
+      "clean_streak": 14,
+      "clean_best": 14,
+      "matches": 17,
+      "burst_best": 4,
+      "votes": 22,
+      "final_votes": 7,
+      "skill_ups": 1,
+      "night_days": 1,
+      "fast_votes": 5
     },
     "days": {
       "2026-08-06": {
@@ -543,35 +658,51 @@
         "h21": 4,
         "hi_counted": 1,
         "h22": 3
+      },
+      "2026-08-07": {
+        "skill_last": 98.0,
+        "skill_n": 2,
+        "skill_min": 98.0,
+        "skill_max": 98.0,
+        "sessions": 5,
+        "urls": 25,
+        "night": 1,
+        "counted_day": 1,
+        "h0": 4,
+        "matches": 7,
+        "votes": 11,
+        "hi_counted": 1,
+        "h1": 1
       }
     },
     "streak": {
-      "cur": 1,
-      "best": 1,
-      "last_day": "2026-08-06"
+      "cur": 2,
+      "best": 2,
+      "last_day": "2026-08-07"
     },
     "skill": {
-      "peak": 96.0,
-      "hi_days": 1,
+      "peak": 98.0,
+      "hi_days": 2,
       "below": false,
-      "last": 96.0
+      "last": 98.0
     },
     "bests": {
-      "sessions_month": 9,
+      "sessions_month": 14,
       "sessions_hour": 4,
       "day_hours": 3,
       "weeks_active": 1,
-      "month_days": 1,
-      "skill90_streak": 1,
-      "tenure_days": 1,
+      "month_days": 2,
+      "skill90_streak": 2,
+      "tenure_days": 2,
       "sessions_day": 9,
-      "sessions_week": 9,
-      "skill_nofall": 1,
+      "sessions_week": 14,
+      "skill_nofall": 2,
       "matches_day": 10,
-      "partner_best": 3,
-      "vote_streak_days": 1,
-      "votes_day": 10,
-      "votes_2d": 10
+      "partner_best": 5,
+      "vote_streak_days": 2,
+      "votes_day": 11,
+      "votes_2d": 22,
+      "night_streak": 1
     },
     "partners": [
       "239227549",
@@ -584,15 +715,17 @@
     "hours": [
       20,
       21,
-      22
+      22,
+      0,
+      1
     ],
     "partner_counts": {
       "239227549": 2,
-      "6696208195": 1,
+      "6696208195": 3,
       "969984835": 2,
-      "1467875376": 3,
-      "596548043": 1,
-      "1252967508": 1
+      "1467875376": 5,
+      "596548043": 8,
+      "1252967508": 2
     },
     "unlocked": {
       "skill_peak:90": "2026-08-06 20:37:46",
@@ -606,9 +739,11 @@
       "sess_day:6": "2026-08-06 21:54:48",
       "match_people:5": "2026-08-06 22:22:35",
       "match_total:10": "2026-08-06 22:37:20",
-      "match_day:10": "2026-08-06 22:37:20"
+      "match_day:10": "2026-08-06 22:37:20",
+      "skill_peak:98": "2026-08-07 00:11:22",
+      "match_burst:3": "2026-08-07 00:37:11"
     },
-    "xp": 420,
+    "xp": 490,
     "v": 2,
     "first_day": "2026-08-06"
   },
@@ -775,7 +910,7 @@
       "576391595": 1,
       "1252967508": 1,
       "969984835": 1,
-      "5073552155": 1,
+      "5073552155": 2,
       "232143917": 1,
       "596548043": 1
     },
@@ -797,20 +932,22 @@
   },
   "576391595": {
     "counters": {
-      "urls": 37,
-      "sessions": 8,
-      "active_days": 1,
-      "packs": 8,
-      "full_packs": 7,
-      "full_streak": 1,
+      "urls": 50,
+      "sessions": 11,
+      "active_days": 2,
+      "packs": 11,
+      "full_packs": 9,
+      "full_streak": 2,
       "full_best": 6,
-      "clean_streak": 8,
-      "clean_best": 8,
-      "matches": 9,
-      "burst_best": 1,
-      "votes": 2,
-      "fast_votes": 2,
-      "final_votes": 1
+      "clean_streak": 11,
+      "clean_best": 11,
+      "matches": 16,
+      "burst_best": 2,
+      "votes": 16,
+      "fast_votes": 3,
+      "final_votes": 3,
+      "night_days": 1,
+      "lightning_votes": 1
     },
     "days": {
       "2026-08-06": {
@@ -827,35 +964,49 @@
         "h21": 3,
         "hi_counted": 1,
         "h22": 3
+      },
+      "2026-08-07": {
+        "skill_last": 96.0,
+        "skill_n": 1,
+        "skill_min": 96.0,
+        "skill_max": 96.0,
+        "sessions": 3,
+        "urls": 13,
+        "night": 1,
+        "counted_day": 1,
+        "h0": 3,
+        "matches": 7,
+        "votes": 1
       }
     },
     "streak": {
-      "cur": 1,
-      "best": 1,
-      "last_day": "2026-08-06"
+      "cur": 2,
+      "best": 2,
+      "last_day": "2026-08-07"
     },
     "skill": {
       "peak": 98.0,
       "hi_days": 1,
       "below": false,
-      "last": 98.0
+      "last": 96.0
     },
     "bests": {
-      "sessions_month": 8,
+      "sessions_month": 11,
       "sessions_hour": 3,
       "day_hours": 3,
       "weeks_active": 1,
-      "month_days": 1,
-      "skill90_streak": 1,
-      "tenure_days": 1,
+      "month_days": 2,
+      "skill90_streak": 2,
+      "tenure_days": 2,
       "sessions_day": 8,
-      "sessions_week": 8,
+      "sessions_week": 11,
       "skill_nofall": 1,
       "matches_day": 9,
-      "partner_best": 3,
-      "vote_streak_days": 1,
+      "partner_best": 6,
+      "vote_streak_days": 2,
       "votes_day": 2,
-      "votes_2d": 2
+      "votes_2d": 3,
+      "night_streak": 1
     },
     "partners": [
       "1252967508",
@@ -868,15 +1019,16 @@
     "hours": [
       20,
       21,
-      22
+      22,
+      0
     ],
     "partner_counts": {
-      "1252967508": 2,
+      "1252967508": 3,
       "239227549": 1,
-      "1467875376": 1,
-      "5073552155": 3,
-      "596548043": 1,
-      "969984835": 1
+      "1467875376": 2,
+      "5073552155": 7,
+      "596548043": 2,
+      "969984835": 2
     },
     "unlocked": {
       "skill_peak:90": "2026-08-06 20:44:58",
@@ -889,29 +1041,31 @@
       "match_people:5": "2026-08-06 21:35:55",
       "sess_hour:3": "2026-08-06 21:48:22",
       "skill_hi:1": "2026-08-06 21:48:22",
-      "sess_day:6": "2026-08-06 22:04:52"
+      "sess_day:6": "2026-08-06 22:04:52",
+      "match_total:10": "2026-08-07 00:14:06"
     },
-    "xp": 445,
+    "xp": 455,
     "v": 2,
     "first_day": "2026-08-06"
   },
   "1467875376": {
     "counters": {
-      "urls": 54,
-      "sessions": 12,
-      "active_days": 1,
-      "packs": 12,
-      "full_packs": 10,
-      "full_streak": 3,
-      "full_best": 5,
-      "clean_streak": 12,
-      "clean_best": 12,
-      "matches": 8,
-      "burst_best": 1,
-      "votes": 8,
-      "final_votes": 2,
-      "fast_votes": 4,
-      "lightning_votes": 2
+      "urls": 84,
+      "sessions": 18,
+      "active_days": 2,
+      "packs": 18,
+      "full_packs": 16,
+      "full_streak": 9,
+      "full_best": 9,
+      "clean_streak": 18,
+      "clean_best": 18,
+      "matches": 16,
+      "burst_best": 2,
+      "votes": 18,
+      "final_votes": 4,
+      "fast_votes": 12,
+      "lightning_votes": 8,
+      "night_days": 1
     },
     "days": {
       "2026-08-06": {
@@ -926,56 +1080,76 @@
         "hi_counted": 1,
         "h21": 6,
         "matches": 8,
-        "votes": 8,
+        "votes": 10,
         "h22": 4
+      },
+      "2026-08-07": {
+        "skill_last": 94.0,
+        "skill_n": 6,
+        "skill_min": 94.0,
+        "skill_max": 96.0,
+        "sessions": 6,
+        "urls": 30,
+        "night": 1,
+        "counted_day": 1,
+        "h0": 5,
+        "hi_counted": 1,
+        "matches": 8,
+        "votes": 8,
+        "h1": 1
       }
     },
     "streak": {
-      "cur": 1,
-      "best": 1,
-      "last_day": "2026-08-06"
+      "cur": 2,
+      "best": 2,
+      "last_day": "2026-08-07"
     },
     "skill": {
       "peak": 96.0,
-      "hi_days": 1,
+      "hi_days": 2,
       "below": false,
-      "last": 96.0
+      "last": 94.0
     },
     "bests": {
-      "sessions_month": 12,
+      "sessions_month": 18,
       "sessions_hour": 6,
       "day_hours": 3,
       "weeks_active": 1,
-      "month_days": 1,
-      "skill90_streak": 1,
-      "tenure_days": 1,
+      "month_days": 2,
+      "skill90_streak": 2,
+      "tenure_days": 2,
       "sessions_day": 12,
-      "sessions_week": 12,
-      "skill_nofall": 1,
+      "sessions_week": 18,
+      "skill_nofall": 2,
       "matches_day": 8,
-      "partner_best": 3,
-      "vote_streak_days": 1,
-      "votes_day": 8,
-      "votes_2d": 8
+      "partner_best": 5,
+      "vote_streak_days": 2,
+      "votes_day": 10,
+      "votes_2d": 18,
+      "night_streak": 1
     },
     "partners": [
       "576391595",
       "5073552155",
       "596548043",
       "969984835",
-      "8476561679"
+      "8476561679",
+      "6696208195"
     ],
     "hours": [
       20,
       21,
-      22
+      22,
+      0,
+      1
     ],
     "partner_counts": {
-      "576391595": 1,
-      "5073552155": 2,
-      "596548043": 1,
-      "969984835": 1,
-      "8476561679": 3
+      "576391595": 2,
+      "5073552155": 3,
+      "596548043": 3,
+      "969984835": 3,
+      "8476561679": 5,
+      "6696208195": 1
     },
     "unlocked": {
       "skill_peak:90": "2026-08-06 20:48:05",
@@ -988,9 +1162,13 @@
       "match_day:3": "2026-08-06 21:31:32",
       "sess_day:6": "2026-08-06 21:38:42",
       "match_people:5": "2026-08-06 21:54:48",
-      "sess_hour:6": "2026-08-06 21:56:20"
+      "sess_hour:6": "2026-08-06 21:56:20",
+      "sess_total:15": "2026-08-07 00:41:33",
+      "match_total:10": "2026-08-07 00:41:33",
+      "vote_light:5": "2026-08-07 00:43:42",
+      "vote_fast:10": "2026-08-07 01:09:51"
     },
-    "xp": 410,
+    "xp": 450,
     "v": 2,
     "first_day": "2026-08-06"
   }

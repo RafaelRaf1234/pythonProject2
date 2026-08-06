@@ -1,704 +1,4 @@
 {
-  "284": {
-    "token": "284",
-    "copies": [
-      {
-        "chat_id": 596548043,
-        "message_id": 48207
-      },
-      {
-        "chat_id": 1252967508,
-        "message_id": 48208
-      },
-      {
-        "chat_id": 576391595,
-        "message_id": 48209
-      }
-    ],
-    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/284797f4-7c15-4ad5-b8ea-2ff1b64a4d2b/5707_ca928102d0d77808ec6d.html",
-    "idx": 1,
-    "users": [
-      {
-        "name": "Pavel",
-        "row": 2,
-        "added_at": "2026-08-05 00:17:07",
-        "uid": 596548043,
-        "username": "Kandalosh",
-        "yang": null
-      },
-      {
-        "name": "Таня",
-        "row": 3,
-        "added_at": "2026-08-05 00:11:29",
-        "uid": 1252967508,
-        "username": "tani_kr",
-        "yang": "https://yang.yandex-team.ru/task/93817080/00059788f8--6a725567817830412b87883c"
-      }
-    ],
-    "allowed_uids": [
-      596548043,
-      1252967508
-    ],
-    "phase": "initial",
-    "ratings": {
-      "596548043": "r"
-    },
-    "final_ratings": {},
-    "prefix": "🔔 Новое совпадение • запустил: Pavel • 2026-08-05 00:17:07",
-    "suffix": "",
-    "created_at": "2026-08-05 00:17:07",
-    "carried": {
-      "initial": "r",
-      "final": null,
-      "by": "Pavel"
-    }
-  },
-  "285": {
-    "token": "285",
-    "copies": [
-      {
-        "chat_id": 596548043,
-        "message_id": 48210
-      },
-      {
-        "chat_id": 1252967508,
-        "message_id": 48211
-      },
-      {
-        "chat_id": 576391595,
-        "message_id": 48212
-      }
-    ],
-    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/284797f4-7c15-4ad5-b8ea-2ff1b64a4d2b/1988_ee4f8a561a305e7ffe3e.html",
-    "idx": 2,
-    "users": [
-      {
-        "name": "Pavel",
-        "row": 3,
-        "added_at": "2026-08-05 00:17:07",
-        "uid": 596548043,
-        "username": "Kandalosh",
-        "yang": null
-      },
-      {
-        "name": "Таня",
-        "row": 2,
-        "added_at": "2026-08-05 00:11:29",
-        "uid": 1252967508,
-        "username": "tani_kr",
-        "yang": "https://yang.yandex-team.ru/task/93817080/00059788f8--6a725567817830412b87883c"
-      }
-    ],
-    "allowed_uids": [
-      596548043,
-      1252967508
-    ],
-    "phase": "initial",
-    "ratings": {
-      "1252967508": "r",
-      "596548043": "r"
-    },
-    "final_ratings": {},
-    "prefix": "🔔 Новое совпадение • запустил: Pavel • 2026-08-05 00:17:07",
-    "suffix": "",
-    "created_at": "2026-08-05 00:17:07",
-    "carried": {
-      "initial": "r",
-      "final": null,
-      "by": "Pavel"
-    }
-  },
-  "286": {
-    "token": "286",
-    "copies": [
-      {
-        "chat_id": 6696208195,
-        "message_id": 48240
-      },
-      {
-        "chat_id": 1252967508,
-        "message_id": 48241
-      }
-    ],
-    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/284797f4-7c15-4ad5-b8ea-2ff1b64a4d2b/3222_9d78f6fba2be11aa916e.html",
-    "idx": 1,
-    "users": [
-      {
-        "name": "ЛжеЛида",
-        "row": 3,
-        "added_at": "2026-08-05 00:31:48",
-        "uid": 6696208195,
-        "username": null,
-        "yang": "https://yang.yandex-team.ru/task/93817081/00059788f9--6a725a316d52e612e29b4d1b"
-      },
-      {
-        "name": "Таня",
-        "row": 2,
-        "added_at": "2026-08-05 00:25:58",
-        "uid": 1252967508,
-        "username": "tani_kr",
-        "yang": "https://yang.yandex-team.ru/task/93817081/00059788f9--6a7258d84b8be435eb5d2d4a"
-      }
-    ],
-    "allowed_uids": [
-      6696208195,
-      1252967508
-    ],
-    "phase": "initial",
-    "ratings": {
-      "6696208195": "h",
-      "1252967508": "h"
-    },
-    "final_ratings": {},
-    "prefix": "🔔 Новое совпадение • запустил: ЛжеЛида • 2026-08-05 00:31:49",
-    "suffix": "",
-    "created_at": "2026-08-05 00:31:49",
-    "carried": {
-      "initial": "h",
-      "final": null,
-      "by": "Таня"
-    }
-  },
-  "287": {
-    "token": "287",
-    "copies": [
-      {
-        "chat_id": 8476561679,
-        "message_id": 48262
-      },
-      {
-        "chat_id": 1252967508,
-        "message_id": 48263
-      }
-    ],
-    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/284797f4-7c15-4ad5-b8ea-2ff1b64a4d2b/4614_a56a1547f97af8f18c18.html",
-    "idx": 1,
-    "users": [
-      {
-        "name": "Даша",
-        "row": 3,
-        "added_at": "2026-08-05 00:34:03",
-        "uid": 8476561679,
-        "username": "Anyaibusi",
-        "yang": null
-      },
-      {
-        "name": "Таня",
-        "row": 4,
-        "added_at": "2026-08-05 00:25:58",
-        "uid": 1252967508,
-        "username": "tani_kr",
-        "yang": "https://yang.yandex-team.ru/task/93817081/00059788f9--6a7258d84b8be435eb5d2d4a"
-      }
-    ],
-    "allowed_uids": [
-      8476561679,
-      1252967508
-    ],
-    "phase": "initial",
-    "ratings": {
-      "1252967508": "r",
-      "8476561679": "r"
-    },
-    "final_ratings": {},
-    "prefix": "🔔 Новое совпадение • запустил: Даша • 2026-08-05 00:34:04",
-    "suffix": "",
-    "created_at": "2026-08-05 00:34:04",
-    "carried": {
-      "initial": "r",
-      "final": null,
-      "by": "Даша"
-    }
-  },
-  "288": {
-    "token": "288",
-    "copies": [
-      {
-        "chat_id": 546938924,
-        "message_id": 48270
-      },
-      {
-        "chat_id": 1467875376,
-        "message_id": 48271
-      }
-    ],
-    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/284797f4-7c15-4ad5-b8ea-2ff1b64a4d2b/1274_8ba26e34861321d968c9.html",
-    "idx": 1,
-    "users": [
-      {
-        "name": "Дмитрий",
-        "row": 2,
-        "added_at": "2026-08-05 00:39:01",
-        "uid": 546938924,
-        "username": "dm1triy20",
-        "yang": "https://yang.yandex-team.ru/task/93817077/00059788f5--6a725bea0bf0484561a27543"
-      },
-      {
-        "name": "Дима",
-        "row": 3,
-        "added_at": "2026-08-05 00:31:52",
-        "uid": 1467875376,
-        "username": "dustergts",
-        "yang": "https://yang.yandex-team.ru/task/93817077/00059788f5--6a7258c3b8059b7e17be1ccd"
-      }
-    ],
-    "allowed_uids": [
-      546938924,
-      1467875376
-    ],
-    "phase": "initial",
-    "ratings": {
-      "1467875376": "r"
-    },
-    "final_ratings": {},
-    "prefix": "🔔 Новое совпадение • запустил: Дмитрий • 2026-08-05 00:39:02",
-    "suffix": "",
-    "created_at": "2026-08-05 00:39:02",
-    "carried": {
-      "initial": "r",
-      "final": null,
-      "by": "Дима"
-    }
-  },
-  "289": {
-    "token": "289",
-    "copies": [
-      {
-        "chat_id": 1252967508,
-        "message_id": 48277
-      },
-      {
-        "chat_id": 6696208195,
-        "message_id": 48278
-      }
-    ],
-    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/284797f4-7c15-4ad5-b8ea-2ff1b64a4d2b/3734_b05ed403301ecd429f47.html",
-    "idx": 1,
-    "users": [
-      {
-        "name": "Таня",
-        "row": 2,
-        "added_at": "2026-08-05 00:44:48",
-        "uid": 1252967508,
-        "username": "tani_kr",
-        "yang": "https://yang.yandex-team.ru/task/93817081/00059788f9--6a725d29438d3d371c054881"
-      },
-      {
-        "name": "ЛжеЛида",
-        "row": 4,
-        "added_at": "2026-08-05 00:31:48",
-        "uid": 6696208195,
-        "username": null,
-        "yang": "https://yang.yandex-team.ru/task/93817081/00059788f9--6a725a316d52e612e29b4d1b"
-      }
-    ],
-    "allowed_uids": [
-      1252967508,
-      6696208195
-    ],
-    "phase": "initial",
-    "ratings": {
-      "1252967508": "r",
-      "6696208195": "r"
-    },
-    "final_ratings": {},
-    "prefix": "🔔 Новое совпадение • запустил: Таня • 2026-08-05 00:44:48",
-    "suffix": "",
-    "created_at": "2026-08-05 00:44:48",
-    "carried": {
-      "initial": "r",
-      "final": null,
-      "by": "ЛжеЛида"
-    }
-  },
-  "290": {
-    "token": "290",
-    "copies": [
-      {
-        "chat_id": 546938924,
-        "message_id": 48282
-      },
-      {
-        "chat_id": 969984835,
-        "message_id": 48283
-      }
-    ],
-    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/284797f4-7c15-4ad5-b8ea-2ff1b64a4d2b/3503_db47136d9e5d17b1791a.html",
-    "idx": 1,
-    "users": [
-      {
-        "name": "Дмитрий",
-        "row": 5,
-        "added_at": "2026-08-05 00:46:27",
-        "uid": 546938924,
-        "username": "dm1triy20",
-        "yang": "https://yang.yandex-team.ru/task/93817081/00059788f9--6a725dafce94155025721a8f"
-      },
-      {
-        "name": "Рафаэль",
-        "row": 3,
-        "added_at": "2026-08-05 00:31:38",
-        "uid": 969984835,
-        "username": "RafaelRaf1",
-        "yang": "https://yang.yandex-team.ru/task/93817081/00059788f9--6a725a32a498836d16a0d5ba"
-      }
-    ],
-    "allowed_uids": [
-      546938924,
-      969984835
-    ],
-    "phase": "initial",
-    "ratings": {
-      "969984835": "h",
-      "546938924": "h"
-    },
-    "final_ratings": {},
-    "prefix": "🔔 Новое совпадение • запустил: Дмитрий • 2026-08-05 00:46:27",
-    "suffix": "",
-    "created_at": "2026-08-05 00:46:27",
-    "carried": {
-      "initial": "h",
-      "final": null,
-      "by": "Дмитрий"
-    }
-  },
-  "291": {
-    "token": "291",
-    "copies": [
-      {
-        "chat_id": 596548043,
-        "message_id": 48307
-      },
-      {
-        "chat_id": 1467875376,
-        "message_id": 48308
-      },
-      {
-        "chat_id": 576391595,
-        "message_id": 48309
-      }
-    ],
-    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/284797f4-7c15-4ad5-b8ea-2ff1b64a4d2b/5271_9b69398c97b48885daa9.html",
-    "idx": 1,
-    "users": [
-      {
-        "name": "Pavel",
-        "row": 4,
-        "added_at": "2026-08-05 00:50:16",
-        "uid": 596548043,
-        "username": "Kandalosh",
-        "yang": null
-      },
-      {
-        "name": "Дима",
-        "row": 5,
-        "added_at": "2026-08-05 00:38:34",
-        "uid": 1467875376,
-        "username": "dustergts",
-        "yang": "https://yang.yandex-team.ru/task/93817081/00059788f9--6a725bc225855d26ea065ac0"
-      }
-    ],
-    "allowed_uids": [
-      596548043,
-      1467875376
-    ],
-    "phase": "initial",
-    "ratings": {
-      "1467875376": "h",
-      "596548043": "h"
-    },
-    "final_ratings": {},
-    "prefix": "🔔 Новое совпадение • запустил: Pavel • 2026-08-05 00:50:16",
-    "suffix": "",
-    "created_at": "2026-08-05 00:50:16",
-    "carried": {
-      "initial": "h",
-      "final": null,
-      "by": "Pavel"
-    }
-  },
-  "292": {
-    "token": "292",
-    "copies": [
-      {
-        "chat_id": 596548043,
-        "message_id": 48310
-      },
-      {
-        "chat_id": 6696208195,
-        "message_id": 48311
-      },
-      {
-        "chat_id": 576391595,
-        "message_id": 48312
-      }
-    ],
-    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/284797f4-7c15-4ad5-b8ea-2ff1b64a4d2b/3080_f87b9934573793191e03.html",
-    "idx": 2,
-    "users": [
-      {
-        "name": "Pavel",
-        "row": 1,
-        "added_at": "2026-08-05 00:50:16",
-        "uid": 596548043,
-        "username": "Kandalosh",
-        "yang": null
-      },
-      {
-        "name": "ЛжеЛида",
-        "row": 2,
-        "added_at": "2026-08-05 00:31:48",
-        "uid": 6696208195,
-        "username": null,
-        "yang": "https://yang.yandex-team.ru/task/93817081/00059788f9--6a725a316d52e612e29b4d1b"
-      }
-    ],
-    "allowed_uids": [
-      596548043,
-      6696208195
-    ],
-    "phase": "initial",
-    "ratings": {
-      "596548043": "h",
-      "6696208195": "h"
-    },
-    "final_ratings": {},
-    "prefix": "🔔 Новое совпадение • запустил: Pavel • 2026-08-05 00:50:16",
-    "suffix": "",
-    "created_at": "2026-08-05 00:50:17",
-    "carried": {
-      "initial": "h",
-      "final": null,
-      "by": "ЛжеЛида"
-    }
-  },
-  "293": {
-    "token": "293",
-    "copies": [
-      {
-        "chat_id": 596548043,
-        "message_id": 48313
-      },
-      {
-        "chat_id": 8476561679,
-        "message_id": 48314
-      },
-      {
-        "chat_id": 576391595,
-        "message_id": 48315
-      }
-    ],
-    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/284797f4-7c15-4ad5-b8ea-2ff1b64a4d2b/4265_4fceccc769ad3b1a0705.html",
-    "idx": 3,
-    "users": [
-      {
-        "name": "Pavel",
-        "row": 5,
-        "added_at": "2026-08-05 00:50:16",
-        "uid": 596548043,
-        "username": "Kandalosh",
-        "yang": null
-      },
-      {
-        "name": "Даша",
-        "row": 5,
-        "added_at": "2026-08-05 00:34:03",
-        "uid": 8476561679,
-        "username": "Anyaibusi",
-        "yang": null
-      }
-    ],
-    "allowed_uids": [
-      596548043,
-      8476561679
-    ],
-    "phase": "initial",
-    "ratings": {
-      "8476561679": "r",
-      "596548043": "r"
-    },
-    "final_ratings": {},
-    "prefix": "🔔 Новое совпадение • запустил: Pavel • 2026-08-05 00:50:16",
-    "suffix": "",
-    "created_at": "2026-08-05 00:50:17",
-    "carried": {
-      "initial": "r",
-      "final": null,
-      "by": "Pavel"
-    }
-  },
-  "294": {
-    "token": "294",
-    "copies": [
-      {
-        "chat_id": 1252967508,
-        "message_id": 48335
-      },
-      {
-        "chat_id": 546938924,
-        "message_id": 48336
-      }
-    ],
-    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/284797f4-7c15-4ad5-b8ea-2ff1b64a4d2b/4613_f83655dd98f88a542eed.html",
-    "idx": 1,
-    "users": [
-      {
-        "name": "Таня",
-        "row": 1,
-        "added_at": "2026-08-05 01:00:39",
-        "uid": 1252967508,
-        "username": "tani_kr",
-        "yang": "https://yang.yandex-team.ru/task/93817081/00059788f9--6a7260fa817830412b87ae57"
-      },
-      {
-        "name": "Дмитрий",
-        "row": 2,
-        "added_at": "2026-08-05 00:46:27",
-        "uid": 546938924,
-        "username": "dm1triy20",
-        "yang": "https://yang.yandex-team.ru/task/93817081/00059788f9--6a725dafce94155025721a8f"
-      }
-    ],
-    "allowed_uids": [
-      1252967508,
-      546938924
-    ],
-    "phase": "initial",
-    "ratings": {
-      "546938924": "h"
-    },
-    "final_ratings": {
-      "546938924": "h"
-    },
-    "prefix": "🔔 Новое совпадение • запустил: Таня • 2026-08-05 01:00:39",
-    "suffix": "",
-    "created_at": "2026-08-05 01:00:39",
-    "carried": {
-      "initial": "h",
-      "final": "h",
-      "by": "Дмитрий"
-    }
-  },
-  "295": {
-    "token": "295",
-    "copies": [
-      {
-        "chat_id": 6696208195,
-        "message_id": 48343
-      },
-      {
-        "chat_id": 596548043,
-        "message_id": 48344
-      },
-      {
-        "chat_id": 8476561679,
-        "message_id": 48345
-      },
-      {
-        "chat_id": 576391595,
-        "message_id": 48346
-      }
-    ],
-    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/284797f4-7c15-4ad5-b8ea-2ff1b64a4d2b/4265_4fceccc769ad3b1a0705.html",
-    "idx": 1,
-    "users": [
-      {
-        "name": "ЛжеЛида",
-        "row": 2,
-        "added_at": "2026-08-05 01:02:05",
-        "uid": 6696208195,
-        "username": null,
-        "yang": "https://yang.yandex-team.ru/task/93817079/00059788f7--6a72613d4b8be435eb5d503b"
-      },
-      {
-        "name": "Pavel",
-        "row": 5,
-        "added_at": "2026-08-05 00:50:16",
-        "uid": 596548043,
-        "username": "Kandalosh",
-        "yang": null
-      },
-      {
-        "name": "Даша",
-        "row": 5,
-        "added_at": "2026-08-05 00:34:03",
-        "uid": 8476561679,
-        "username": "Anyaibusi",
-        "yang": null
-      }
-    ],
-    "allowed_uids": [
-      6696208195,
-      596548043,
-      8476561679
-    ],
-    "phase": "initial",
-    "ratings": {
-      "596548043": "r",
-      "8476561679": "r",
-      "6696208195": "r"
-    },
-    "final_ratings": {},
-    "prefix": "🔔 Новое совпадение • запустил: ЛжеЛида • 2026-08-05 01:02:05",
-    "suffix": "",
-    "created_at": "2026-08-05 01:02:05",
-    "carried": {
-      "initial": "r",
-      "final": null,
-      "by": "ЛжеЛида"
-    }
-  },
-  "296": {
-    "token": "296",
-    "copies": [
-      {
-        "chat_id": 8476561679,
-        "message_id": 48350
-      },
-      {
-        "chat_id": 6696208195,
-        "message_id": 48351
-      }
-    ],
-    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/284797f4-7c15-4ad5-b8ea-2ff1b64a4d2b/3925_ee519dd179161862bde7.html",
-    "idx": 1,
-    "users": [
-      {
-        "name": "Даша",
-        "row": 2,
-        "added_at": "2026-08-05 01:03:32",
-        "uid": 8476561679,
-        "username": "Anyaibusi",
-        "yang": null
-      },
-      {
-        "name": "ЛжеЛида",
-        "row": 3,
-        "added_at": "2026-08-05 00:48:50",
-        "uid": 6696208195,
-        "username": null,
-        "yang": "https://yang.yandex-team.ru/task/93817081/00059788f9--6a725e20a498836d16a0e3a4"
-      }
-    ],
-    "allowed_uids": [
-      8476561679,
-      6696208195
-    ],
-    "phase": "initial",
-    "ratings": {
-      "6696208195": "r",
-      "8476561679": "r"
-    },
-    "final_ratings": {},
-    "prefix": "🔔 Новое совпадение • запустил: Даша • 2026-08-05 01:03:33",
-    "suffix": "",
-    "created_at": "2026-08-05 01:03:33",
-    "carried": {
-      "initial": "r",
-      "final": null,
-      "by": "Даша"
-    }
-  },
   "297": {
     "token": "297",
     "copies": [
@@ -1640,7 +940,9 @@
       596548043
     ],
     "phase": "initial",
-    "ratings": {},
+    "ratings": {
+      "1467875376": "h"
+    },
     "final_ratings": {
       "596548043": "h"
     },
@@ -1648,13 +950,16 @@
     "suffix": "",
     "created_at": "2026-08-06 21:31:31",
     "carried": {
-      "initial": null,
+      "initial": "h",
       "final": "h",
-      "by": "Pavel"
+      "by": "Дима"
     },
     "ach_counted": {
       "final": [
         "596548043"
+      ],
+      "init": [
+        "1467875376"
       ]
     }
   },
@@ -2518,7 +1823,9 @@
       1467875376
     ],
     "phase": "initial",
-    "ratings": {},
+    "ratings": {
+      "1467875376": "h"
+    },
     "final_ratings": {
       "1467875376": "h"
     },
@@ -2526,12 +1833,15 @@
     "suffix": "",
     "created_at": "2026-08-06 21:54:48",
     "carried": {
-      "initial": null,
+      "initial": "h",
       "final": "h",
       "by": "Дима"
     },
     "ach_counted": {
       "final": [
+        "1467875376"
+      ],
+      "init": [
         "1467875376"
       ]
     }
@@ -3563,6 +2873,1669 @@
     "ach_counted": {
       "init": [
         "6696208195",
+        "596548043"
+      ]
+    }
+  },
+  "345": {
+    "token": "345",
+    "copies": [
+      {
+        "chat_id": 5073552155,
+        "message_id": 49772
+      },
+      {
+        "chat_id": 576391595,
+        "message_id": 49773
+      },
+      {
+        "chat_id": 596548043,
+        "message_id": 49774
+      }
+    ],
+    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/3389_28d23a9138ed29ad6229.html",
+    "idx": 1,
+    "users": [
+      {
+        "name": "Ксения",
+        "row": 2,
+        "added_at": "2026-08-07 00:14:05",
+        "uid": 5073552155,
+        "username": "Kseniaya11",
+        "yang": null
+      },
+      {
+        "name": "Элис",
+        "row": 2,
+        "added_at": "2026-08-07 00:11:40",
+        "uid": 576391595,
+        "username": "milligan_alice",
+        "yang": null
+      }
+    ],
+    "allowed_uids": [
+      5073552155,
+      576391595
+    ],
+    "phase": "initial",
+    "ratings": {
+      "5073552155": "h",
+      "576391595": "h"
+    },
+    "final_ratings": {
+      "5073552155": "h"
+    },
+    "prefix": "🔔 Новое совпадение • запустил: Ксения • 2026-08-07 00:14:05",
+    "suffix": "",
+    "created_at": "2026-08-07 00:14:05",
+    "carried": {
+      "initial": "h",
+      "final": "h",
+      "by": "Ксения"
+    },
+    "ach_counted": {
+      "init": [
+        "5073552155",
+        "576391595"
+      ],
+      "final": [
+        "5073552155"
+      ]
+    }
+  },
+  "346": {
+    "token": "346",
+    "copies": [
+      {
+        "chat_id": 5073552155,
+        "message_id": 49775
+      },
+      {
+        "chat_id": 576391595,
+        "message_id": 49776
+      },
+      {
+        "chat_id": 596548043,
+        "message_id": 49777
+      }
+    ],
+    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/1527_efadb4452dba287746ca.html",
+    "idx": 2,
+    "users": [
+      {
+        "name": "Ксения",
+        "row": 3,
+        "added_at": "2026-08-07 00:14:05",
+        "uid": 5073552155,
+        "username": "Kseniaya11",
+        "yang": null
+      },
+      {
+        "name": "Элис",
+        "row": 3,
+        "added_at": "2026-08-07 00:11:40",
+        "uid": 576391595,
+        "username": "milligan_alice",
+        "yang": null
+      }
+    ],
+    "allowed_uids": [
+      5073552155,
+      576391595
+    ],
+    "phase": "initial",
+    "ratings": {
+      "576391595": "h",
+      "5073552155": "h"
+    },
+    "final_ratings": {
+      "5073552155": "h"
+    },
+    "prefix": "🔔 Новое совпадение • запустил: Ксения • 2026-08-07 00:14:05",
+    "suffix": "",
+    "created_at": "2026-08-07 00:14:05",
+    "carried": {
+      "initial": "h",
+      "final": "h",
+      "by": "Ксения"
+    },
+    "ach_counted": {
+      "init": [
+        "576391595",
+        "5073552155"
+      ],
+      "final": [
+        "5073552155"
+      ]
+    }
+  },
+  "347": {
+    "token": "347",
+    "copies": [
+      {
+        "chat_id": 5073552155,
+        "message_id": 49861
+      },
+      {
+        "chat_id": 576391595,
+        "message_id": 49862
+      },
+      {
+        "chat_id": 596548043,
+        "message_id": 49863
+      }
+    ],
+    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/355_10251ab5f45c8e874e0f.html",
+    "idx": 1,
+    "users": [
+      {
+        "name": "Ксения",
+        "row": 2,
+        "added_at": "2026-08-07 00:25:28",
+        "uid": 5073552155,
+        "username": "Kseniaya11",
+        "yang": null
+      },
+      {
+        "name": "Элис",
+        "row": 1,
+        "added_at": "2026-08-07 00:11:40",
+        "uid": 576391595,
+        "username": "milligan_alice",
+        "yang": null
+      }
+    ],
+    "allowed_uids": [
+      5073552155,
+      576391595
+    ],
+    "phase": "initial",
+    "ratings": {
+      "576391595": "h",
+      "5073552155": "h"
+    },
+    "final_ratings": {
+      "576391595": "h"
+    },
+    "prefix": "🔔 Новое совпадение • запустил: Ксения • 2026-08-07 00:25:28",
+    "suffix": "",
+    "created_at": "2026-08-07 00:25:28",
+    "carried": {
+      "initial": "h",
+      "final": "h",
+      "by": "Элис"
+    },
+    "ach_counted": {
+      "init": [
+        "576391595",
+        "5073552155"
+      ],
+      "final": [
+        "576391595"
+      ]
+    }
+  },
+  "348": {
+    "token": "348",
+    "copies": [
+      {
+        "chat_id": 6696208195,
+        "message_id": 49873
+      },
+      {
+        "chat_id": 969984835,
+        "message_id": 49874
+      }
+    ],
+    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/2881_0cacab57803a8bfe2d7c.html",
+    "idx": 1,
+    "users": [
+      {
+        "name": "ЛжеЛида",
+        "row": 4,
+        "added_at": "2026-08-07 00:28:14",
+        "uid": 6696208195,
+        "username": null,
+        "yang": "https://yang.yandex-team.ru/task/93878081/0005987741--6a74fc5ad684151f3bbfbe83"
+      },
+      {
+        "name": "Рафаэль",
+        "row": 4,
+        "added_at": "2026-08-07 00:28:04",
+        "uid": 969984835,
+        "username": "RafaelRaf1",
+        "yang": "https://yang.yandex-team.ru/task/93878081/0005987741--6a74fc5e35e5ba45adee469c"
+      }
+    ],
+    "allowed_uids": [
+      6696208195,
+      969984835
+    ],
+    "phase": "initial",
+    "ratings": {
+      "6696208195": "h",
+      "969984835": "h"
+    },
+    "final_ratings": {},
+    "prefix": "🔔 Новое совпадение • запустил: ЛжеЛида • 2026-08-07 00:28:14",
+    "suffix": "",
+    "created_at": "2026-08-07 00:28:14",
+    "carried": {
+      "initial": "h",
+      "final": null,
+      "by": "Рафаэль"
+    },
+    "ach_counted": {
+      "init": [
+        "6696208195",
+        "969984835"
+      ]
+    }
+  },
+  "349": {
+    "token": "349",
+    "copies": [
+      {
+        "chat_id": 596548043,
+        "message_id": 49893
+      },
+      {
+        "chat_id": 8476561679,
+        "message_id": 49894
+      },
+      {
+        "chat_id": 576391595,
+        "message_id": 49895
+      }
+    ],
+    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/319_03e66641e4063ac36075.html",
+    "idx": 1,
+    "users": [
+      {
+        "name": "Pavel",
+        "row": 2,
+        "added_at": "2026-08-07 00:37:10",
+        "uid": 596548043,
+        "username": "Kandalosh",
+        "yang": null
+      },
+      {
+        "name": "Даша",
+        "row": 2,
+        "added_at": "2026-08-07 00:11:22",
+        "uid": 8476561679,
+        "username": "Anyaibusi",
+        "yang": null
+      }
+    ],
+    "allowed_uids": [
+      596548043,
+      8476561679
+    ],
+    "phase": "initial",
+    "ratings": {
+      "596548043": "r",
+      "8476561679": "r"
+    },
+    "final_ratings": {
+      "8476561679": "r"
+    },
+    "prefix": "🔔 Новое совпадение • запустил: Pavel • 2026-08-07 00:37:10",
+    "suffix": "",
+    "created_at": "2026-08-07 00:37:10",
+    "carried": {
+      "initial": "r",
+      "final": "r",
+      "by": "Даша"
+    },
+    "ach_counted": {
+      "init": [
+        "596548043",
+        "8476561679"
+      ],
+      "final": [
+        "8476561679"
+      ]
+    }
+  },
+  "350": {
+    "token": "350",
+    "copies": [
+      {
+        "chat_id": 596548043,
+        "message_id": 49896
+      },
+      {
+        "chat_id": 8476561679,
+        "message_id": 49897
+      },
+      {
+        "chat_id": 576391595,
+        "message_id": 49898
+      }
+    ],
+    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/547_a1e9c3a5a40e4dc3101a.html",
+    "idx": 2,
+    "users": [
+      {
+        "name": "Pavel",
+        "row": 3,
+        "added_at": "2026-08-07 00:37:10",
+        "uid": 596548043,
+        "username": "Kandalosh",
+        "yang": null
+      },
+      {
+        "name": "Даша",
+        "row": 1,
+        "added_at": "2026-08-07 00:11:22",
+        "uid": 8476561679,
+        "username": "Anyaibusi",
+        "yang": null
+      }
+    ],
+    "allowed_uids": [
+      596548043,
+      8476561679
+    ],
+    "phase": "initial",
+    "ratings": {
+      "8476561679": "r",
+      "596548043": "r"
+    },
+    "final_ratings": {
+      "8476561679": "r"
+    },
+    "prefix": "🔔 Новое совпадение • запустил: Pavel • 2026-08-07 00:37:10",
+    "suffix": "",
+    "created_at": "2026-08-07 00:37:11",
+    "carried": {
+      "initial": "r",
+      "final": "r",
+      "by": "Даша"
+    },
+    "ach_counted": {
+      "init": [
+        "8476561679",
+        "596548043"
+      ],
+      "final": [
+        "8476561679"
+      ]
+    }
+  },
+  "351": {
+    "token": "351",
+    "copies": [
+      {
+        "chat_id": 596548043,
+        "message_id": 49899
+      },
+      {
+        "chat_id": 8476561679,
+        "message_id": 49900
+      },
+      {
+        "chat_id": 576391595,
+        "message_id": 49901
+      }
+    ],
+    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/4024_3072648821c7ea95631d.html",
+    "idx": 3,
+    "users": [
+      {
+        "name": "Pavel",
+        "row": 4,
+        "added_at": "2026-08-07 00:37:10",
+        "uid": 596548043,
+        "username": "Kandalosh",
+        "yang": null
+      },
+      {
+        "name": "Даша",
+        "row": 3,
+        "added_at": "2026-08-07 00:11:22",
+        "uid": 8476561679,
+        "username": "Anyaibusi",
+        "yang": null
+      }
+    ],
+    "allowed_uids": [
+      596548043,
+      8476561679
+    ],
+    "phase": "initial",
+    "ratings": {
+      "8476561679": "r",
+      "596548043": "r"
+    },
+    "final_ratings": {
+      "8476561679": "r"
+    },
+    "prefix": "🔔 Новое совпадение • запустил: Pavel • 2026-08-07 00:37:10",
+    "suffix": "",
+    "created_at": "2026-08-07 00:37:11",
+    "carried": {
+      "initial": "r",
+      "final": "r",
+      "by": "Pavel"
+    },
+    "ach_counted": {
+      "init": [
+        "8476561679",
+        "596548043"
+      ],
+      "final": [
+        "8476561679"
+      ]
+    }
+  },
+  "352": {
+    "token": "352",
+    "copies": [
+      {
+        "chat_id": 596548043,
+        "message_id": 49902
+      },
+      {
+        "chat_id": 8476561679,
+        "message_id": 49903
+      },
+      {
+        "chat_id": 576391595,
+        "message_id": 49904
+      }
+    ],
+    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/4492_82f6261140872582f462.html",
+    "idx": 4,
+    "users": [
+      {
+        "name": "Pavel",
+        "row": 5,
+        "added_at": "2026-08-07 00:37:10",
+        "uid": 596548043,
+        "username": "Kandalosh",
+        "yang": null
+      },
+      {
+        "name": "Даша",
+        "row": 4,
+        "added_at": "2026-08-07 00:11:22",
+        "uid": 8476561679,
+        "username": "Anyaibusi",
+        "yang": null
+      }
+    ],
+    "allowed_uids": [
+      596548043,
+      8476561679
+    ],
+    "phase": "initial",
+    "ratings": {
+      "8476561679": "r",
+      "596548043": "r"
+    },
+    "final_ratings": {
+      "8476561679": "r"
+    },
+    "prefix": "🔔 Новое совпадение • запустил: Pavel • 2026-08-07 00:37:10",
+    "suffix": "",
+    "created_at": "2026-08-07 00:37:11",
+    "carried": {
+      "initial": "r",
+      "final": "r",
+      "by": "Pavel"
+    },
+    "ach_counted": {
+      "init": [
+        "8476561679",
+        "596548043"
+      ],
+      "final": [
+        "8476561679"
+      ]
+    }
+  },
+  "353": {
+    "token": "353",
+    "copies": [
+      {
+        "chat_id": 969984835,
+        "message_id": 49921
+      },
+      {
+        "chat_id": 5073552155,
+        "message_id": 49922
+      }
+    ],
+    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/3502_b3f9380f0d2d0e1299c6.html",
+    "idx": 1,
+    "users": [
+      {
+        "name": "Рафаэль",
+        "row": 1,
+        "added_at": "2026-08-07 00:39:08",
+        "uid": 969984835,
+        "username": "RafaelRaf1",
+        "yang": "https://yang.yandex-team.ru/task/93878081/0005987741--6a74fed489954c18d64214c2"
+      },
+      {
+        "name": "Ксения",
+        "row": 3,
+        "added_at": "2026-08-07 00:38:08",
+        "uid": 5073552155,
+        "username": "Kseniaya11",
+        "yang": null
+      }
+    ],
+    "allowed_uids": [
+      969984835,
+      5073552155
+    ],
+    "phase": "initial",
+    "ratings": {
+      "969984835": "h",
+      "5073552155": "h"
+    },
+    "final_ratings": {},
+    "prefix": "🔔 Новое совпадение • запустил: Рафаэль • 2026-08-07 00:39:08",
+    "suffix": "",
+    "created_at": "2026-08-07 00:39:08",
+    "carried": {
+      "initial": "h",
+      "final": null,
+      "by": "Ксения"
+    },
+    "ach_counted": {
+      "init": [
+        "969984835",
+        "5073552155"
+      ]
+    }
+  },
+  "354": {
+    "token": "354",
+    "copies": [
+      {
+        "chat_id": 969984835,
+        "message_id": 49923
+      },
+      {
+        "chat_id": 1252967508,
+        "message_id": 49924
+      }
+    ],
+    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/2309_98d29cf2d4767a307ebc.html",
+    "idx": 2,
+    "users": [
+      {
+        "name": "Рафаэль",
+        "row": 5,
+        "added_at": "2026-08-07 00:39:08",
+        "uid": 969984835,
+        "username": "RafaelRaf1",
+        "yang": "https://yang.yandex-team.ru/task/93878081/0005987741--6a74fed489954c18d64214c2"
+      },
+      {
+        "name": "Таня",
+        "row": 4,
+        "added_at": "2026-08-07 00:37:46",
+        "uid": 1252967508,
+        "username": "tani_kr",
+        "yang": "https://yang.yandex-team.ru/task/93878081/0005987741--6a74fe9cffbc55379fc98508"
+      }
+    ],
+    "allowed_uids": [
+      969984835,
+      1252967508
+    ],
+    "phase": "initial",
+    "ratings": {
+      "969984835": "h",
+      "1252967508": "h"
+    },
+    "final_ratings": {},
+    "prefix": "🔔 Новое совпадение • запустил: Рафаэль • 2026-08-07 00:39:08",
+    "suffix": "",
+    "created_at": "2026-08-07 00:39:08",
+    "carried": {
+      "initial": "h",
+      "final": null,
+      "by": "Таня"
+    },
+    "ach_counted": {
+      "init": [
+        "969984835",
+        "1252967508"
+      ]
+    }
+  },
+  "355": {
+    "token": "355",
+    "copies": [
+      {
+        "chat_id": 576391595,
+        "message_id": 49933
+      },
+      {
+        "chat_id": 969984835,
+        "message_id": 49934
+      },
+      {
+        "chat_id": 596548043,
+        "message_id": 49935
+      }
+    ],
+    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/3557_dc225cd737ba666b9b4b.html",
+    "idx": 1,
+    "users": [
+      {
+        "name": "Элис",
+        "row": 1,
+        "added_at": "2026-08-07 00:40:54",
+        "uid": 576391595,
+        "username": "milligan_alice",
+        "yang": null
+      },
+      {
+        "name": "Рафаэль",
+        "row": 4,
+        "added_at": "2026-08-07 00:39:08",
+        "uid": 969984835,
+        "username": "RafaelRaf1",
+        "yang": "https://yang.yandex-team.ru/task/93878081/0005987741--6a74fed489954c18d64214c2"
+      }
+    ],
+    "allowed_uids": [
+      576391595,
+      969984835
+    ],
+    "phase": "initial",
+    "ratings": {
+      "969984835": "r",
+      "576391595": "r"
+    },
+    "final_ratings": {},
+    "prefix": "🔔 Новое совпадение • запустил: Элис • 2026-08-07 00:40:56",
+    "suffix": "",
+    "created_at": "2026-08-07 00:40:56",
+    "carried": {
+      "initial": "r",
+      "final": null,
+      "by": "Элис"
+    },
+    "ach_counted": {
+      "init": [
+        "969984835",
+        "576391595"
+      ]
+    }
+  },
+  "356": {
+    "token": "356",
+    "copies": [
+      {
+        "chat_id": 576391595,
+        "message_id": 49936
+      },
+      {
+        "chat_id": 1252967508,
+        "message_id": 49937
+      },
+      {
+        "chat_id": 596548043,
+        "message_id": 49938
+      }
+    ],
+    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/7002_c813509ba99b9aacf1dd.html",
+    "idx": 2,
+    "users": [
+      {
+        "name": "Элис",
+        "row": 2,
+        "added_at": "2026-08-07 00:40:54",
+        "uid": 576391595,
+        "username": "milligan_alice",
+        "yang": null
+      },
+      {
+        "name": "Таня",
+        "row": 2,
+        "added_at": "2026-08-07 00:37:46",
+        "uid": 1252967508,
+        "username": "tani_kr",
+        "yang": "https://yang.yandex-team.ru/task/93878081/0005987741--6a74fe9cffbc55379fc98508"
+      }
+    ],
+    "allowed_uids": [
+      576391595,
+      1252967508
+    ],
+    "phase": "initial",
+    "ratings": {
+      "576391595": "h",
+      "1252967508": "h"
+    },
+    "final_ratings": {},
+    "prefix": "🔔 Новое совпадение • запустил: Элис • 2026-08-07 00:40:56",
+    "suffix": "",
+    "created_at": "2026-08-07 00:40:56",
+    "carried": {
+      "initial": "h",
+      "final": null,
+      "by": "Таня"
+    },
+    "ach_counted": {
+      "init": [
+        "576391595",
+        "1252967508"
+      ]
+    }
+  },
+  "357": {
+    "token": "357",
+    "copies": [
+      {
+        "chat_id": 1467875376,
+        "message_id": 49943
+      },
+      {
+        "chat_id": 969984835,
+        "message_id": 49944
+      }
+    ],
+    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/1295_051177affe0e5a6337e3.html",
+    "idx": 1,
+    "users": [
+      {
+        "name": "Дима",
+        "row": 4,
+        "added_at": "2026-08-07 00:41:32",
+        "uid": 1467875376,
+        "username": "dustergts",
+        "yang": "https://yang.yandex-team.ru/task/93878081/0005987741--6a74ff84d1817376037522d2"
+      },
+      {
+        "name": "Рафаэль",
+        "row": 5,
+        "added_at": "2026-08-07 00:28:04",
+        "uid": 969984835,
+        "username": "RafaelRaf1",
+        "yang": "https://yang.yandex-team.ru/task/93878081/0005987741--6a74fc5e35e5ba45adee469c"
+      }
+    ],
+    "allowed_uids": [
+      1467875376,
+      969984835
+    ],
+    "phase": "initial",
+    "ratings": {
+      "969984835": "h",
+      "1467875376": "h"
+    },
+    "final_ratings": {},
+    "prefix": "🔔 Новое совпадение • запустил: Дима • 2026-08-07 00:41:32",
+    "suffix": "",
+    "created_at": "2026-08-07 00:41:32",
+    "carried": {
+      "initial": "h",
+      "final": null,
+      "by": "Дима"
+    },
+    "ach_counted": {
+      "init": [
+        "969984835",
+        "1467875376"
+      ]
+    }
+  },
+  "358": {
+    "token": "358",
+    "copies": [
+      {
+        "chat_id": 1467875376,
+        "message_id": 49945
+      },
+      {
+        "chat_id": 576391595,
+        "message_id": 49946
+      },
+      {
+        "chat_id": 596548043,
+        "message_id": 49947
+      }
+    ],
+    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/1151_56ad06d250b5534b0bdc.html",
+    "idx": 2,
+    "users": [
+      {
+        "name": "Дима",
+        "row": 2,
+        "added_at": "2026-08-07 00:41:32",
+        "uid": 1467875376,
+        "username": "dustergts",
+        "yang": "https://yang.yandex-team.ru/task/93878081/0005987741--6a74ff84d1817376037522d2"
+      },
+      {
+        "name": "Элис",
+        "row": 3,
+        "added_at": "2026-08-07 00:40:54",
+        "uid": 576391595,
+        "username": "milligan_alice",
+        "yang": null
+      }
+    ],
+    "allowed_uids": [
+      1467875376,
+      576391595
+    ],
+    "phase": "initial",
+    "ratings": {
+      "576391595": "h",
+      "1467875376": "h"
+    },
+    "final_ratings": {},
+    "prefix": "🔔 Новое совпадение • запустил: Дима • 2026-08-07 00:41:32",
+    "suffix": "",
+    "created_at": "2026-08-07 00:41:33",
+    "carried": {
+      "initial": "h",
+      "final": null,
+      "by": "Дима"
+    },
+    "ach_counted": {
+      "init": [
+        "576391595",
+        "1467875376"
+      ]
+    }
+  },
+  "359": {
+    "token": "359",
+    "copies": [
+      {
+        "chat_id": 596548043,
+        "message_id": 49954
+      },
+      {
+        "chat_id": 6696208195,
+        "message_id": 49955
+      },
+      {
+        "chat_id": 576391595,
+        "message_id": 49956
+      }
+    ],
+    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/419_b6da85572d190c5f11b8.html",
+    "idx": 1,
+    "users": [
+      {
+        "name": "Pavel",
+        "row": 5,
+        "added_at": "2026-08-07 00:42:37",
+        "uid": 596548043,
+        "username": "Kandalosh",
+        "yang": null
+      },
+      {
+        "name": "ЛжеЛида",
+        "row": 3,
+        "added_at": "2026-08-07 00:38:58",
+        "uid": 6696208195,
+        "username": null,
+        "yang": "https://yang.yandex-team.ru/task/93878081/0005987741--6a74fed623ce0316d62a8311"
+      }
+    ],
+    "allowed_uids": [
+      596548043,
+      6696208195
+    ],
+    "phase": "initial",
+    "ratings": {
+      "6696208195": "h",
+      "596548043": "h"
+    },
+    "final_ratings": {},
+    "prefix": "🔔 Новое совпадение • запустил: Pavel • 2026-08-07 00:42:38",
+    "suffix": "",
+    "created_at": "2026-08-07 00:42:38",
+    "carried": {
+      "initial": "h",
+      "final": null,
+      "by": "Pavel"
+    },
+    "ach_counted": {
+      "init": [
+        "6696208195",
+        "596548043"
+      ]
+    }
+  },
+  "360": {
+    "token": "360",
+    "copies": [
+      {
+        "chat_id": 596548043,
+        "message_id": 49957
+      },
+      {
+        "chat_id": 1252967508,
+        "message_id": 49958
+      },
+      {
+        "chat_id": 576391595,
+        "message_id": 49959
+      }
+    ],
+    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/1495_64ca43424a429e4094d1.html",
+    "idx": 2,
+    "users": [
+      {
+        "name": "Pavel",
+        "row": 4,
+        "added_at": "2026-08-07 00:42:37",
+        "uid": 596548043,
+        "username": "Kandalosh",
+        "yang": null
+      },
+      {
+        "name": "Таня",
+        "row": 3,
+        "added_at": "2026-08-07 00:37:46",
+        "uid": 1252967508,
+        "username": "tani_kr",
+        "yang": "https://yang.yandex-team.ru/task/93878081/0005987741--6a74fe9cffbc55379fc98508"
+      }
+    ],
+    "allowed_uids": [
+      596548043,
+      1252967508
+    ],
+    "phase": "initial",
+    "ratings": {
+      "1252967508": "h",
+      "596548043": "h"
+    },
+    "final_ratings": {},
+    "prefix": "🔔 Новое совпадение • запустил: Pavel • 2026-08-07 00:42:38",
+    "suffix": "",
+    "created_at": "2026-08-07 00:42:38",
+    "carried": {
+      "initial": "h",
+      "final": null,
+      "by": "Pavel"
+    },
+    "ach_counted": {
+      "init": [
+        "1252967508",
+        "596548043"
+      ]
+    }
+  },
+  "361": {
+    "token": "361",
+    "copies": [
+      {
+        "chat_id": 8476561679,
+        "message_id": 49963
+      },
+      {
+        "chat_id": 1467875376,
+        "message_id": 49964
+      }
+    ],
+    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/1817_ff5a245637c0ee5350e3.html",
+    "idx": 1,
+    "users": [
+      {
+        "name": "Даша",
+        "row": 5,
+        "added_at": "2026-08-07 00:43:32",
+        "uid": 8476561679,
+        "username": "Anyaibusi",
+        "yang": null
+      },
+      {
+        "name": "Дима",
+        "row": 2,
+        "added_at": "2026-08-07 00:33:10",
+        "uid": 1467875376,
+        "username": "dustergts",
+        "yang": "https://yang.yandex-team.ru/task/93878081/0005987741--6a74fd8e806ea55564d8ee3b"
+      }
+    ],
+    "allowed_uids": [
+      8476561679,
+      1467875376
+    ],
+    "phase": "initial",
+    "ratings": {
+      "1467875376": "r",
+      "8476561679": "r"
+    },
+    "final_ratings": {},
+    "prefix": "🔔 Новое совпадение • запустил: Даша • 2026-08-07 00:43:32",
+    "suffix": "",
+    "created_at": "2026-08-07 00:43:32",
+    "carried": {
+      "initial": "r",
+      "final": null,
+      "by": "Даша"
+    },
+    "ach_counted": {
+      "init": [
+        "1467875376",
+        "8476561679"
+      ]
+    }
+  },
+  "362": {
+    "token": "362",
+    "copies": [
+      {
+        "chat_id": 1467875376,
+        "message_id": 49972
+      },
+      {
+        "chat_id": 6696208195,
+        "message_id": 49973
+      }
+    ],
+    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/5386_0dc421a58da44baf6e11.html",
+    "idx": 1,
+    "users": [
+      {
+        "name": "Дима",
+        "row": 4,
+        "added_at": "2026-08-07 00:47:20",
+        "uid": 1467875376,
+        "username": "dustergts",
+        "yang": "https://yang.yandex-team.ru/task/93878081/0005987741--6a7500e2d18173760375292d"
+      },
+      {
+        "name": "ЛжеЛида",
+        "row": 1,
+        "added_at": "2026-08-07 00:38:58",
+        "uid": 6696208195,
+        "username": null,
+        "yang": "https://yang.yandex-team.ru/task/93878081/0005987741--6a74fed623ce0316d62a8311"
+      }
+    ],
+    "allowed_uids": [
+      1467875376,
+      6696208195
+    ],
+    "phase": "initial",
+    "ratings": {
+      "6696208195": "r",
+      "1467875376": "r"
+    },
+    "final_ratings": {},
+    "prefix": "🔔 Новое совпадение • запустил: Дима • 2026-08-07 00:47:21",
+    "suffix": "",
+    "created_at": "2026-08-07 00:47:21",
+    "carried": {
+      "initial": "r",
+      "final": null,
+      "by": "Дима"
+    },
+    "ach_counted": {
+      "init": [
+        "6696208195",
+        "1467875376"
+      ]
+    }
+  },
+  "363": {
+    "token": "363",
+    "copies": [
+      {
+        "chat_id": 1467875376,
+        "message_id": 49974
+      },
+      {
+        "chat_id": 8476561679,
+        "message_id": 49975
+      }
+    ],
+    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/2773_75759f3a6ff320cd301c.html",
+    "idx": 2,
+    "users": [
+      {
+        "name": "Дима",
+        "row": 5,
+        "added_at": "2026-08-07 00:47:20",
+        "uid": 1467875376,
+        "username": "dustergts",
+        "yang": "https://yang.yandex-team.ru/task/93878081/0005987741--6a7500e2d18173760375292d"
+      },
+      {
+        "name": "Даша",
+        "row": 3,
+        "added_at": "2026-08-07 00:43:32",
+        "uid": 8476561679,
+        "username": "Anyaibusi",
+        "yang": null
+      }
+    ],
+    "allowed_uids": [
+      1467875376,
+      8476561679
+    ],
+    "phase": "initial",
+    "ratings": {
+      "1467875376": "h",
+      "8476561679": "h"
+    },
+    "final_ratings": {},
+    "prefix": "🔔 Новое совпадение • запустил: Дима • 2026-08-07 00:47:21",
+    "suffix": "",
+    "created_at": "2026-08-07 00:47:21",
+    "carried": {
+      "initial": "h",
+      "final": null,
+      "by": "Даша"
+    },
+    "ach_counted": {
+      "init": [
+        "1467875376",
+        "8476561679"
+      ]
+    }
+  },
+  "364": {
+    "token": "364",
+    "copies": [
+      {
+        "chat_id": 5073552155,
+        "message_id": 49993
+      },
+      {
+        "chat_id": 6696208195,
+        "message_id": 49994
+      }
+    ],
+    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/7089_1748ee17b14471acb42b.html",
+    "idx": 1,
+    "users": [
+      {
+        "name": "Ксения",
+        "row": 2,
+        "added_at": "2026-08-07 00:53:25",
+        "uid": 5073552155,
+        "username": "Kseniaya11",
+        "yang": null
+      },
+      {
+        "name": "ЛжеЛида",
+        "row": 5,
+        "added_at": "2026-08-07 00:50:02",
+        "uid": 6696208195,
+        "username": null,
+        "yang": "https://yang.yandex-team.ru/task/93878088/0005987748--6a75018220e9e8071e6991db"
+      }
+    ],
+    "allowed_uids": [
+      5073552155,
+      6696208195
+    ],
+    "phase": "initial",
+    "ratings": {
+      "6696208195": "h",
+      "5073552155": "h"
+    },
+    "final_ratings": {},
+    "prefix": "🔔 Новое совпадение • запустил: Ксения • 2026-08-07 00:53:25",
+    "suffix": "",
+    "created_at": "2026-08-07 00:53:25",
+    "carried": {
+      "initial": "h",
+      "final": null,
+      "by": "Ксения"
+    },
+    "ach_counted": {
+      "init": [
+        "6696208195",
+        "5073552155"
+      ]
+    }
+  },
+  "365": {
+    "token": "365",
+    "copies": [
+      {
+        "chat_id": 8476561679,
+        "message_id": 50004
+      },
+      {
+        "chat_id": 596548043,
+        "message_id": 50005
+      },
+      {
+        "chat_id": 576391595,
+        "message_id": 50006
+      }
+    ],
+    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/6690_4bee76e058f23025d317.html",
+    "idx": 1,
+    "users": [
+      {
+        "name": "Даша",
+        "row": 1,
+        "added_at": "2026-08-07 00:56:13",
+        "uid": 8476561679,
+        "username": "Anyaibusi",
+        "yang": null
+      },
+      {
+        "name": "Pavel",
+        "row": 2,
+        "added_at": "2026-08-07 00:42:37",
+        "uid": 596548043,
+        "username": "Kandalosh",
+        "yang": null
+      }
+    ],
+    "allowed_uids": [
+      8476561679,
+      596548043
+    ],
+    "phase": "initial",
+    "ratings": {
+      "596548043": "h",
+      "8476561679": "h"
+    },
+    "final_ratings": {},
+    "prefix": "🔔 Новое совпадение • запустил: Даша • 2026-08-07 00:56:13",
+    "suffix": "",
+    "created_at": "2026-08-07 00:56:13",
+    "carried": {
+      "initial": "h",
+      "final": null,
+      "by": "Даша"
+    },
+    "ach_counted": {
+      "init": [
+        "596548043",
+        "8476561679"
+      ]
+    }
+  },
+  "366": {
+    "token": "366",
+    "copies": [
+      {
+        "chat_id": 5073552155,
+        "message_id": 50032
+      },
+      {
+        "chat_id": 1467875376,
+        "message_id": 50033
+      }
+    ],
+    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/4865_f5dc67541fde2b84fe86.html",
+    "idx": 1,
+    "users": [
+      {
+        "name": "Ксения",
+        "row": 3,
+        "added_at": "2026-08-07 01:09:29",
+        "uid": 5073552155,
+        "username": "Kseniaya11",
+        "yang": null
+      },
+      {
+        "name": "Дима",
+        "row": 4,
+        "added_at": "2026-08-07 00:57:26",
+        "uid": 1467875376,
+        "username": "dustergts",
+        "yang": "https://yang.yandex-team.ru/task/93878088/0005987748--6a7503429d36c90b1aeb623d"
+      }
+    ],
+    "allowed_uids": [
+      5073552155,
+      1467875376
+    ],
+    "phase": "initial",
+    "ratings": {
+      "1467875376": "h"
+    },
+    "final_ratings": {},
+    "prefix": "🔔 Новое совпадение • запустил: Ксения • 2026-08-07 01:09:31",
+    "suffix": "",
+    "created_at": "2026-08-07 01:09:31",
+    "carried": {
+      "initial": "h",
+      "final": null,
+      "by": "Дима"
+    },
+    "ach_counted": {
+      "init": [
+        "1467875376"
+      ]
+    }
+  },
+  "367": {
+    "token": "367",
+    "copies": [
+      {
+        "chat_id": 596548043,
+        "message_id": 50046
+      },
+      {
+        "chat_id": 1467875376,
+        "message_id": 50047
+      },
+      {
+        "chat_id": 576391595,
+        "message_id": 50048
+      }
+    ],
+    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/5409_2439e8bf622326159850.html",
+    "idx": 1,
+    "users": [
+      {
+        "name": "Pavel",
+        "row": 2,
+        "added_at": "2026-08-07 01:13:21",
+        "uid": 596548043,
+        "username": "Kandalosh",
+        "yang": null
+      },
+      {
+        "name": "Дима",
+        "row": 1,
+        "added_at": "2026-08-06 21:31:31",
+        "uid": 1467875376,
+        "username": "dustergts",
+        "yang": "https://yang.yandex-team.ru/task/93875919/0005986ecf--6a74d2f996134a3a69d5c37f"
+      }
+    ],
+    "allowed_uids": [
+      596548043,
+      1467875376
+    ],
+    "phase": "initial",
+    "ratings": {
+      "596548043": "r"
+    },
+    "final_ratings": {
+      "1467875376": "r"
+    },
+    "prefix": "🔔 Новое совпадение • запустил: Pavel • 2026-08-07 01:13:21",
+    "suffix": "",
+    "created_at": "2026-08-07 01:13:21",
+    "carried": {
+      "initial": "r",
+      "final": "r",
+      "by": "Дима"
+    },
+    "ach_counted": {
+      "init": [
+        "596548043"
+      ],
+      "final": [
+        "1467875376"
+      ]
+    }
+  },
+  "368": {
+    "token": "368",
+    "copies": [
+      {
+        "chat_id": 596548043,
+        "message_id": 50049
+      },
+      {
+        "chat_id": 5073552155,
+        "message_id": 50050
+      },
+      {
+        "chat_id": 576391595,
+        "message_id": 50051
+      }
+    ],
+    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/1966_0aaa1cd8fc37ef5fac4c.html",
+    "idx": 2,
+    "users": [
+      {
+        "name": "Pavel",
+        "row": 1,
+        "added_at": "2026-08-07 01:13:21",
+        "uid": 596548043,
+        "username": "Kandalosh",
+        "yang": null
+      },
+      {
+        "name": "Ксения",
+        "row": 2,
+        "added_at": "2026-08-06 22:09:16",
+        "uid": 5073552155,
+        "username": "Kseniaya11",
+        "yang": null
+      },
+      {
+        "name": "Элис",
+        "row": 2,
+        "added_at": "2026-08-06 21:29:05",
+        "uid": 576391595,
+        "username": "milligan_alice",
+        "yang": null
+      }
+    ],
+    "allowed_uids": [
+      596548043,
+      5073552155,
+      576391595
+    ],
+    "phase": "initial",
+    "ratings": {
+      "5073552155": "h",
+      "596548043": "h"
+    },
+    "final_ratings": {
+      "576391595": "h",
+      "5073552155": "h"
+    },
+    "prefix": "🔔 Новое совпадение • запустил: Pavel • 2026-08-07 01:13:21",
+    "suffix": "",
+    "created_at": "2026-08-07 01:13:21",
+    "carried": {
+      "initial": "h",
+      "final": "h",
+      "by": "Pavel"
+    },
+    "ach_counted": {
+      "final": [
+        "5073552155"
+      ],
+      "init": [
+        "596548043"
+      ]
+    }
+  },
+  "369": {
+    "token": "369",
+    "copies": [
+      {
+        "chat_id": 969984835,
+        "message_id": 50059
+      },
+      {
+        "chat_id": 6696208195,
+        "message_id": 50060
+      }
+    ],
+    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/2477_73670236c5d6f403b696.html",
+    "idx": 1,
+    "users": [
+      {
+        "name": "Рафаэль",
+        "row": 1,
+        "added_at": "2026-08-07 01:21:32",
+        "uid": 969984835,
+        "username": "RafaelRaf1",
+        "yang": "https://yang.yandex-team.ru/task/93878081/0005987741--6a7508d964a2e4533f4aa107"
+      },
+      {
+        "name": "ЛжеЛида",
+        "row": 2,
+        "added_at": "2026-08-07 00:28:14",
+        "uid": 6696208195,
+        "username": null,
+        "yang": "https://yang.yandex-team.ru/task/93878081/0005987741--6a74fc5ad684151f3bbfbe83"
+      }
+    ],
+    "allowed_uids": [
+      969984835,
+      6696208195
+    ],
+    "phase": "initial",
+    "ratings": {
+      "969984835": "h",
+      "6696208195": "h"
+    },
+    "final_ratings": {
+      "6696208195": "h"
+    },
+    "prefix": "🔔 Новое совпадение • запустил: Рафаэль • 2026-08-07 01:21:32",
+    "suffix": "",
+    "created_at": "2026-08-07 01:21:32",
+    "carried": {
+      "initial": "h",
+      "final": "h",
+      "by": "ЛжеЛида"
+    },
+    "ach_counted": {
+      "init": [
+        "969984835",
+        "6696208195"
+      ],
+      "final": [
+        "6696208195"
+      ]
+    }
+  },
+  "370": {
+    "token": "370",
+    "copies": [
+      {
+        "chat_id": 969984835,
+        "message_id": 50061
+      },
+      {
+        "chat_id": 1467875376,
+        "message_id": 50062
+      }
+    ],
+    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/610_63958189bda2c28798d5.html",
+    "idx": 2,
+    "users": [
+      {
+        "name": "Рафаэль",
+        "row": 2,
+        "added_at": "2026-08-07 01:21:32",
+        "uid": 969984835,
+        "username": "RafaelRaf1",
+        "yang": "https://yang.yandex-team.ru/task/93878081/0005987741--6a7508d964a2e4533f4aa107"
+      },
+      {
+        "name": "Дима",
+        "row": 5,
+        "added_at": "2026-08-07 00:33:10",
+        "uid": 1467875376,
+        "username": "dustergts",
+        "yang": "https://yang.yandex-team.ru/task/93878081/0005987741--6a74fd8e806ea55564d8ee3b"
+      }
+    ],
+    "allowed_uids": [
+      969984835,
+      1467875376
+    ],
+    "phase": "initial",
+    "ratings": {
+      "969984835": "h"
+    },
+    "final_ratings": {
+      "1467875376": "h"
+    },
+    "prefix": "🔔 Новое совпадение • запустил: Рафаэль • 2026-08-07 01:21:32",
+    "suffix": "",
+    "created_at": "2026-08-07 01:21:32",
+    "carried": {
+      "initial": "h",
+      "final": "h",
+      "by": "Рафаэль"
+    },
+    "ach_counted": {
+      "final": [
+        "1467875376"
+      ],
+      "init": [
+        "969984835"
+      ]
+    }
+  },
+  "371": {
+    "token": "371",
+    "copies": [
+      {
+        "chat_id": 1252967508,
+        "message_id": 50070
+      },
+      {
+        "chat_id": 596548043,
+        "message_id": 50071
+      },
+      {
+        "chat_id": 576391595,
+        "message_id": 50072
+      }
+    ],
+    "link": "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/5592_c9912fda3df5e0da9154.html",
+    "idx": 1,
+    "users": [
+      {
+        "name": "Таня",
+        "row": 1,
+        "added_at": "2026-08-07 01:22:31",
+        "uid": 1252967508,
+        "username": "tani_kr",
+        "yang": "https://yang.yandex-team.ru/task/93875938/0005986ee2--6a75091635e5ba45adee69b5"
+      },
+      {
+        "name": "Pavel",
+        "row": 2,
+        "added_at": "2026-08-06 22:21:23",
+        "uid": 596548043,
+        "username": "Kandalosh",
+        "yang": null
+      }
+    ],
+    "allowed_uids": [
+      1252967508,
+      596548043
+    ],
+    "phase": "initial",
+    "ratings": {},
+    "final_ratings": {
+      "596548043": "h"
+    },
+    "prefix": "🔔 Новое совпадение • запустил: Таня • 2026-08-07 01:22:31",
+    "suffix": "",
+    "created_at": "2026-08-07 01:22:31",
+    "last_remind": {
+      "596548043": "2026-08-07 01:22:58"
+    },
+    "reminder_msgs": {},
+    "carried": {
+      "initial": null,
+      "final": "h",
+      "by": "Pavel"
+    },
+    "ach_counted": {
+      "final": [
         "596548043"
       ]
     }
