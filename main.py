@@ -625,7 +625,8 @@ def save_achievements():
 
 def _ach_rec(uid):
     rec = achievements.get(uid)
-    if not isinstance(rec, dict):
+    is_new = not isinstance(rec, dict)
+    if is_new:
         rec = {}
         achievements[uid] = rec
     if not isinstance(rec.get("counters"), dict):
@@ -651,6 +652,8 @@ def _ach_rec(uid):
     except (TypeError, ValueError):
         rec["xp"] = 0
     _ach_migrate(rec)
+    if is_new:
+        save_achievements()
     return rec
 
 
@@ -4397,11 +4400,6 @@ def _last_submission_dt(uid, data):
     for h in user_links_history.get(uid, []):
         if isinstance(h, dict):
             consider(h.get("added_at", ""))
-
-    try:
-        consider(data.get("updated_at", ""), iso=True)
-    except Exception:
-        pass
 
     return best
 
