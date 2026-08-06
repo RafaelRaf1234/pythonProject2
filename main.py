@@ -14,6 +14,7 @@ import shutil
 import time
 import asyncio
 import threading
+from collections import Counter
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from datetime import datetime, timedelta
 
@@ -1431,6 +1432,154 @@ def _ach_migrate_all() -> int:
 
 
 _ach_migrate_all()
+
+
+def _ach_fix_partner_symmetry() -> int:
+    """Разовая починка уже сохранённой статистики после бага рассинхрона зачёта
+    совпадений (partner_counts мог занижаться неравномерно на разных сторонах
+    пары — см. фикс в _ach_credit_matches). Пара всегда взаимна: сколько раз
+    A совпал с B, столько же раз B совпал с A. Поднимаем ОБЕ стороны до
+    максимума из: текущего значения A, текущего значения B, и того, что ещё
+    живо в match_votes (самый надёжный источник, но он режется TTL, поэтому
+    только подстраховка, а не единственный источник). Значения только
+    поднимаются, никогда не занижаются — не теряем то, что уже насчитано."""
+    changed = 0
+    real_pair = Counter()
+    for st in (match_votes or {}).values():
+        if not isinstance(st, dict):
+            continue
+        uids_m = [u.get("uid") for u in (st.get("users") or []) if isinstance(u, dict)]
+        uids_m = [u for u in uids_m if u is not None]
+        if len(uids_m) < 2:
+            continue
+        for a in uids_m:
+            for b in uids_m:
+                if a != b:
+                    real_pair[(a, b)] += 1
+
+    for uid in list(achievements.keys()):
+        try:
+            uid_int = int(uid)
+        except (TypeError, ValueError):
+            continue
+        rec = _ach_rec(uid_int)
+        pc = rec.get("partner_counts")
+        if not isinstance(pc, dict):
+            continue
+        for key in list(pc.keys()):
+            try:
+                p_uid = int(key)
+                a = int(pc.get(key, 0) or 0)
+            except (TypeError, ValueError):
+                continue
+            other_rec = _ach_rec(p_uid)
+            other_pc = other_rec.setdefault("partner_counts", {})
+            try:
+                b = int(other_pc.get(str(uid_int), 0) or 0)
+            except (TypeError, ValueError):
+                b = 0
+            truth = max(a, b, real_pair.get((uid_int, p_uid), 0))
+            if truth > a:
+                pc[key] = truth
+                changed += 1
+            if truth > b:
+                other_pc[str(uid_int)] = truth
+                changed += 1
+    if changed:
+        save_achievements()
+        logger.info(f"Ачивки: починена симметрия пар — исправлено записей {changed}")
+    return changed
+
+
+_ach_fix_partner_symmetry()
+
+
+def _ach_fix_vote_pair_misattribution() -> int:
+    """Разовая починка после бага в vote_callback: клик кросс-войсера (VOTE_PAIRS)
+    записывал голос на target_uid, а зачёт ачивки уходил тому, кто физически нажал
+    кнопку — то есть партнёру по паре. В паре Pavel/Элис голоса Элис годами
+    записывались Павлу (ach_vote_counted гейтит по target_uid, а ach_on_vote
+    зачислял по uid — см. фикс в vote_callback).
+
+    Кто именно кликал по каждому историческому голосу — нигде не хранилось
+    (сохранялся только target_uid), поэтому 1-в-1 по всей истории не восстановить.
+    Но в ещё живом match_votes.json отметки ach_counted хранят ПРАВИЛЬНОГО
+    target_uid — берём это как нижнюю границу правды и переносим дефицит от
+    партнёра с избытком, не уходя у него в минус ниже его же нижней границы и
+    ничего не выдумывая сверху."""
+    if not VOTE_PAIRS or not match_votes:
+        return 0
+    changed = 0
+    window_init, window_final = Counter(), Counter()
+    for st in match_votes.values():
+        if not isinstance(st, dict):
+            continue
+        ac = st.get("ach_counted") or {}
+        for k in (ac.get("init") or []):
+            window_init[k] += 1
+        for k in (ac.get("final") or []):
+            window_final[k] += 1
+
+    for a_uid, b_uid in VOTE_PAIRS:
+        for lo, hi in ((a_uid, b_uid), (b_uid, a_uid)):
+            lo_key, hi_key = str(lo), str(hi)
+            need_total = window_init[lo_key] + window_final[lo_key]
+            need_final = window_final[lo_key]
+            c_lo = _ach_rec(lo)["counters"]
+            c_hi = _ach_rec(hi)["counters"]
+            cur_lo = int(c_lo.get("votes", 0) or 0)
+            deficit = max(0, need_total - cur_lo)
+            if deficit:
+                hi_floor = window_init[hi_key] + window_final[hi_key]
+                movable = max(0, int(c_hi.get("votes", 0) or 0) - hi_floor)
+                move = min(deficit, movable)
+                if move:
+                    c_hi["votes"] = int(c_hi.get("votes", 0) or 0) - move
+                    c_lo["votes"] = cur_lo + move
+                    changed += 1
+            cur_lo_final = int(c_lo.get("final_votes", 0) or 0)
+            deficit_final = max(0, need_final - cur_lo_final)
+            if deficit_final:
+                hi_floor_f = window_final[hi_key]
+                movable_f = max(0, int(c_hi.get("final_votes", 0) or 0) - hi_floor_f)
+                move_f = min(deficit_final, movable_f)
+                if move_f:
+                    c_hi["final_votes"] = int(c_hi.get("final_votes", 0) or 0) - move_f
+                    c_lo["final_votes"] = cur_lo_final + move_f
+                    changed += 1
+    if changed:
+        save_achievements()
+        logger.info(f"Ачивки: починена атрибуция голосов VOTE_PAIRS — записей {changed}")
+    return changed
+
+
+_ach_fix_vote_pair_misattribution()
+
+
+def _ach_rescan_after_retrofix() -> int:
+    """Ретро-фиксы выше правят только сырые counters — тиры/бейджи/XP считаются
+    отдельно (_ach_xp читает только rec['unlocked'], который обновляет только
+    _ach_scan на реальном событии). Без этого прогона починенные цифры могли бы
+    молча пересечь порог тира, и никто бы не увидел ни бейджа, ни уведомления,
+    ни правильного XP, пока человек не отправит что-то ещё сам. Тиры отсюда
+    только добавляются (никогда не снимаются) — как и везде в этой системе."""
+    total_fired = 0
+    for uid_s in list(achievements.keys()):
+        try:
+            uid = int(uid_s)
+        except (TypeError, ValueError):
+            continue
+        try:
+            fired = _ach_scan(uid)
+            total_fired += len(fired)
+        except Exception as e:
+            logger.warning(f"Ачивки: рескан после ретро-фикса {uid}: {e}")
+    if total_fired:
+        logger.info(f"Ачивки: рескан после ретро-фикса — новых тиров {total_fired}")
+    return total_fired
+
+
+_ach_rescan_after_retrofix()
 
 
 def load_access():
@@ -3011,7 +3160,7 @@ async def vote_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         voter = user_data[target_uid]["name"]
     _record_vote(state, target_uid, val, is_final, voter)
     if ach_vote_counted(state, target_uid, is_final):
-        ach_on_vote(uid, is_final, state.get("created_at"))
+        ach_on_vote(target_uid, is_final, state.get("created_at"))
         save_match_votes()
     await _clear_reminder_msg(context.bot, state, target_uid)
     note = "Финальная оценка учтена ✅" if is_final else "Первичная оценка учтена ✅"
@@ -3149,6 +3298,7 @@ async def _check_matches_impl(update: Update, context: ContextTypes.DEFAULT_TYPE
             cur_sig = set(_match_sig(m["users"]))
             prev_sig = _reported_sig(link)
             if not prev_sig or (cur_sig - prev_sig):
+                m["_prev_sig"] = prev_sig
                 new_matches.append(m)
 
         current_check_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -3355,16 +3505,33 @@ async def _check_matches_impl(update: Update, context: ContextTypes.DEFAULT_TYPE
 
 
 async def _ach_credit_matches(bot, new_matches):
-    """Зачёт совпадений всем участникам доставленных совпадений."""
+    """Зачёт совпадений участникам доставленных совпадений.
+
+    Зачёт идёт НЕЗАВИСИМО по каждому участнику: считаем совпадение новым для
+    конкретного uid только если именно ЕГО собственная запись (uid@added_at)
+    не встречалась в prev_sig раньше. Иначе, если один участник пересдал сессию
+    (новый added_at того же урла), а у второго ничего не изменилось — второй
+    получал бы повторный зачёт на пустом месте только из-за того, что общая
+    сигнатура пары изменилась. Раньше зачёт шёл по общей сигнатуре на всю пару
+    сразу — отсюда и рассинхрон в счётчиках.
+
+    "p" — список партнёров (не set!) — при нескольких совпадениях с одним и тем
+    же партнёром в одной проверке партнёр должен засчитаться столько раз,
+    сколько было реальных совпадений, а не один раз на всю проверку."""
     per_uid = {}
     for m in new_matches:
         if m["link"] not in reported_matches:
             continue
+        prev_sig = m.get("_prev_sig") or set()
         uids = [u["uid"] for u in m["users"]]
-        for muid in uids:
-            agg = per_uid.setdefault(muid, {"n": 0, "p": set()})
+        for u in m["users"]:
+            own_key = f"{u['uid']}@{u.get('added_at', '')}"
+            if own_key in prev_sig:
+                continue
+            muid = u["uid"]
+            agg = per_uid.setdefault(muid, {"n": 0, "p": []})
             agg["n"] += 1
-            agg["p"].update(uids)
+            agg["p"].extend(x for x in uids if x != muid)
     for muid, agg in per_uid.items():
         try:
             ach_on_matches(muid, agg["n"], agg["p"])
@@ -4012,7 +4179,9 @@ def _ach_top_rows(uid, include_hidden=False):
                      "partner_best": m["partner_best"],
                      "partner_best_uid": _ach_partner_best_uid(rec)[0],
                      "partner_counts": rec.get("partner_counts") or {},
-                     "tenure_days": m["tenure_days"]})
+                     "tenure_days": m["tenure_days"],
+                     "urls_total": m["urls_total"], "final_votes": m["final_votes"],
+                     "partners_unique": m["partners_unique"], "day_hours": m["day_hours"]})
     rows.sort(key=lambda r: (-r["xp"], -r["tiers"], r["name"].lower()))
     my_place = next((i for i, r in enumerate(rows, start=1) if r["uid"] == uid), None)
     return rows, my_place
@@ -4032,6 +4201,10 @@ ACH_RECORD_CATS = [
     ("matches_burst", "🎯 Залп совпадений за одну проверку", "{v}"),
     ("clean_streak", "🧹 Самая длинная серия без единой отмены", "{v}"),
     ("skill_nofall", "📈 Дольше всех держал навык без падения", "{v} дн."),
+    ("urls_total", "🔗 Больше всего размечено ссылок всего", "{v}"),
+    ("final_votes", "🏁 Больше всего финальных вердиктов", "{v}"),
+    ("partners_unique", "🧩 Самый широкий круг совпадений", "{v} чел."),
+    ("day_hours", "⏱ Самый длинный рабочий день", "{v} ч. подряд"),
 ]
 
 
