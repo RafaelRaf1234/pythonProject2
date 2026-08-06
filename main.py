@@ -3542,13 +3542,7 @@ async def _send_bot_ready_broadcast(bot, text=None):
     if text is None:
         text = "✅ <b>Бот включился/перезагрузился и готов к работе</b>\nМожете отправлять сессии."
     sent, failed = 0, 0
-    for uid, data in list(user_data.items()):
-        if not isinstance(data, dict) or not data.get("registered"):
-            continue
-        if not is_approved(uid):
-            continue
-        if not data.get("notify", True):
-            continue
+    for uid in list(ADMIN_IDS):
         try:
             await tg(bot.send_message, chat_id=uid, text=text, parse_mode="HTML")
             sent += 1
