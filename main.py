@@ -308,7 +308,7 @@ match_votes: Dict[str, dict] = load_match_votes()
 link_verdicts: Dict[str, dict] = load_link_verdicts()
 
 
-# ==================== ДОСТИЖЕНИЯ ====================
+# ===================== ДОСТИЖЕНИЯ ====================
 
 ACH_TIER_ICONS = ["🥉", "🥈", "🥇", "💎"]
 ACH_TIER_NAMES = ["Бронза", "Серебро", "Золото", "Платина"]
