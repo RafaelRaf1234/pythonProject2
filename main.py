@@ -3582,11 +3582,13 @@ class _ResetUpdateShim:
         self.effective_user = q.from_user
 
 
-async def _send_bot_ready_broadcast(bot, text=None):
+async def _send_bot_ready_broadcast(bot, text=None, uids=None):
     if text is None:
         text = "✅ <b>Бот включился/перезагрузился и готов к работе</b>\nМожете отправлять сессии."
+    if uids is None:
+        uids = ADMIN_IDS
     sent, failed = 0, 0
-    for uid in list(ADMIN_IDS):
+    for uid in list(uids):
         try:
             await tg(bot.send_message, chat_id=uid, text=text, parse_mode="HTML")
             sent += 1
@@ -3604,7 +3606,7 @@ async def broadcast_bot_ready(update: Update, context: ContextTypes.DEFAULT_TYPE
         return
     try:
         button_text = "🏃 <b>БЕЕЕЕГОМ ДЕЛАТЬ СЕССИИ, ПРИШЛИ РОДНЫЕ</b>"
-        sent, failed = await _send_bot_ready_broadcast(context.bot, text=button_text)
+        sent, failed = await _send_bot_ready_broadcast(context.bot, text=button_text, uids=access_users("approved"))
         await tg(update.message.reply_text, f"📣 Рассылка отправлена.\n✅ Успешно: {sent}\n❌ Ошибок: {failed}")
     except Exception as e:
         logger.error(f"Ошибка в broadcast_bot_ready: {e}")
