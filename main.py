@@ -901,6 +901,24 @@ def _ach_partner_best(rec):
     return best
 
 
+def _ach_partner_best_uid(rec):
+    """Возвращает (uid_партнёра, кол-во) для самой частой пары — или (None, 0)."""
+    pc = rec.get("partner_counts") or {}
+    best_uid, best_n = None, 0
+    for k, v in pc.items():
+        try:
+            n = int(v or 0)
+        except (TypeError, ValueError):
+            continue
+        if n > best_n:
+            try:
+                best_uid = int(k)
+            except (TypeError, ValueError):
+                continue
+            best_n = n
+    return best_uid, best_n
+
+
 def _ach_tenure_days(rec):
     first = _ach_parse_day(rec.get("first_day") or "")
     if first is None:
@@ -1145,8 +1163,14 @@ def _ach_unlock_block(uid, fired):
     return ["\n".join(lines) + "\n" + tail + "\n\n"]
 
 
+def _ach_is_optout(uid):
+    """Скрытость: не участвует в топе, чужой профиль недоступен. Данные и XP всё равно копятся."""
+    return bool((user_data.get(uid, {}) or {}).get("ach_optout"))
+
+
 async def ach_award(bot, uid):
-    """Проверить пороги и уведомить. Никогда не роняет вызывающий код."""
+    """Проверить пороги и уведомить. Работает и в режиме скрытости — данные и ачивки
+    не должны теряться, пока пользователь не участвует в топе/просмотре. Никогда не роняет вызывающий код."""
     try:
         fired = _ach_scan(uid)
     except Exception as e:
@@ -1274,7 +1298,7 @@ def ach_on_skill(uid, value):
         peak = 0.0
     sk["peak"] = max(peak, val)
 
-    if val < ACH_SKILL_LOW:
+    if val <= ACH_SKILL_LOW:
         sk["below"] = True
     elif val >= ACH_SKILL_HI and sk.get("below"):
         sk["below"] = False
@@ -3737,14 +3761,17 @@ def _ach_total_tiers():
     return sum(len(a["tiers"]) for a in ACHIEVEMENTS_DEF)
 
 
-def _ach_home_text(uid):
+def _ach_home_text(uid, viewer_uid=None):
     rec, m, items = _ach_state(uid)
     lvl, cur_xp, need_xp = _ach_level(_ach_xp(rec))
     got = _ach_tiers_taken(rec)
     total = _ach_total_tiers()
     name = (user_data.get(uid, {}) or {}).get("name") or "Участник"
+    title = "🏆 <b>ДОСТИЖЕНИЯ</b>"
+    if viewer_uid is not None and viewer_uid != uid:
+        title = f"👤 <b>ПРОФИЛЬ</b>"
     lines = [
-        f"🏆 <b>ДОСТИЖЕНИЯ</b> — {html.escape(str(name))}",
+        f"{title} — {html.escape(str(name))}",
         "",
         f"⭐ Уровень {lvl}  •  {rec.get('xp', 0)} XP",
         f"{_ach_bar(cur_xp, need_xp)} {cur_xp}/{need_xp} до {lvl + 1} уровня",
@@ -3768,21 +3795,42 @@ def _ach_home_text(uid):
     return "\n".join(lines)
 
 
-def _ach_home_kb(uid):
-    on = (user_data.get(uid, {}) or {}).get("ach_notify", True)
-    rows = [[InlineKeyboardButton("🏅 Все достижения", callback_data="ach:cat:0"),
-             InlineKeyboardButton("📊 Статистика", callback_data="ach:stats")],
-            [InlineKeyboardButton("🏆 Топ участников", callback_data="ach:top"),
-             InlineKeyboardButton("🔔 Уведомления: вкл" if on else "🔕 Уведомления: выкл",
-                                  callback_data="ach:ntf")]]
+def _ach_target_suffix(uid, viewer_uid):
+    """Добавляет ':<uid>' к callback_data, если смотрим чужой профиль."""
+    return "" if viewer_uid is None or viewer_uid == uid else f":{uid}"
+
+
+def _ach_home_kb(uid, viewer_uid=None):
+    sfx = _ach_target_suffix(uid, viewer_uid)
+    own = viewer_uid is None or viewer_uid == uid
+    if own:
+        on = (user_data.get(uid, {}) or {}).get("ach_notify", True)
+        optout = _ach_is_optout(uid)
+        rows = [[InlineKeyboardButton("🏅 Все достижения", callback_data="ach:cat:0"),
+                 InlineKeyboardButton("📊 Статистика", callback_data="ach:stats")],
+                [InlineKeyboardButton("🏆 Топ участников", callback_data="ach:top"),
+                 InlineKeyboardButton("🔔 Уведомления: вкл" if on else "🔕 Уведомления: выкл",
+                                      callback_data="ach:ntf")],
+                [InlineKeyboardButton("🙈 Скрыть себя из топа" if not optout
+                                      else "👁 Скрыт из топа — нажми, чтобы показаться",
+                                      callback_data="ach:optout")]]
+        return InlineKeyboardMarkup(rows)
+    # чужой профиль: только достижения с прогресс-барами, без подробной статистики
+    rows = [[InlineKeyboardButton("🏅 Достижения", callback_data=f"ach:cat:0{sfx}")]]
+    rows.append([InlineKeyboardButton("🏆 Топ участников", callback_data="ach:top"),
+                 InlineKeyboardButton("👤 Мой профиль", callback_data="ach:home")])
     return InlineKeyboardMarkup(rows)
 
 
-def _ach_cat_text(uid, cat_idx):
+def _ach_cat_text(uid, cat_idx, viewer_uid=None):
     rec, m, items = _ach_state(uid)
     cat_idx = max(0, min(cat_idx, len(ACH_CATEGORIES) - 1))
     code, title = ACH_CATEGORIES[cat_idx]
-    lines = [f"<b>{html.escape(title)}</b>", ""]
+    lines = [f"<b>{html.escape(title)}</b>"]
+    if viewer_uid is not None and viewer_uid != uid:
+        name = (user_data.get(uid, {}) or {}).get("name") or "Участник"
+        lines[0] += f" — {html.escape(str(name))}"
+    lines.append("")
     for i in items:
         a = i["a"]
         if a["cat"] != code:
@@ -3806,26 +3854,31 @@ def _ach_cat_text(uid, cat_idx):
     return "\n".join(lines)
 
 
-def _ach_cat_kb(cat_idx):
+def _ach_cat_kb(cat_idx, uid=None, viewer_uid=None):
+    sfx = "" if uid is None else _ach_target_suffix(uid, viewer_uid)
     prev_i = (cat_idx - 1) % len(ACH_CATEGORIES)
     next_i = (cat_idx + 1) % len(ACH_CATEGORIES)
+    home_cb = "ach:home" if not sfx else f"ach:home{sfx}"
     rows = [
-        [InlineKeyboardButton("◀️", callback_data=f"ach:cat:{prev_i}"),
-         InlineKeyboardButton("🏠 Обзор", callback_data="ach:home"),
-         InlineKeyboardButton("▶️", callback_data=f"ach:cat:{next_i}")],
+        [InlineKeyboardButton("◀️", callback_data=f"ach:cat:{prev_i}{sfx}"),
+         InlineKeyboardButton("🏠 Обзор", callback_data=home_cb),
+         InlineKeyboardButton("▶️", callback_data=f"ach:cat:{next_i}{sfx}")],
     ]
     row = []
     for i, (_code, title) in enumerate(ACH_CATEGORIES):
-        row.append(InlineKeyboardButton(title.split(" ")[0], callback_data=f"ach:cat:{i}"))
+        row.append(InlineKeyboardButton(title.split(" ")[0], callback_data=f"ach:cat:{i}{sfx}"))
         if len(row) == 4:
             rows.append(row)
             row = []
     if row:
         rows.append(row)
+    if sfx:
+        rows.append([InlineKeyboardButton("🏆 Топ", callback_data="ach:top"),
+                     InlineKeyboardButton("👤 Мой профиль", callback_data="ach:home")])
     return InlineKeyboardMarkup(rows)
 
 
-def _ach_stats_text(uid):
+def _ach_stats_text(uid, viewer_uid=None):
     rec, m, items = _ach_state(uid)
     lvl, cur_xp, need_xp = _ach_level(_ach_xp(rec))
     days = rec.get("days") or {}
@@ -3841,8 +3894,12 @@ def _ach_stats_text(uid):
         if v is not None:
             skill_last = v
             break
+    header = "📊 <b>ОБЩАЯ СТАТИСТИКА</b>"
+    if viewer_uid is not None and viewer_uid != uid:
+        name = (user_data.get(uid, {}) or {}).get("name") or "Участник"
+        header += f" — {html.escape(str(name))}"
     lines = [
-        "📊 <b>ОБЩАЯ СТАТИСТИКА</b>",
+        header,
         "",
         f"⭐ Уровень {lvl} • {rec.get('xp', 0)} XP ({cur_xp}/{need_xp} до следующего)",
         f"🏅 Тиров взято: {_ach_tiers_taken(rec)} из {_ach_total_tiers()}",
@@ -3895,13 +3952,15 @@ def _ach_stats_text(uid):
     return "\n".join(lines)
 
 
-def _ach_top_text(uid):
+def _ach_top_rows(uid):
     rows = []
     for other_uid, rec in achievements.items():
         if not isinstance(rec, dict):
             continue
         d = user_data.get(other_uid) or {}
         if not d.get("registered"):
+            continue
+        if d.get("ach_optout"):
             continue
         name = d.get("name") or str(other_uid)
         if name in BUTTON_NAMES:
@@ -3911,16 +3970,88 @@ def _ach_top_text(uid):
         m = _ach_metrics(rec)
         rows.append({"uid": other_uid, "name": name, "xp": xp,
                      "tiers": _ach_tiers_taken(rec),
-                     "sessions": m["sessions_total"], "votes": m["votes_total"]})
+                     "sessions": m["sessions_total"], "votes": m["votes_total"],
+                     "matches": m["matches_total"], "skill_peak": m["skill_peak"],
+                     "streak_days": m["streak_days"], "sessions_day": m["sessions_day"],
+                     "lightning_votes": m["lightning_votes"],
+                     "comebacks": m["comebacks"],
+                     "night_days": m["night_days"], "early_days": m["early_days"],
+                     "matches_burst": m["matches_burst"],
+                     "clean_streak": m["clean_streak"], "no_undo_days": m["no_undo_days"],
+                     "skill_nofall": m["skill_nofall"],
+                     "partner_best": m["partner_best"],
+                     "partner_best_uid": _ach_partner_best_uid(rec)[0],
+                     "tenure_days": m["tenure_days"]})
     rows.sort(key=lambda r: (-r["xp"], -r["tiers"], r["name"].lower()))
+    my_place = next((i for i, r in enumerate(rows, start=1) if r["uid"] == uid), None)
+    return rows, my_place
+
+
+ACH_RECORD_CATS = [
+    ("sessions", "📦 Больше всего сессий за всё время", "{v}"),
+    ("matches", "🎯 Больше всего совпадений найдено", "{v}"),
+    ("votes", "⚖️ Больше всего оценок выставлено", "{v}"),
+    ("sessions_day", "🔥 Рекорд сессий за один день", "{v}"),
+    ("streak_days", "📅 Самая длинная серия дней подряд", "{v} дн."),
+    ("skill_peak", "📈 Самый высокий пик навыка", "{v}"),
+    ("lightning_votes", "⚡ Больше всего молниеносных оценок", "{v}"),
+    ("comebacks", "🔄 Больше всего камбэков навыка", "{v}"),
+    ("night_days", "🦉 Больше всего ночных дней (00–05)", "{v}"),
+    ("early_days", "🌅 Больше всего раннего старта (до 07)", "{v}"),
+    ("matches_burst", "🎯 Залп совпадений за одну проверку", "{v}"),
+    ("clean_streak", "🧹 Самая длинная серия без единой отмены", "{v}"),
+    ("skill_nofall", "📈 Дольше всех держал навык без падения", "{v} дн."),
+]
+
+
+def _ach_top_records(rows):
+    out = []
+    for key, label, fmt in ACH_RECORD_CATS:
+        best = None
+        for r in rows:
+            v = r.get(key) or 0
+            try:
+                v = float(v)
+            except (TypeError, ValueError):
+                continue
+            if v <= 0:
+                continue
+            if best is None or v > best[0]:
+                best = (v, r)
+        if best is None:
+            continue
+        v, r = best
+        out.append((label, r["name"], r["uid"], fmt.format(v=_ach_fmt_val(v))))
+    return out
+
+
+def _ach_top_best_pair(rows):
+    """Пара участников с наибольшим числом совместных совпадений."""
+    best = None
+    for r in rows:
+        n = int(r.get("partner_best") or 0)
+        p_uid = r.get("partner_best_uid")
+        if n <= 0 or p_uid is None:
+            continue
+        if best is None or n > best[0]:
+            best = (n, r["uid"], r["name"], p_uid)
+    if best is None:
+        return None
+    n, uid_a, name_a, uid_b = best
+    d_b = user_data.get(uid_b) or {}
+    name_b = d_b.get("name") or str(uid_b)
+    if not d_b.get("registered") or d_b.get("ach_optout"):
+        return None
+    return name_a, uid_a, name_b, uid_b, n
+
+
+def _ach_top_text(uid):
+    rows, my_place = _ach_top_rows(uid)
     if not rows:
         return "🏆 <b>ТОП УЧАСТНИКОВ</b>\n\nПока пусто — статистика копится с этого момента."
     medals = ["🥇", "🥈", "🥉"]
-    lines = ["🏆 <b>ТОП УЧАСТНИКОВ</b>", ""]
-    my_place = None
+    lines = ["🏆 <b>ТОП УЧАСТНИКОВ</b>", "", "Нажми на участника, чтобы открыть его профиль.", ""]
     for i, r in enumerate(rows, start=1):
-        if r["uid"] == uid:
-            my_place = i
         if i > ACH_TOP_LIMIT:
             continue
         mark = medals[i - 1] if i <= 3 else f"{i}."
@@ -3934,13 +4065,49 @@ def _ach_top_text(uid):
     if my_place and my_place > ACH_TOP_LIMIT:
         lines.append("")
         lines.append(f"Твоё место: {my_place} из {len(rows)}")
+    records = _ach_top_records(rows)
+    pair = _ach_top_best_pair(rows)
+    if records or pair:
+        lines.append("")
+        lines.append("🏅 <b>РЕКОРДСМЕНЫ</b>")
+        for label, name, r_uid, val in records:
+            me = " (ты)" if r_uid == uid else ""
+            lines.append(f"{label}: <b>{html.escape(str(name))}</b>{me} — {val}")
+        if pair:
+            name_a, uid_a, name_b, uid_b, n = pair
+            you_a = " (ты)" if uid_a == uid else ""
+            you_b = " (ты)" if uid_b == uid else ""
+            lines.append(
+                f"🤝 Лучшая пара: <b>{html.escape(str(name_a))}</b>{you_a} + "
+                f"<b>{html.escape(str(name_b))}</b>{you_b} — {n} совпадений вместе"
+            )
     return "\n".join(lines)
 
 
-def _ach_back_kb():
-    return InlineKeyboardMarkup([[InlineKeyboardButton("🏠 Обзор", callback_data="ach:home"),
-                                 InlineKeyboardButton("🏅 Все достижения",
-                                                      callback_data="ach:cat:0")]])
+def _ach_top_kb(uid):
+    rows, _my_place = _ach_top_rows(uid)
+    medals = ["🥇", "🥈", "🥉"]
+    kb_rows = []
+    for i, r in enumerate(rows[:ACH_TOP_LIMIT], start=1):
+        mark = medals[i - 1] if i <= 3 else f"{i}."
+        label = f"{mark} {r['name']}"
+        if r["uid"] == uid:
+            label += " (ты)"
+        label = label[:60]
+        kb_rows.append([InlineKeyboardButton(label, callback_data=f"ach:home:{r['uid']}")])
+    kb_rows.append([InlineKeyboardButton("🏠 Мой профиль", callback_data="ach:home")])
+    return InlineKeyboardMarkup(kb_rows)
+
+
+def _ach_back_kb(uid=None, viewer_uid=None):
+    sfx = "" if uid is None else _ach_target_suffix(uid, viewer_uid)
+    home_cb = "ach:home" if not sfx else f"ach:home{sfx}"
+    rows = [[InlineKeyboardButton("🏠 Обзор", callback_data=home_cb),
+             InlineKeyboardButton("🏅 Все достижения", callback_data=f"ach:cat:0{sfx}")]]
+    if sfx:
+        rows.append([InlineKeyboardButton("🏆 Топ", callback_data="ach:top"),
+                     InlineKeyboardButton("👤 Мой профиль", callback_data="ach:home")])
+    return InlineKeyboardMarkup(rows)
 
 
 async def show_achievements(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -3955,6 +4122,22 @@ async def show_achievements(update: Update, context: ContextTypes.DEFAULT_TYPE):
              parse_mode="HTML", reply_markup=_ach_home_kb(user_id))
 
 
+def _ach_resolve_target(uid, raw):
+    """Валидирует чужой uid из callback_data. Возвращает (target_uid, ok)."""
+    if raw is None:
+        return uid, True
+    try:
+        target = int(raw)
+    except (TypeError, ValueError):
+        return uid, False
+    if target == uid:
+        return uid, True
+    d = user_data.get(target) or {}
+    if not d.get("registered") or d.get("ach_optout"):
+        return uid, False
+    return target, True
+
+
 async def achievements_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     q = update.callback_query
     uid = q.from_user.id
@@ -3963,6 +4146,7 @@ async def achievements_callback(update: Update, context: ContextTypes.DEFAULT_TY
     await ach_award(context.bot, uid)
 
     if action == "ntf":
+        # чужие настройки уведомлений недоступны — эта кнопка есть только у себя
         d = user_data.setdefault(uid, {})
         new_val = not d.get("ach_notify", True)
         d["ach_notify"] = new_val
@@ -3970,20 +4154,41 @@ async def achievements_callback(update: Update, context: ContextTypes.DEFAULT_TY
         await tg_answer(q, "Уведомления об ачивках включены 🔔" if new_val
                         else "Уведомления об ачивках выключены 🔕")
         text, kb = _ach_home_text(uid), _ach_home_kb(uid)
+    elif action == "optout":
+        # участие/выход из статистики и топа — доступно только себе
+        d = user_data.setdefault(uid, {})
+        new_val = not d.get("ach_optout", False)
+        d["ach_optout"] = new_val
+        save_data()
+        await tg_answer(q, "Скрыт из топа и чужих просмотров 🙈 (данные и ачивки копятся как раньше)" if new_val
+                        else "Снова виден в топе 👁")
+        text, kb = _ach_home_text(uid), _ach_home_kb(uid)
     elif action == "cat":
         try:
             idx = int(parts[2])
         except (IndexError, ValueError):
             idx = 0
         idx = max(0, min(idx, len(ACH_CATEGORIES) - 1))
-        await tg_answer(q)
-        text, kb = _ach_cat_text(uid, idx), _ach_cat_kb(idx)
+        raw_target = parts[3] if len(parts) > 3 else None
+        target, ok = _ach_resolve_target(uid, raw_target)
+        await tg_answer(q, None if ok else "Профиль недоступен")
+        text, kb = _ach_cat_text(target, idx, viewer_uid=uid), _ach_cat_kb(idx, target, uid)
     elif action == "stats":
-        await tg_answer(q)
-        text, kb = _ach_stats_text(uid), _ach_back_kb()
+        # подробная статистика — только для себя, у чужого профиля кнопки нет
+        raw_target = parts[2] if len(parts) > 2 else None
+        target, ok = _ach_resolve_target(uid, raw_target)
+        if target != uid:
+            target, ok = uid, False
+        await tg_answer(q, None if ok else "Статистика доступна только для себя")
+        text, kb = _ach_stats_text(target, viewer_uid=uid), _ach_back_kb(target, uid)
     elif action == "top":
         await tg_answer(q)
-        text, kb = _ach_top_text(uid), _ach_back_kb()
+        text, kb = _ach_top_text(uid), _ach_top_kb(uid)
+    elif action == "home":
+        raw_target = parts[2] if len(parts) > 2 else None
+        target, ok = _ach_resolve_target(uid, raw_target)
+        await tg_answer(q, None if ok else "Профиль недоступен")
+        text, kb = _ach_home_text(target, viewer_uid=uid), _ach_home_kb(target, uid)
     else:
         await tg_answer(q)
         text, kb = _ach_home_text(uid), _ach_home_kb(uid)
