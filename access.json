@@ -1,0 +1,110 @@
+{
+  "969984835": {
+    "status": "approved",
+    "decided_by": "seed:config",
+    "decided_at": "2026-08-05T12:53:04.007176",
+    "username": "RafaelRaf1"
+  },
+  "1467875376": {
+    "status": "approved",
+    "decided_by": "seed:config",
+    "decided_at": "2026-08-05T12:53:04.007176",
+    "username": "dustergts"
+  },
+  "546938924": {
+    "status": "approved",
+    "decided_by": "seed:config",
+    "decided_at": "2026-08-05T12:53:04.007176",
+    "username": "dm1triy20"
+  },
+  "1252967508": {
+    "status": "approved",
+    "decided_by": "seed:config",
+    "decided_at": "2026-08-05T12:53:04.007176",
+    "username": "tani_kr"
+  },
+  "596548043": {
+    "status": "approved",
+    "decided_by": "seed:config",
+    "decided_at": "2026-08-05T12:53:04.007176",
+    "username": "Kandalosh"
+  },
+  "576391595": {
+    "status": "approved",
+    "decided_by": "seed:config",
+    "decided_at": "2026-08-05T12:53:04.007176",
+    "username": "milligan_alice"
+  },
+  "6696208195": {
+    "status": "approved",
+    "decided_by": "seed:registered",
+    "decided_at": "2026-08-05T12:53:04.007176",
+    "name": "ЛжеЛида",
+    "username": null
+  },
+  "421017458": {
+    "status": "approved",
+    "decided_by": "seed:registered",
+    "decided_at": "2026-08-05T12:53:04.007176",
+    "name": "Настя",
+    "username": "AZaytseva85"
+  },
+  "239227549": {
+    "status": "approved",
+    "decided_by": "seed:registered",
+    "decided_at": "2026-08-05T12:53:04.007176",
+    "name": "Anna",
+    "username": "bukaduka"
+  },
+  "435508232": {
+    "status": "approved",
+    "decided_by": "seed:registered",
+    "decided_at": "2026-08-05T12:53:04.007176",
+    "name": "Оля",
+    "username": "SantOMela"
+  },
+  "5073552155": {
+    "status": "approved",
+    "decided_by": "seed:registered",
+    "decided_at": "2026-08-05T12:53:04.007176",
+    "name": "Ксения",
+    "username": "Kseniaya11"
+  },
+  "8476561679": {
+    "status": "approved",
+    "decided_by": "seed:registered",
+    "decided_at": "2026-08-05T12:53:04.007176",
+    "name": "Даша",
+    "username": "Anyaibusi"
+  },
+  "1953551841": {
+    "status": "approved",
+    "decided_by": "seed:registered",
+    "decided_at": "2026-08-05T12:53:04.007176",
+    "name": "Ирина",
+    "username": "Irina_Kazangi"
+  },
+  "655645670": {
+    "status": "approved",
+    "decided_by": "seed:registered",
+    "decided_at": "2026-08-05T12:53:04.007176",
+    "name": "Aysivinner",
+    "username": "aysivinner"
+  },
+  "232143917": {
+    "status": "approved",
+    "decided_by": "seed:registered",
+    "decided_at": "2026-08-05T12:53:04.007176",
+    "name": "NAB",
+    "username": "NataBon"
+  },
+  "7055164159": {
+    "status": "denied",
+    "username": "dmitriy_20012",
+    "name": "Дмитрий",
+    "requested_at": "2026-08-05T13:02:35.811263",
+    "notified_at": 1785924155.8112545,
+    "decided_at": "2026-08-05T13:02:46.695367",
+    "decided_by": "969984835"
+  }
+}
