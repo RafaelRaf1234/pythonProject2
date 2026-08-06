@@ -321,6 +321,9 @@ ACH_SKILL_HI = 90.0
 ACH_SKILL_LOW = 80.0
 ACH_SKILL_MIN_SAMPLES = 2
 ACH_TOP_LIMIT = 15
+# uid админов, у которых сейчас включён режим "показывать скрытых" на экране топа.
+# Это чисто состояние экрана (не персистентное), сбрасывается при рестарте бота.
+_admin_top_hidden_view = set()
 ACH_UNITS_VERSION = 2      # 1 = сессия считалась по URL, 2 = по отправленной пачке
 ACH_WEEK_GOAL = 30         # порог «стабильной недели» в пачках
 ACH_BTN = "🏆 Достижения"
@@ -3770,6 +3773,8 @@ def _ach_home_text(uid, viewer_uid=None):
     title = "🏆 <b>ДОСТИЖЕНИЯ</b>"
     if viewer_uid is not None and viewer_uid != uid:
         title = f"👤 <b>ПРОФИЛЬ</b>"
+        if viewer_uid in ADMIN_IDS and _ach_is_optout(uid):
+            title += " 🙈 <i>(скрыт из топа)</i>"
     lines = [
         f"{title} — {html.escape(str(name))}",
         "",
@@ -3815,8 +3820,12 @@ def _ach_home_kb(uid, viewer_uid=None):
                                       else "👁 Скрыт из топа — нажми, чтобы показаться",
                                       callback_data="ach:optout")]]
         return InlineKeyboardMarkup(rows)
-    # чужой профиль: только достижения с прогресс-барами, без подробной статистики
-    rows = [[InlineKeyboardButton("🏅 Достижения", callback_data=f"ach:cat:0{sfx}")]]
+    # чужой профиль: обычно только достижения с прогресс-барами, без статистики;
+    # админу дополнительно доступна полная статистика — в том числе для скрытых
+    top_row = [InlineKeyboardButton("🏅 Достижения", callback_data=f"ach:cat:0{sfx}")]
+    if viewer_uid in ADMIN_IDS:
+        top_row.append(InlineKeyboardButton("📊 Статистика", callback_data=f"ach:stats{sfx}"))
+    rows = [top_row]
     rows.append([InlineKeyboardButton("🏆 Топ участников", callback_data="ach:top"),
                  InlineKeyboardButton("👤 Мой профиль", callback_data="ach:home")])
     return InlineKeyboardMarkup(rows)
@@ -3952,7 +3961,11 @@ def _ach_stats_text(uid, viewer_uid=None):
     return "\n".join(lines)
 
 
-def _ach_top_rows(uid):
+def _ach_top_rows(uid, include_hidden=False):
+    """Строки топа. Обычному участнику чужие скрытые не показываются, но свою
+    собственную строку он видит всегда — так можно сравнить себя с топом,
+    как если бы участвовал, оставаясь при этом невидимым для остальных.
+    include_hidden=True (только для админа) показывает вообще всех."""
     rows = []
     for other_uid, rec in achievements.items():
         if not isinstance(rec, dict):
@@ -3960,7 +3973,8 @@ def _ach_top_rows(uid):
         d = user_data.get(other_uid) or {}
         if not d.get("registered"):
             continue
-        if d.get("ach_optout"):
+        optout = bool(d.get("ach_optout"))
+        if optout and not include_hidden and other_uid != uid:
             continue
         name = d.get("name") or str(other_uid)
         if name in BUTTON_NAMES:
@@ -3968,7 +3982,7 @@ def _ach_top_rows(uid):
         rec = _ach_rec(other_uid)
         xp = _ach_xp(rec)
         m = _ach_metrics(rec)
-        rows.append({"uid": other_uid, "name": name, "xp": xp,
+        rows.append({"uid": other_uid, "name": name, "xp": xp, "optout": optout,
                      "tiers": _ach_tiers_taken(rec),
                      "sessions": m["sessions_total"], "votes": m["votes_total"],
                      "matches": m["matches_total"], "skill_peak": m["skill_peak"],
@@ -3981,6 +3995,7 @@ def _ach_top_rows(uid):
                      "skill_nofall": m["skill_nofall"],
                      "partner_best": m["partner_best"],
                      "partner_best_uid": _ach_partner_best_uid(rec)[0],
+                     "partner_counts": rec.get("partner_counts") or {},
                      "tenure_days": m["tenure_days"]})
     rows.sort(key=lambda r: (-r["xp"], -r["tiers"], r["name"].lower()))
     my_place = next((i for i, r in enumerate(rows, start=1) if r["uid"] == uid), None)
@@ -4025,37 +4040,63 @@ def _ach_top_records(rows):
     return out
 
 
-def _ach_top_best_pair(rows):
-    """Пара участников с наибольшим числом совместных совпадений."""
+def _ach_top_best_pair(rows, viewer_uid=None):
+    """Пара участников с наибольшим числом совместных совпадений.
+    Партнёр должен сам входить в текущий (уже отфильтрованный по видимости) rows —
+    иначе скрытый партнёр мог бы "просочиться" в рекорд по имени для третьих лиц.
+    Исключение: если пара — это собственная пара смотрящего (viewer_uid), он видит
+    её честно, даже если сам скрыт и партнёр тоже скрыт — это его личная статистика.
+
+    Для каждой строки перебираем ВСЕХ её партнёров по убыванию числа совпадений
+    (не только персональный топ-1), пока не найдём первого допустимого к показу —
+    иначе если и личный топ-партнёр, и топ-партнёр другой стороны пары оба скрыты,
+    валидная видимая пара рангом ниже терялась бы целиком вместо честного показа."""
+    allowed = {r["uid"] for r in rows}
     best = None
     for r in rows:
-        n = int(r.get("partner_best") or 0)
-        p_uid = r.get("partner_best_uid")
-        if n <= 0 or p_uid is None:
-            continue
-        if best is None or n > best[0]:
-            best = (n, r["uid"], r["name"], p_uid)
+        is_own_pair = viewer_uid is not None and r["uid"] == viewer_uid
+        counts = r.get("partner_counts") or {}
+        candidates = []
+        for k, v in counts.items():
+            try:
+                n = int(v or 0)
+                p_uid = int(k)
+            except (TypeError, ValueError):
+                continue
+            if n <= 0:
+                continue
+            candidates.append((n, p_uid))
+        candidates.sort(key=lambda x: -x[0])
+        for n, p_uid in candidates:
+            if p_uid in allowed or is_own_pair:
+                if best is None or n > best[0]:
+                    best = (n, r["uid"], r["name"], p_uid)
+                break  # лучший из допустимых для этой строки найден — дальше по строке не идём
     if best is None:
         return None
     n, uid_a, name_a, uid_b = best
     d_b = user_data.get(uid_b) or {}
     name_b = d_b.get("name") or str(uid_b)
-    if not d_b.get("registered") or d_b.get("ach_optout"):
-        return None
     return name_a, uid_a, name_b, uid_b, n
 
 
-def _ach_top_text(uid):
-    rows, my_place = _ach_top_rows(uid)
+def _ach_top_text(uid, include_hidden=False):
+    rows, my_place = _ach_top_rows(uid, include_hidden=include_hidden)
     if not rows:
         return "🏆 <b>ТОП УЧАСТНИКОВ</b>\n\nПока пусто — статистика копится с этого момента."
     medals = ["🥇", "🥈", "🥉"]
-    lines = ["🏆 <b>ТОП УЧАСТНИКОВ</b>", "", "Нажми на участника, чтобы открыть его профиль.", ""]
+    lines = ["🏆 <b>ТОП УЧАСТНИКОВ</b>"]
+    if include_hidden:
+        lines.append("👁 Режим админа: показаны и скрытые из топа участники (🙈)")
+    lines += ["", "Нажми на участника, чтобы открыть его профиль.", ""]
     for i, r in enumerate(rows, start=1):
         if i > ACH_TOP_LIMIT:
             continue
         mark = medals[i - 1] if i <= 3 else f"{i}."
-        me = " ← ты" if r["uid"] == uid else ""
+        if r["uid"] == uid:
+            me = " ← ты (скрыт, видно только тебе)" if r.get("optout") else " ← ты"
+        else:
+            me = " 🙈" if r.get("optout") else ""
         lvl, _c, _n = _ach_level(r["xp"])
         lines.append(
             f"{mark} <b>{html.escape(str(r['name']))}</b>{me}\n"
@@ -4065,18 +4106,23 @@ def _ach_top_text(uid):
     if my_place and my_place > ACH_TOP_LIMIT:
         lines.append("")
         lines.append(f"Твоё место: {my_place} из {len(rows)}")
+    if not include_hidden and _ach_is_optout(uid):
+        lines.append("")
+        lines.append("<i>Ты скрыт из топа — эту сводку с твоим местом видишь только ты, "
+                      "остальные тебя здесь не увидят.</i>")
+    rows_by_uid = {r["uid"]: r for r in rows}
     records = _ach_top_records(rows)
-    pair = _ach_top_best_pair(rows)
+    pair = _ach_top_best_pair(rows, viewer_uid=uid)
     if records or pair:
         lines.append("")
         lines.append("🏅 <b>РЕКОРДСМЕНЫ</b>")
         for label, name, r_uid, val in records:
-            me = " (ты)" if r_uid == uid else ""
+            me = " (ты)" if r_uid == uid else (" 🙈" if rows_by_uid.get(r_uid, {}).get("optout") else "")
             lines.append(f"{label}: <b>{html.escape(str(name))}</b>{me} — {val}")
         if pair:
             name_a, uid_a, name_b, uid_b, n = pair
-            you_a = " (ты)" if uid_a == uid else ""
-            you_b = " (ты)" if uid_b == uid else ""
+            you_a = " (ты)" if uid_a == uid else (" 🙈" if _ach_is_optout(uid_a) else "")
+            you_b = " (ты)" if uid_b == uid else (" 🙈" if _ach_is_optout(uid_b) else "")
             lines.append(
                 f"🤝 Лучшая пара: <b>{html.escape(str(name_a))}</b>{you_a} + "
                 f"<b>{html.escape(str(name_b))}</b>{you_b} — {n} совпадений вместе"
@@ -4084,8 +4130,8 @@ def _ach_top_text(uid):
     return "\n".join(lines)
 
 
-def _ach_top_kb(uid):
-    rows, _my_place = _ach_top_rows(uid)
+def _ach_top_kb(uid, include_hidden=False):
+    rows, _my_place = _ach_top_rows(uid, include_hidden=include_hidden)
     medals = ["🥇", "🥈", "🥉"]
     kb_rows = []
     for i, r in enumerate(rows[:ACH_TOP_LIMIT], start=1):
@@ -4093,8 +4139,14 @@ def _ach_top_kb(uid):
         label = f"{mark} {r['name']}"
         if r["uid"] == uid:
             label += " (ты)"
+        elif r.get("optout"):
+            label += " 🙈"
         label = label[:60]
         kb_rows.append([InlineKeyboardButton(label, callback_data=f"ach:home:{r['uid']}")])
+    if uid in ADMIN_IDS:
+        kb_rows.append([InlineKeyboardButton(
+            "🙈 Скрыть скрытых из списка" if include_hidden else "👁 Показать скрытых (админ)",
+            callback_data="ach:toptoggle")])
     kb_rows.append([InlineKeyboardButton("🏠 Мой профиль", callback_data="ach:home")])
     return InlineKeyboardMarkup(kb_rows)
 
@@ -4123,7 +4175,8 @@ async def show_achievements(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 def _ach_resolve_target(uid, raw):
-    """Валидирует чужой uid из callback_data. Возвращает (target_uid, ok)."""
+    """Валидирует чужой uid из callback_data. Возвращает (target_uid, ok).
+    Админам разрешён просмотр профилей, даже если участник скрыл себя из топа."""
     if raw is None:
         return uid, True
     try:
@@ -4133,7 +4186,9 @@ def _ach_resolve_target(uid, raw):
     if target == uid:
         return uid, True
     d = user_data.get(target) or {}
-    if not d.get("registered") or d.get("ach_optout"):
+    if not d.get("registered"):
+        return uid, False
+    if d.get("ach_optout") and uid not in ADMIN_IDS:
         return uid, False
     return target, True
 
@@ -4174,16 +4229,28 @@ async def achievements_callback(update: Update, context: ContextTypes.DEFAULT_TY
         await tg_answer(q, None if ok else "Профиль недоступен")
         text, kb = _ach_cat_text(target, idx, viewer_uid=uid), _ach_cat_kb(idx, target, uid)
     elif action == "stats":
-        # подробная статистика — только для себя, у чужого профиля кнопки нет
+        # подробная статистика — обычно только для себя; админу доступна и чужая,
+        # в т.ч. скрытых из топа участников
         raw_target = parts[2] if len(parts) > 2 else None
         target, ok = _ach_resolve_target(uid, raw_target)
-        if target != uid:
+        if target != uid and uid not in ADMIN_IDS:
             target, ok = uid, False
         await tg_answer(q, None if ok else "Статистика доступна только для себя")
         text, kb = _ach_stats_text(target, viewer_uid=uid), _ach_back_kb(target, uid)
     elif action == "top":
         await tg_answer(q)
-        text, kb = _ach_top_text(uid), _ach_top_kb(uid)
+        show_hidden = uid in ADMIN_IDS and uid in _admin_top_hidden_view
+        text, kb = _ach_top_text(uid, include_hidden=show_hidden), _ach_top_kb(uid, include_hidden=show_hidden)
+    elif action == "toptoggle":
+        # тумблер "показать скрытых" на экране топа — доступен только админу
+        if uid in ADMIN_IDS:
+            if uid in _admin_top_hidden_view:
+                _admin_top_hidden_view.discard(uid)
+            else:
+                _admin_top_hidden_view.add(uid)
+        await tg_answer(q)
+        show_hidden = uid in ADMIN_IDS and uid in _admin_top_hidden_view
+        text, kb = _ach_top_text(uid, include_hidden=show_hidden), _ach_top_kb(uid, include_hidden=show_hidden)
     elif action == "home":
         raw_target = parts[2] if len(parts) > 2 else None
         target, ok = _ach_resolve_target(uid, raw_target)
