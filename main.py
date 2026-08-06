@@ -35,7 +35,7 @@ if not BOT_TOKEN:
 GROUP_CHAT_ID = -1003959278251
 
 NOTIFY_HTTP_HOST = "0.0.0.0"
-NOTIFY_HTTP_PORT = 8799
+NOTIFY_HTTP_PORT = int(os.getenv("PORT") or os.getenv("HTTP_PORT") or 8799)
 NOTIFY_SECRET = "yangBot_rafyl_2026"
 SEARCH_SESSION_HASH = "-1874601906"
 DATA_FILE = "user_data.json"
@@ -920,6 +920,20 @@ def _ach_partner_best_uid(rec):
                 continue
             best_n = n
     return best_uid, best_n
+
+
+def _ach_partner_best_line(rec, count):
+    """Строка "Имя — N" для личной статистики самого участника: это его собственные
+    данные о себе, поэтому имя партнёра показывается честно, даже если тот скрыт
+    из топа — сокрытие касается видимости для ДРУГИХ, а не своей же статистики."""
+    if not count:
+        return "0"
+    p_uid, _n = _ach_partner_best_uid(rec)
+    if p_uid is None:
+        return str(count)
+    d = user_data.get(p_uid) or {}
+    name = d.get("name") or str(p_uid)
+    return f"{html.escape(str(name))} — {count}"
 
 
 def _ach_tenure_days(rec):
@@ -3934,8 +3948,8 @@ def _ach_stats_text(uid, viewer_uid=None):
         "<b>Оценки</b>",
         f"• Всего: {m['votes_total']}  •  финальных: {m['final_votes']}",
         f"• За лучший день: {m['votes_day']} • за лучшие 2 дня: {m['votes_2d']}",
-        f"• Быстрых (<{ACH_FAST_VOTE_SECONDS // 60} мин): {m['fast_votes']} • "
-        f"молний (<{ACH_LIGHTNING_SECONDS} сек): {m['lightning_votes']}",
+        f"• Быстрых (&lt;{ACH_FAST_VOTE_SECONDS // 60} мин): {m['fast_votes']} • "
+        f"молний (&lt;{ACH_LIGHTNING_SECONDS} сек): {m['lightning_votes']}",
         f"• Дней подряд с оценками: {m['vote_streak_days']}",
         "",
         "<b>Навык</b>",
@@ -3948,7 +3962,7 @@ def _ach_stats_text(uid, viewer_uid=None):
         "<b>Совпадения</b>",
         f"• Всего: {m['matches_total']}  •  разных участников: {m['partners_unique']}",
         f"• Лучший день: {m['matches_day']} • лучшая проверка: {m['matches_burst']}",
-        f"• Чаще всего с одним участником: {m['partner_best']}",
+        f"• Чаще всего с одним участником: {_ach_partner_best_line(rec, m['partner_best'])}",
         "",
         "<b>Режим</b>",
         f"• Ночных дней (00–05): {m['night_days']}  •  ранних (до 07): {m['early_days']}",
@@ -4113,7 +4127,10 @@ def _ach_top_text(uid, include_hidden=False):
     rows_by_uid = {r["uid"]: r for r in rows}
     records = _ach_top_records(rows)
     pair = _ach_top_best_pair(rows, viewer_uid=uid)
-    if records or pair:
+    my_rec = _ach_rec(uid)
+    my_p_uid, my_p_n = _ach_partner_best_uid(my_rec)
+    my_p_line = _ach_partner_best_line(my_rec, my_p_n) if my_p_uid is not None and my_p_n > 0 else None
+    if records or pair or my_p_line:
         lines.append("")
         lines.append("🏅 <b>РЕКОРДСМЕНЫ</b>")
         for label, name, r_uid, val in records:
@@ -4127,6 +4144,8 @@ def _ach_top_text(uid, include_hidden=False):
                 f"🤝 Лучшая пара: <b>{html.escape(str(name_a))}</b>{you_a} + "
                 f"<b>{html.escape(str(name_b))}</b>{you_b} — {n} совпадений вместе"
             )
+        if my_p_line:
+            lines.append(f"👤 Ты чаще всего совпадаешь с: {my_p_line}")
     return "\n".join(lines)
 
 
@@ -4200,6 +4219,28 @@ async def achievements_callback(update: Update, context: ContextTypes.DEFAULT_TY
     action = parts[1] if len(parts) > 1 else "home"
     await ach_award(context.bot, uid)
 
+    try:
+        text, kb = await _ach_callback_render(uid, action, parts, q)
+    except Exception as e:
+        logger.exception(f"Ачивки: сбой при построении экрана '{action}' для {uid}")
+        await tg_answer(q, "⚠️ Ошибка статистики, уже смотрю логи", show_alert=True)
+        return
+
+    try:
+        await tg(context.bot.edit_message_text,
+                 chat_id=q.message.chat_id, message_id=q.message.message_id,
+                 text=text, parse_mode="HTML", reply_markup=kb,
+                 disable_web_page_preview=True)
+    except BadRequest as e:
+        if "not modified" not in str(e).lower():
+            logger.exception(f"Ачивки: не удалось обновить экран {uid} (BadRequest)")
+            await tg_answer(q, "⚠️ Не удалось обновить экран", show_alert=True)
+    except Exception as e:
+        logger.exception(f"Ачивки: не удалось обновить экран {uid}")
+        await tg_answer(q, "⚠️ Не удалось обновить экран", show_alert=True)
+
+
+async def _ach_callback_render(uid, action, parts, q):
     if action == "ntf":
         # чужие настройки уведомлений недоступны — эта кнопка есть только у себя
         d = user_data.setdefault(uid, {})
@@ -4260,16 +4301,7 @@ async def achievements_callback(update: Update, context: ContextTypes.DEFAULT_TY
         await tg_answer(q)
         text, kb = _ach_home_text(uid), _ach_home_kb(uid)
 
-    try:
-        await tg(context.bot.edit_message_text,
-                 chat_id=q.message.chat_id, message_id=q.message.message_id,
-                 text=text, parse_mode="HTML", reply_markup=kb,
-                 disable_web_page_preview=True)
-    except BadRequest as e:
-        if "not modified" not in str(e).lower():
-            logger.warning(f"Ачивки: не удалось обновить экран {uid}: {e}")
-    except Exception as e:
-        logger.warning(f"Ачивки: не удалось обновить экран {uid}: {e}")
+    return text, kb
 
 
 async def achievements_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):

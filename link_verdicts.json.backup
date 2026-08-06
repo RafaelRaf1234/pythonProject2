@@ -1,374 +1,4 @@
 {
-  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/f4b2154e-1cbe-4fc6-8a98-d3096049642b/4966_d38bbc355e1299debf7a.html": {
-    "initial": "h",
-    "final": null,
-    "by": "Таня",
-    "at": "2026-08-03 13:43:47",
-    "users": {
-      "5073552155": {
-        "initial": "h",
-        "final": null,
-        "by": "Ксения",
-        "at": "2026-08-03 13:33:53"
-      },
-      "1252967508": {
-        "initial": "h",
-        "final": null,
-        "by": "Таня",
-        "at": "2026-08-03 13:43:47"
-      }
-    }
-  },
-  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/f4b2154e-1cbe-4fc6-8a98-d3096049642b/960_0f95c540179be31fab30.html": {
-    "initial": "h",
-    "final": "h",
-    "by": "Ксения",
-    "at": "2026-08-03 13:49:26",
-    "users": {
-      "8476561679": {
-        "initial": null,
-        "final": "h",
-        "by": "Даша",
-        "at": "2026-08-03 13:40:00"
-      },
-      "5073552155": {
-        "initial": "h",
-        "final": null,
-        "by": "Ксения",
-        "at": "2026-08-03 13:49:26"
-      }
-    }
-  },
-  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/f4b2154e-1cbe-4fc6-8a98-d3096049642b/1605_b58e96873a940cdbe93b.html": {
-    "initial": "r",
-    "final": "r",
-    "by": "Рафаэль",
-    "at": "2026-08-03 13:51:53",
-    "users": {
-      "8476561679": {
-        "initial": null,
-        "final": "r",
-        "by": "Даша",
-        "at": "2026-08-03 13:40:29"
-      },
-      "969984835": {
-        "initial": "r",
-        "final": null,
-        "by": "Рафаэль",
-        "at": "2026-08-03 13:51:53"
-      }
-    }
-  },
-  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/f4b2154e-1cbe-4fc6-8a98-d3096049642b/5189_051315be656c8092da5f.html": {
-    "initial": "h",
-    "final": "h",
-    "by": "Рафаэль",
-    "at": "2026-08-03 13:51:41",
-    "users": {
-      "239227549": {
-        "initial": "h",
-        "final": null,
-        "by": "Anna",
-        "at": "2026-08-03 13:41:18"
-      },
-      "969984835": {
-        "initial": null,
-        "final": "h",
-        "by": "Рафаэль",
-        "at": "2026-08-03 13:51:41"
-      }
-    }
-  },
-  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/f4b2154e-1cbe-4fc6-8a98-d3096049642b/1310_624c975c6ccf4b1782a5.html": {
-    "initial": "r",
-    "final": null,
-    "by": "Рафаэль",
-    "at": "2026-08-03 13:52:06",
-    "users": {
-      "1252967508": {
-        "initial": "r",
-        "final": null,
-        "by": "Таня",
-        "at": "2026-08-03 13:51:35"
-      },
-      "969984835": {
-        "initial": "r",
-        "final": null,
-        "by": "Рафаэль",
-        "at": "2026-08-03 13:52:06"
-      }
-    }
-  },
-  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/f4b2154e-1cbe-4fc6-8a98-d3096049642b/8484_fc3fa090b701ffe85a5f.html": {
-    "initial": "h",
-    "final": "h",
-    "by": "Ирина",
-    "at": "2026-08-03 14:16:08",
-    "users": {
-      "5073552155": {
-        "initial": "h",
-        "final": null,
-        "by": "Ксения",
-        "at": "2026-08-03 14:04:33"
-      },
-      "1953551841": {
-        "initial": null,
-        "final": "h",
-        "by": "Ирина",
-        "at": "2026-08-03 14:16:08"
-      }
-    }
-  },
-  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/f4b2154e-1cbe-4fc6-8a98-d3096049642b/4864_f2b689251430690dc108.html": {
-    "initial": null,
-    "final": "h",
-    "by": "Ксения",
-    "at": "2026-08-03 14:07:06",
-    "users": {
-      "5073552155": {
-        "initial": null,
-        "final": "h",
-        "by": "Ксения",
-        "at": "2026-08-03 14:07:06"
-      }
-    }
-  },
-  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/f4b2154e-1cbe-4fc6-8a98-d3096049642b/1033_9396eb6ad88f016bcd5a.html": {
-    "initial": "r",
-    "final": "r",
-    "by": "NAB",
-    "at": "2026-08-03 14:23:52",
-    "users": {
-      "8476561679": {
-        "initial": null,
-        "final": "r",
-        "by": "Даша",
-        "at": "2026-08-03 14:14:39"
-      },
-      "232143917": {
-        "initial": "r",
-        "final": null,
-        "by": "NAB",
-        "at": "2026-08-03 14:23:52"
-      }
-    }
-  },
-  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/f4b2154e-1cbe-4fc6-8a98-d3096049642b/232_4a127b3626861281db8f.html": {
-    "initial": null,
-    "final": "h",
-    "by": "Anna",
-    "at": "2026-08-03 14:20:33",
-    "users": {
-      "239227549": {
-        "initial": null,
-        "final": "h",
-        "by": "Anna",
-        "at": "2026-08-03 14:20:33"
-      }
-    }
-  },
-  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/f4b2154e-1cbe-4fc6-8a98-d3096049642b/66_4369816e7eb7f972207d.html": {
-    "initial": "r",
-    "final": "r",
-    "by": "Ксения",
-    "at": "2026-08-03 14:50:53",
-    "users": {
-      "5073552155": {
-        "initial": "r",
-        "final": "r",
-        "by": "Ксения",
-        "at": "2026-08-03 14:50:53"
-      },
-      "546938924": {
-        "initial": "r",
-        "final": null,
-        "by": "Дмитрий",
-        "at": "2026-08-03 14:24:03"
-      }
-    }
-  },
-  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/f4b2154e-1cbe-4fc6-8a98-d3096049642b/7848_2194d5b933b36ad0f49e.html": {
-    "initial": "r",
-    "final": null,
-    "by": "Рафаэль",
-    "at": "2026-08-03 14:27:12",
-    "users": {
-      "969984835": {
-        "initial": "r",
-        "final": null,
-        "by": "Рафаэль",
-        "at": "2026-08-03 14:27:12"
-      }
-    }
-  },
-  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/f4b2154e-1cbe-4fc6-8a98-d3096049642b/1997_5aa8dbe53daf6d1eeb3d.html": {
-    "initial": "h",
-    "final": null,
-    "by": "Ксения",
-    "at": "2026-08-03 14:50:45",
-    "users": {
-      "239227549": {
-        "initial": "h",
-        "final": null,
-        "by": "Anna",
-        "at": "2026-08-03 14:48:07"
-      },
-      "5073552155": {
-        "initial": "h",
-        "final": null,
-        "by": "Ксения",
-        "at": "2026-08-03 14:50:45"
-      }
-    }
-  },
-  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/f4b2154e-1cbe-4fc6-8a98-d3096049642b/2259_3a311035acf111017bb2.html": {
-    "initial": "h",
-    "final": null,
-    "by": "Рафаэль",
-    "at": "2026-08-03 14:57:45",
-    "users": {
-      "969984835": {
-        "initial": "h",
-        "final": null,
-        "by": "Рафаэль",
-        "at": "2026-08-03 14:57:45"
-      }
-    }
-  },
-  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/f4b2154e-1cbe-4fc6-8a98-d3096049642b/8983_033d61ad2730f772f6f1.html": {
-    "initial": "h",
-    "final": null,
-    "by": "Рафаэль",
-    "at": "2026-08-03 15:08:44",
-    "users": {
-      "546938924": {
-        "initial": "h",
-        "final": null,
-        "by": "Дмитрий",
-        "at": "2026-08-03 15:08:22"
-      },
-      "969984835": {
-        "initial": "h",
-        "final": null,
-        "by": "Рафаэль",
-        "at": "2026-08-03 15:08:44"
-      }
-    }
-  },
-  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/f4b2154e-1cbe-4fc6-8a98-d3096049642b/8991_b12dec4ae41ddc0323ff.html": {
-    "initial": null,
-    "final": "h",
-    "by": "Anna",
-    "at": "2026-08-03 15:20:44",
-    "users": {
-      "239227549": {
-        "initial": null,
-        "final": "h",
-        "by": "Anna",
-        "at": "2026-08-03 15:20:44"
-      }
-    }
-  },
-  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/f4b2154e-1cbe-4fc6-8a98-d3096049642b/6365_122c4ac6b3186c7e9bde.html": {
-    "initial": "r",
-    "final": null,
-    "by": "Дмитрий",
-    "at": "2026-08-03 17:28:57",
-    "users": {
-      "1252967508": {
-        "initial": "r",
-        "final": null,
-        "by": "Таня",
-        "at": "2026-08-03 17:27:26"
-      },
-      "546938924": {
-        "initial": "r",
-        "final": null,
-        "by": "Дмитрий",
-        "at": "2026-08-03 17:28:57"
-      }
-    }
-  },
-  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/f4b2154e-1cbe-4fc6-8a98-d3096049642b/5795_4b0f45257f1fa992e5e4.html": {
-    "initial": "h",
-    "final": null,
-    "by": "Дмитрий",
-    "at": "2026-08-03 17:28:59",
-    "users": {
-      "1252967508": {
-        "initial": "h",
-        "final": null,
-        "by": "Таня",
-        "at": "2026-08-03 17:27:45"
-      },
-      "546938924": {
-        "initial": "h",
-        "final": null,
-        "by": "Дмитрий",
-        "at": "2026-08-03 17:28:59"
-      }
-    }
-  },
-  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/f4b2154e-1cbe-4fc6-8a98-d3096049642b/8687_04307a3ba08e02e238d1.html": {
-    "initial": "h",
-    "final": null,
-    "by": "Дмитрий",
-    "at": "2026-08-03 17:33:00",
-    "users": {
-      "239227549": {
-        "initial": "h",
-        "final": null,
-        "by": "Anna",
-        "at": "2026-08-03 17:31:37"
-      },
-      "546938924": {
-        "initial": "h",
-        "final": null,
-        "by": "Дмитрий",
-        "at": "2026-08-03 17:33:00"
-      }
-    }
-  },
-  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/f4b2154e-1cbe-4fc6-8a98-d3096049642b/6518_812f180ccb6f86b683b3.html": {
-    "initial": "h",
-    "final": null,
-    "by": "Pavel",
-    "at": "2026-08-03 17:40:44",
-    "users": {
-      "1252967508": {
-        "initial": "h",
-        "final": null,
-        "by": "Таня",
-        "at": "2026-08-03 17:39:46"
-      },
-      "596548043": {
-        "initial": "h",
-        "final": null,
-        "by": "Pavel",
-        "at": "2026-08-03 17:40:44"
-      }
-    }
-  },
-  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/f4b2154e-1cbe-4fc6-8a98-d3096049642b/5274_893b950bef7d92a04aab.html": {
-    "initial": "r",
-    "final": null,
-    "by": "Дима",
-    "at": "2026-08-03 17:41:42",
-    "users": {
-      "546938924": {
-        "initial": "r",
-        "final": null,
-        "by": "Дмитрий",
-        "at": "2026-08-03 17:40:17"
-      },
-      "1467875376": {
-        "initial": "r",
-        "final": null,
-        "by": "Дима",
-        "at": "2026-08-03 17:41:42"
-      }
-    }
-  },
   "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/284797f4-7c15-4ad5-b8ea-2ff1b64a4d2b/1988_ee4f8a561a305e7ffe3e.html": {
     "initial": "r",
     "final": null,
@@ -594,6 +224,910 @@
         "final": null,
         "by": "Даша",
         "at": "2026-08-05 01:09:15"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/3519_34ff8c56f3e074c5caee.html": {
+    "initial": "r",
+    "final": null,
+    "by": "Ксения",
+    "at": "2026-08-06 20:44:34",
+    "users": {
+      "969984835": {
+        "initial": "r",
+        "final": null,
+        "by": "Рафаэль",
+        "at": "2026-08-06 20:35:18"
+      },
+      "5073552155": {
+        "initial": "r",
+        "final": null,
+        "by": "Ксения",
+        "at": "2026-08-06 20:44:34"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/6455_7225a16ddf6d19f759fe.html": {
+    "initial": "h",
+    "final": null,
+    "by": "Ксения",
+    "at": "2026-08-06 20:44:38",
+    "users": {
+      "596548043": {
+        "initial": "h",
+        "final": null,
+        "by": "Pavel",
+        "at": "2026-08-06 20:36:15"
+      },
+      "5073552155": {
+        "initial": "h",
+        "final": null,
+        "by": "Ксения",
+        "at": "2026-08-06 20:44:38"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/6056_e16bd1a273619467ce8e.html": {
+    "initial": "r",
+    "final": null,
+    "by": "Элис",
+    "at": "2026-08-06 20:46:22",
+    "users": {
+      "1252967508": {
+        "initial": "r",
+        "final": null,
+        "by": "Таня",
+        "at": "2026-08-06 20:46:08"
+      },
+      "576391595": {
+        "initial": "r",
+        "final": null,
+        "by": "Элис",
+        "at": "2026-08-06 20:46:22"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/3098_11a2926b37ccefb3c724.html": {
+    "initial": "h",
+    "final": "h",
+    "by": "Рафаэль",
+    "at": "2026-08-06 22:04:23",
+    "users": {
+      "6696208195": {
+        "initial": "h",
+        "final": "h",
+        "by": "ЛжеЛида",
+        "at": "2026-08-06 20:46:24"
+      },
+      "969984835": {
+        "initial": "h",
+        "final": null,
+        "by": "Рафаэль",
+        "at": "2026-08-06 22:04:23"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/1340_ae8ed626dc04e14c978b.html": {
+    "initial": "r",
+    "final": null,
+    "by": "Anna",
+    "at": "2026-08-06 20:51:06",
+    "users": {
+      "6696208195": {
+        "initial": "r",
+        "final": null,
+        "by": "ЛжеЛида",
+        "at": "2026-08-06 20:46:42"
+      },
+      "239227549": {
+        "initial": "r",
+        "final": null,
+        "by": "Anna",
+        "at": "2026-08-06 20:51:06"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/4669_6c36819ca05aa91898c6.html": {
+    "initial": "r",
+    "final": "r",
+    "by": "Даша",
+    "at": "2026-08-06 21:02:13",
+    "users": {
+      "6696208195": {
+        "initial": "h",
+        "final": null,
+        "by": "ЛжеЛида",
+        "at": "2026-08-06 20:47:28"
+      },
+      "8476561679": {
+        "initial": "r",
+        "final": "r",
+        "by": "Даша",
+        "at": "2026-08-06 21:02:13"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/4924_9198aebab327759ccc55.html": {
+    "initial": "h",
+    "final": "h",
+    "by": "Даша",
+    "at": "2026-08-06 21:02:17",
+    "users": {
+      "8476561679": {
+        "initial": "h",
+        "final": "h",
+        "by": "Даша",
+        "at": "2026-08-06 21:02:17"
+      },
+      "239227549": {
+        "initial": "h",
+        "final": null,
+        "by": "Anna",
+        "at": "2026-08-06 20:51:02"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/3126_7c707fbeccd0177d58da.html": {
+    "initial": "r",
+    "final": null,
+    "by": "Anna",
+    "at": "2026-08-06 20:57:00",
+    "users": {
+      "576391595": {
+        "initial": "r",
+        "final": null,
+        "by": "Элис",
+        "at": "2026-08-06 20:55:17"
+      },
+      "239227549": {
+        "initial": "r",
+        "final": null,
+        "by": "Anna",
+        "at": "2026-08-06 20:57:00"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/5560_0787938ca6bbcb153f37.html": {
+    "initial": "r",
+    "final": null,
+    "by": "Anna",
+    "at": "2026-08-06 20:56:51",
+    "users": {
+      "239227549": {
+        "initial": "r",
+        "final": null,
+        "by": "Anna",
+        "at": "2026-08-06 20:56:51"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/1924_b28c1ca6dc23a5a3f788.html": {
+    "initial": "r",
+    "final": null,
+    "by": "Ксения",
+    "at": "2026-08-06 21:01:38",
+    "users": {
+      "969984835": {
+        "initial": "r",
+        "final": null,
+        "by": "Рафаэль",
+        "at": "2026-08-06 20:57:40"
+      },
+      "5073552155": {
+        "initial": "r",
+        "final": null,
+        "by": "Ксения",
+        "at": "2026-08-06 21:01:38"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/6883_56a5f19e26c4dd878734.html": {
+    "initial": "r",
+    "final": "r",
+    "by": "ЛжеЛида",
+    "at": "2026-08-06 22:04:45",
+    "users": {
+      "969984835": {
+        "initial": null,
+        "final": "r",
+        "by": "Рафаэль",
+        "at": "2026-08-06 21:06:07"
+      },
+      "6696208195": {
+        "initial": "r",
+        "final": null,
+        "by": "ЛжеЛида",
+        "at": "2026-08-06 22:04:45"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/6905_abeacdd523d75676b570.html": {
+    "initial": "h",
+    "final": "h",
+    "by": "Дима",
+    "at": "2026-08-06 21:15:01",
+    "users": {
+      "576391595": {
+        "initial": "h",
+        "final": null,
+        "by": "Элис",
+        "at": "2026-08-06 21:12:56"
+      },
+      "1467875376": {
+        "initial": "h",
+        "final": "h",
+        "by": "Дима",
+        "at": "2026-08-06 21:15:01"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/1937_a093a18f5b39f4469e86.html": {
+    "initial": "h",
+    "final": null,
+    "by": "Ксения",
+    "at": "2026-08-06 21:32:23",
+    "users": {
+      "576391595": {
+        "initial": "h",
+        "final": null,
+        "by": "Элис",
+        "at": "2026-08-06 21:19:39"
+      },
+      "5073552155": {
+        "initial": "h",
+        "final": null,
+        "by": "Ксения",
+        "at": "2026-08-06 21:32:23"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/832_677eb63df9d782ff746d.html": {
+    "initial": "h",
+    "final": null,
+    "by": "Ксения",
+    "at": "2026-08-06 21:32:37",
+    "users": {
+      "1467875376": {
+        "initial": "h",
+        "final": null,
+        "by": "Дима",
+        "at": "2026-08-06 21:23:29"
+      },
+      "5073552155": {
+        "initial": "h",
+        "final": null,
+        "by": "Ксения",
+        "at": "2026-08-06 21:32:37"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/2816_005a47f0dc077221b5c1.html": {
+    "initial": "r",
+    "final": null,
+    "by": "Даша",
+    "at": "2026-08-06 21:28:23",
+    "users": {
+      "969984835": {
+        "initial": "r",
+        "final": null,
+        "by": "Рафаэль",
+        "at": "2026-08-06 21:24:19"
+      },
+      "8476561679": {
+        "initial": "r",
+        "final": null,
+        "by": "Даша",
+        "at": "2026-08-06 21:28:23"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/3409_9cde49df2d91e80e1aa7.html": {
+    "initial": null,
+    "final": "h",
+    "by": "Pavel",
+    "at": "2026-08-06 21:31:57",
+    "users": {
+      "596548043": {
+        "initial": null,
+        "final": "h",
+        "by": "Pavel",
+        "at": "2026-08-06 21:31:57"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/272_c0908478c43a291a8a0f.html": {
+    "initial": "h",
+    "final": null,
+    "by": "Элис",
+    "at": "2026-08-06 21:34:51",
+    "users": {
+      "576391595": {
+        "initial": "h",
+        "final": null,
+        "by": "Элис",
+        "at": "2026-08-06 21:34:51"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/1267_f7289c476e6df312a862.html": {
+    "initial": null,
+    "final": "h",
+    "by": "Элис",
+    "at": "2026-08-06 21:36:32",
+    "users": {
+      "576391595": {
+        "initial": null,
+        "final": "h",
+        "by": "Элис",
+        "at": "2026-08-06 21:36:32"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/1627_8722e94ac179b9fc7d74.html": {
+    "initial": "r",
+    "final": "r",
+    "by": "Ксения",
+    "at": "2026-08-06 21:39:06",
+    "users": {
+      "596548043": {
+        "initial": "r",
+        "final": "r",
+        "by": "Pavel",
+        "at": "2026-08-06 21:38:07"
+      },
+      "5073552155": {
+        "initial": "r",
+        "final": null,
+        "by": "Ксения",
+        "at": "2026-08-06 21:39:06"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/7134_b95e808a483929e6f829.html": {
+    "initial": "h",
+    "final": "h",
+    "by": "Ксения",
+    "at": "2026-08-06 22:03:16",
+    "users": {
+      "1252967508": {
+        "initial": "h",
+        "final": null,
+        "by": "Таня",
+        "at": "2026-08-06 21:38:09"
+      },
+      "5073552155": {
+        "initial": null,
+        "final": "h",
+        "by": "Ксения",
+        "at": "2026-08-06 22:03:16"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/5653_24b59dcda8b917c9a04c.html": {
+    "initial": "h",
+    "final": null,
+    "by": "Ксения",
+    "at": "2026-08-06 21:39:52",
+    "users": {
+      "1467875376": {
+        "initial": "r",
+        "final": null,
+        "by": "Дима",
+        "at": "2026-08-06 21:39:17"
+      },
+      "5073552155": {
+        "initial": "h",
+        "final": null,
+        "by": "Ксения",
+        "at": "2026-08-06 21:39:52"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/3584_2cbd7e5b81aa8c3c7936.html": {
+    "initial": "h",
+    "final": null,
+    "by": "Anna",
+    "at": "2026-08-06 21:39:58",
+    "users": {
+      "969984835": {
+        "initial": "h",
+        "final": null,
+        "by": "Рафаэль",
+        "at": "2026-08-06 21:39:42"
+      },
+      "239227549": {
+        "initial": "h",
+        "final": null,
+        "by": "Anna",
+        "at": "2026-08-06 21:39:58"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/3159_a3f7d2e18f122f5e677d.html": {
+    "initial": "r",
+    "final": "r",
+    "by": "Anna",
+    "at": "2026-08-06 21:51:11",
+    "users": {
+      "596548043": {
+        "initial": null,
+        "final": "r",
+        "by": "Pavel",
+        "at": "2026-08-06 21:49:03"
+      },
+      "239227549": {
+        "initial": "r",
+        "final": null,
+        "by": "Anna",
+        "at": "2026-08-06 21:51:11"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/2372_d3c4b02af95ebc246b70.html": {
+    "initial": "h",
+    "final": null,
+    "by": "Anna",
+    "at": "2026-08-06 21:51:32",
+    "users": {
+      "232143917": {
+        "initial": "h",
+        "final": null,
+        "by": "NAB",
+        "at": "2026-08-06 21:49:07"
+      },
+      "239227549": {
+        "initial": "h",
+        "final": null,
+        "by": "Anna",
+        "at": "2026-08-06 21:51:32"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/4314_1bf3a8d0dfdd3c12f575.html": {
+    "initial": "r",
+    "final": null,
+    "by": "Рафаэль",
+    "at": "2026-08-06 21:49:42",
+    "users": {
+      "1467875376": {
+        "initial": "h",
+        "final": null,
+        "by": "Дима",
+        "at": "2026-08-06 21:49:13"
+      },
+      "969984835": {
+        "initial": "r",
+        "final": null,
+        "by": "Рафаэль",
+        "at": "2026-08-06 21:49:42"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/133_7b71729708a2da3b6776.html": {
+    "initial": "h",
+    "final": null,
+    "by": "NAB",
+    "at": "2026-08-06 21:49:24",
+    "users": {
+      "969984835": {
+        "initial": "h",
+        "final": null,
+        "by": "Рафаэль",
+        "at": "2026-08-06 21:49:15"
+      },
+      "232143917": {
+        "initial": "h",
+        "final": null,
+        "by": "NAB",
+        "at": "2026-08-06 21:49:24"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/6840_747c9940bed6bd679072.html": {
+    "initial": "h",
+    "final": null,
+    "by": "Ксения",
+    "at": "2026-08-06 22:03:05",
+    "users": {
+      "239227549": {
+        "initial": "h",
+        "final": null,
+        "by": "Anna",
+        "at": "2026-08-06 21:49:50"
+      },
+      "5073552155": {
+        "initial": "h",
+        "final": null,
+        "by": "Ксения",
+        "at": "2026-08-06 22:03:05"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/2838_3238a165c78fa5d2e311.html": {
+    "initial": "h",
+    "final": null,
+    "by": "Ксения",
+    "at": "2026-08-06 22:06:16",
+    "users": {
+      "239227549": {
+        "initial": "h",
+        "final": null,
+        "by": "Anna",
+        "at": "2026-08-06 21:50:21"
+      },
+      "5073552155": {
+        "initial": "h",
+        "final": null,
+        "by": "Ксения",
+        "at": "2026-08-06 22:06:16"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/2497_5eb38412aab2e0e6961f.html": {
+    "initial": null,
+    "final": "r",
+    "by": "Даша",
+    "at": "2026-08-06 21:51:59",
+    "users": {
+      "8476561679": {
+        "initial": null,
+        "final": "r",
+        "by": "Даша",
+        "at": "2026-08-06 21:51:59"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/3651_2e195fcd858266b04b38.html": {
+    "initial": "h",
+    "final": null,
+    "by": "Ксения",
+    "at": "2026-08-06 22:04:36",
+    "users": {
+      "232143917": {
+        "initial": "r",
+        "final": null,
+        "by": "NAB",
+        "at": "2026-08-06 21:53:41"
+      },
+      "5073552155": {
+        "initial": "h",
+        "final": null,
+        "by": "Ксения",
+        "at": "2026-08-06 22:04:36"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/5228_878c2f24bf461d1207e7.html": {
+    "initial": null,
+    "final": "h",
+    "by": "Дима",
+    "at": "2026-08-06 21:55:09",
+    "users": {
+      "1467875376": {
+        "initial": null,
+        "final": "h",
+        "by": "Дима",
+        "at": "2026-08-06 21:55:09"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/7060_39dd9f1ee1f962da0470.html": {
+    "initial": "h",
+    "final": null,
+    "by": "Рафаэль",
+    "at": "2026-08-06 22:04:03",
+    "users": {
+      "6696208195": {
+        "initial": "h",
+        "final": null,
+        "by": "ЛжеЛида",
+        "at": "2026-08-06 22:03:52"
+      },
+      "969984835": {
+        "initial": "h",
+        "final": null,
+        "by": "Рафаэль",
+        "at": "2026-08-06 22:04:03"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/3793_68579349b435eae1809e.html": {
+    "initial": "h",
+    "final": null,
+    "by": "Элис",
+    "at": "2026-08-06 22:05:49",
+    "users": {
+      "969984835": {
+        "initial": "h",
+        "final": null,
+        "by": "Рафаэль",
+        "at": "2026-08-06 22:05:21"
+      },
+      "576391595": {
+        "initial": "h",
+        "final": null,
+        "by": "Элис",
+        "at": "2026-08-06 22:05:49"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/5227_88ea2ae57a10529f9af7.html": {
+    "initial": "r",
+    "final": "r",
+    "by": "Pavel",
+    "at": "2026-08-06 22:31:48",
+    "users": {
+      "1252967508": {
+        "initial": null,
+        "final": "r",
+        "by": "Таня",
+        "at": "2026-08-06 22:06:00"
+      },
+      "6696208195": {
+        "initial": "r",
+        "final": null,
+        "by": "ЛжеЛида",
+        "at": "2026-08-06 22:31:15"
+      },
+      "596548043": {
+        "initial": "r",
+        "final": null,
+        "by": "Pavel",
+        "at": "2026-08-06 22:31:48"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/1966_0aaa1cd8fc37ef5fac4c.html": {
+    "initial": "h",
+    "final": "h",
+    "by": "Ксения",
+    "at": "2026-08-06 22:17:11",
+    "users": {
+      "576391595": {
+        "initial": null,
+        "final": "h",
+        "by": "Элис",
+        "at": "2026-08-06 22:10:46"
+      },
+      "5073552155": {
+        "initial": "h",
+        "final": null,
+        "by": "Ксения",
+        "at": "2026-08-06 22:17:11"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/5053_6c4b01faf7cd4966ab25.html": {
+    "initial": "h",
+    "final": null,
+    "by": "Даша",
+    "at": "2026-08-06 22:21:49",
+    "users": {
+      "1467875376": {
+        "initial": "h",
+        "final": null,
+        "by": "Дима",
+        "at": "2026-08-06 22:12:40"
+      },
+      "8476561679": {
+        "initial": "h",
+        "final": null,
+        "by": "Даша",
+        "at": "2026-08-06 22:21:49"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/6053_6f19684aef15999f80bf.html": {
+    "initial": "h",
+    "final": null,
+    "by": "Даша",
+    "at": "2026-08-06 22:17:58",
+    "users": {
+      "969984835": {
+        "initial": "h",
+        "final": null,
+        "by": "Рафаэль",
+        "at": "2026-08-06 22:15:36"
+      },
+      "8476561679": {
+        "initial": "h",
+        "final": null,
+        "by": "Даша",
+        "at": "2026-08-06 22:17:58"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/6362_0adb60089566fa4c2c0b.html": {
+    "initial": "h",
+    "final": null,
+    "by": "Рафаэль",
+    "at": "2026-08-06 22:28:03",
+    "users": {
+      "596548043": {
+        "initial": "h",
+        "final": null,
+        "by": "Pavel",
+        "at": "2026-08-06 22:22:26"
+      },
+      "969984835": {
+        "initial": "h",
+        "final": null,
+        "by": "Рафаэль",
+        "at": "2026-08-06 22:28:03"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/10_59f1d25bac6ceca6a2e5.html": {
+    "initial": "r",
+    "final": null,
+    "by": "Даша",
+    "at": "2026-08-06 22:31:11",
+    "users": {
+      "596548043": {
+        "initial": "r",
+        "final": null,
+        "by": "Pavel",
+        "at": "2026-08-06 22:23:00"
+      },
+      "8476561679": {
+        "initial": "r",
+        "final": null,
+        "by": "Даша",
+        "at": "2026-08-06 22:31:11"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/2564_0d5a303e2559568c0016.html": {
+    "initial": "r",
+    "final": null,
+    "by": "Pavel",
+    "at": "2026-08-06 22:24:46",
+    "users": {
+      "596548043": {
+        "initial": "r",
+        "final": null,
+        "by": "Pavel",
+        "at": "2026-08-06 22:24:46"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/401_92b41123052f7e22fefe.html": {
+    "initial": "r",
+    "final": null,
+    "by": "Элис",
+    "at": "2026-08-06 22:28:37",
+    "users": {
+      "1252967508": {
+        "initial": "r",
+        "final": null,
+        "by": "Таня",
+        "at": "2026-08-06 22:25:33"
+      },
+      "576391595": {
+        "initial": "r",
+        "final": null,
+        "by": "Элис",
+        "at": "2026-08-06 22:28:37"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/51_122bb9541a623080087d.html": {
+    "initial": "h",
+    "final": null,
+    "by": "Таня",
+    "at": "2026-08-06 22:31:58",
+    "users": {
+      "596548043": {
+        "initial": "h",
+        "final": null,
+        "by": "Pavel",
+        "at": "2026-08-06 22:29:25"
+      },
+      "1252967508": {
+        "initial": "h",
+        "final": null,
+        "by": "Таня",
+        "at": "2026-08-06 22:31:58"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/3816_2550b8faa314ebf20dbb.html": {
+    "initial": "h",
+    "final": null,
+    "by": "Таня",
+    "at": "2026-08-06 22:36:28",
+    "users": {
+      "8476561679": {
+        "initial": "h",
+        "final": null,
+        "by": "Даша",
+        "at": "2026-08-06 22:34:10"
+      },
+      "1252967508": {
+        "initial": "h",
+        "final": null,
+        "by": "Таня",
+        "at": "2026-08-06 22:36:28"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/6044_0e5485081e492046a2e3.html": {
+    "initial": "r",
+    "final": null,
+    "by": "Pavel",
+    "at": "2026-08-06 22:40:43",
+    "users": {
+      "6696208195": {
+        "initial": "r",
+        "final": null,
+        "by": "ЛжеЛида",
+        "at": "2026-08-06 22:38:51"
+      },
+      "596548043": {
+        "initial": "r",
+        "final": null,
+        "by": "Pavel",
+        "at": "2026-08-06 22:40:43"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/6912_60f2444dab22770883ce.html": {
+    "initial": "r",
+    "final": null,
+    "by": "Pavel",
+    "at": "2026-08-06 22:39:19",
+    "users": {
+      "6696208195": {
+        "initial": "r",
+        "final": null,
+        "by": "ЛжеЛида",
+        "at": "2026-08-06 22:38:56"
+      },
+      "596548043": {
+        "initial": "r",
+        "final": null,
+        "by": "Pavel",
+        "at": "2026-08-06 22:39:19"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/4662_7223c54b418ad2a116c9.html": {
+    "initial": "h",
+    "final": null,
+    "by": "Pavel",
+    "at": "2026-08-06 22:42:08",
+    "users": {
+      "6696208195": {
+        "initial": "h",
+        "final": null,
+        "by": "ЛжеЛида",
+        "at": "2026-08-06 22:39:01"
+      },
+      "596548043": {
+        "initial": "h",
+        "final": null,
+        "by": "Pavel",
+        "at": "2026-08-06 22:42:08"
+      }
+    }
+  },
+  "https://antifraud-search.s3-staff.mds.yandex.net/prod/kpi/4350111a-268b-4c8c-9424-5bf111530b2b/6972_c15cff76ed2ce8fb1aa2.html": {
+    "initial": "h",
+    "final": null,
+    "by": "Даша",
+    "at": "2026-08-06 22:55:42",
+    "users": {
+      "1467875376": {
+        "initial": "h",
+        "final": null,
+        "by": "Дима",
+        "at": "2026-08-06 22:40:55"
+      },
+      "8476561679": {
+        "initial": "h",
+        "final": null,
+        "by": "Даша",
+        "at": "2026-08-06 22:55:42"
       }
     }
   }
