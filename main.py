@@ -340,7 +340,7 @@ ACH_TOP_LIMIT = 15
 # Это чисто состояние экрана (не персистентное), сбрасывается при рестарте бота.
 _admin_top_hidden_view = set()
 ACH_UNITS_VERSION = 2      # 1 = сессия считалась по URL, 2 = по отправленной пачке
-ACH_WEEK_GOAL = 30         # порог «стабильной недели» в пачках
+ACH_WEEK_GOAL = 90         # порог «стабильной недели» в пачках
 ACH_BTN = "🏆 Достижения"
 
 ACH_CATEGORIES = [
@@ -360,25 +360,25 @@ ACHIEVEMENTS_DEF = [
      "tiers": [15, 75, 300, 1500], "unit": "сессий"},
     {"code": "sess_day", "cat": "vol", "name": "Спринтер",
      "desc": "Сессий за один день", "metric": "sessions_day",
-     "tiers": [6, 15, 30, 60], "unit": "за день"},
+     "tiers": [5, 12, 20, 30], "unit": "за день"},
     {"code": "sess_week", "cat": "vol", "name": "Марафонец",
      "desc": "Сессий за 7 дней подряд", "metric": "sessions_week",
-     "tiers": [45, 120, 270, 600], "unit": "за неделю"},
+     "tiers": [35, 80, 150, 250], "unit": "за неделю"},
     {"code": "full_pack", "cat": "vol", "name": "Полная пачка",
      "desc": "Сессий, отправленных сразу по 5 ссылок", "metric": "full_packs",
      "tiers": [25, 100, 500], "unit": "сессий"},
     {"code": "sess_month", "cat": "vol", "name": "Месячная норма",
      "desc": "Сессий за 30 дней подряд", "metric": "sessions_month",
-     "tiers": [150, 450, 1200, 3000], "unit": "за 30 дней"},
+     "tiers": [120, 300, 550, 800], "unit": "за 30 дней"},
     {"code": "urls_total", "cat": "vol", "name": "Разметчик",
      "desc": "Размечено ссылок всего (по всем сессиям)", "metric": "urls_total",
      "tiers": [100, 500, 2000, 8000], "unit": "ссылок"},
     {"code": "pack_avg", "cat": "vol", "name": "Под завязку",
      "desc": "Сессий подряд по 5 ссылок без неполных", "metric": "full_streak",
-     "tiers": [10, 30, 100], "unit": "подряд"},
+     "tiers": [10, 30, 80], "unit": "подряд"},
     {"code": "sess_hour", "cat": "vol", "name": "Турбо-час",
      "desc": "Сессий за один час", "metric": "sessions_hour",
-     "tiers": [3, 6, 10, 15], "unit": "за час"},
+     "tiers": [2, 3, 4, 6], "unit": "за час"},
 
     {"code": "day_streak", "cat": "streak", "name": "Не пропускаю",
      "desc": "Дней подряд минимум с одной сессией", "metric": "streak_days",
@@ -401,7 +401,7 @@ ACHIEVEMENTS_DEF = [
      "tiers": [50, 250, 1000, 3000], "unit": "оценок"},
     {"code": "vote_2d", "cat": "vote", "name": "Судейский заплыв",
      "desc": "Оценок за 2 дня", "metric": "votes_2d",
-     "tiers": [30, 60, 100, 150], "unit": "за 2 дня"},
+     "tiers": [25, 55, 85, 120], "unit": "за 2 дня"},
     {"code": "vote_final", "cat": "vote", "name": "Последнее слово",
      "desc": "Финальных вердиктов", "metric": "final_votes",
      "tiers": [25, 100, 500], "unit": "финалок"},
@@ -410,7 +410,7 @@ ACHIEVEMENTS_DEF = [
      "metric": "fast_votes", "tiers": [10, 50, 200], "unit": "раз"},
     {"code": "vote_day", "cat": "vote", "name": "Разбор полётов",
      "desc": "Оценок за один день", "metric": "votes_day",
-     "tiers": [15, 30, 60, 120], "unit": "за день"},
+     "tiers": [12, 25, 45, 75], "unit": "за день"},
     {"code": "vote_light", "cat": "vote", "name": "Молния",
      "desc": f"Оценок быстрее {ACH_LIGHTNING_SECONDS} сек после уведомления",
      "metric": "lightning_votes", "tiers": [5, 25, 100], "unit": "раз"},
@@ -426,7 +426,7 @@ ACHIEVEMENTS_DEF = [
      "tiers": [3, 7, 21], "unit": "дней"},
     {"code": "skill_comeback", "cat": "skill", "name": "Камбэк",
      "desc": "Подъёмов навыка с 80− обратно на 90+", "metric": "comebacks",
-     "tiers": [1, 5, 15], "unit": "раз"},
+     "tiers": [1, 3], "unit": "раз"},
     {"code": "skill_ups", "cat": "skill", "name": "По ступенькам",
      "desc": "Сколько раз навык вырос", "metric": "skill_ups",
      "tiers": [10, 50, 200], "unit": "подъёмов"},
@@ -439,16 +439,16 @@ ACHIEVEMENTS_DEF = [
      "tiers": [10, 50, 200, 500], "unit": "совпадений"},
     {"code": "match_people", "cat": "match", "name": "Свой круг",
      "desc": "Разных участников в твоих совпадениях", "metric": "partners_unique",
-     "tiers": [5, 15, 30], "unit": "человек"},
+     "tiers": [3, 6, 10], "unit": "человек"},
     {"code": "match_day", "cat": "match", "name": "Час пик",
      "desc": "Совпадений за один день", "metric": "matches_day",
-     "tiers": [3, 10, 25], "unit": "за день"},
+     "tiers": [3, 10, 25, 40], "unit": "за день"},
     {"code": "match_soul", "cat": "match", "name": "Родственная душа",
      "desc": "Совпадений с одним и тем же участником", "metric": "partner_best",
      "tiers": [10, 50, 150], "unit": "с одним"},
     {"code": "match_burst", "cat": "match", "name": "Залп",
      "desc": "Совпадений за одну проверку", "metric": "matches_burst",
-     "tiers": [3, 7, 15], "unit": "за проверку"},
+     "tiers": [3, 6, 10], "unit": "за проверку"},
 
     {"code": "night", "cat": "style", "name": "Ночная смена",
      "desc": "Дней с сессиями между 00:00 и 05:00", "metric": "night_days",
@@ -465,6 +465,9 @@ ACHIEVEMENTS_DEF = [
     {"code": "long_day", "cat": "style", "name": "Длинный день",
      "desc": "Разных часов с отправками за один день", "metric": "day_hours",
      "tiers": [4, 6, 9], "unit": "часов"},
+    {"code": "nonstop", "cat": "style", "name": "Без передышки",
+     "desc": "Часов подряд без перерыва (в одном дне)", "metric": "day_hours_run",
+     "tiers": [3, 5, 7], "unit": "часов подряд"},
 
     {"code": "veteran", "cat": "time", "name": "Ветеран",
      "desc": "Активных дней всего", "metric": "active_days",
@@ -478,7 +481,7 @@ ACHIEVEMENTS_DEF = [
 
     {"code": "first_match", "cat": "secret", "name": "Первый контакт",
      "desc": "Первое в жизни совпадение", "metric": "matches_total",
-     "tiers": [1], "hidden": True, "unit": ""},
+     "tiers": [1], "hidden": True, "xp": 20, "unit": ""},
     {"code": "century", "cat": "secret", "name": "Сотка",
      "desc": "100 дней серии подряд", "metric": "streak_days",
      "tiers": [100], "hidden": True, "unit": ""},
@@ -490,22 +493,19 @@ ACHIEVEMENTS_DEF = [
      "tiers": [30], "hidden": True, "unit": ""},
     {"code": "first_step", "cat": "secret", "name": "Начало положено",
      "desc": "Первая отправленная сессия", "metric": "sessions_total",
-     "tiers": [1], "hidden": True, "unit": ""},
+     "tiers": [1], "hidden": True, "xp": 20, "unit": ""},
     {"code": "lucky_777", "cat": "secret", "name": "Счастливое число",
      "desc": "777 размеченных ссылок", "metric": "urls_total",
      "tiers": [777], "hidden": True, "unit": ""},
     {"code": "owl", "cat": "secret", "name": "Сова",
      "desc": "7 ночных дней подряд", "metric": "night_streak",
      "tiers": [7], "hidden": True, "unit": ""},
-    {"code": "phoenix", "cat": "secret", "name": "Феникс",
-     "desc": "10 камбэков навыка", "metric": "comebacks",
-     "tiers": [10], "hidden": True, "unit": ""},
     {"code": "deep_night", "cat": "secret", "name": "Глубокая ночь",
      "desc": "10 дней с отправками между 03:00 и 05:00",
      "metric": "deep_night_days", "tiers": [10], "hidden": True, "unit": ""},
     {"code": "first_vote", "cat": "secret", "name": "Голос отдан",
      "desc": "Первая выставленная оценка", "metric": "votes_total",
-     "tiers": [1], "hidden": True, "unit": ""},
+     "tiers": [1], "hidden": True, "xp": 20, "unit": ""},
     {"code": "iron", "cat": "secret", "name": "Железный человек",
      "desc": "Серия 30 дней подряд", "metric": "streak_days",
      "tiers": [30], "hidden": True, "unit": ""},
@@ -528,6 +528,13 @@ def _ach_unlock_key(code, need):
 
 
 def _ach_tier_xp(a, ti):
+    """Явный "xp" в описании перебивает тир/скрытость — для туториальных ачивок."""
+    xp = a.get("xp")
+    if xp is not None:
+        try:
+            return int(xp)
+        except (TypeError, ValueError):
+            pass
     if a.get("hidden"):
         return ACH_HIDDEN_XP
     return ACH_XP_BY_TIER[min(ti, len(ACH_XP_BY_TIER) - 1)]
@@ -4297,7 +4304,7 @@ def _ach_stats_text(uid, viewer_uid=None):
         "",
         "<b>Серии</b>",
         f"• Текущая: {int(st.get('cur', 0) or 0)} дн.  •  Рекорд: {m['streak_days']} дн.",
-        f"• Недель подряд со 100+: {m['weeks_100']} • просто активных недель подряд: {m['weeks_active']}",
+        f"• Недель подряд с {ACH_WEEK_GOAL}+: {m['weeks_100']} • просто активных недель подряд: {m['weeks_active']}",
         f"• Лучший месяц: {m['month_days']} активных дней",
         f"• Отправок без отмены подряд: {int((rec.get('counters') or {}).get('clean_streak', 0) or 0)} "
         f"(рекорд {m['clean_streak']})",
