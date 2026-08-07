@@ -236,7 +236,21 @@ def load_data():
     return result
 
 
+# Кэш строк топа. Экран собирается дважды подряд (текст + клавиатура), а каждая
+# сборка пересчитывает метрики всем участникам по 120 дням истории — на полном
+# составе это сотни миллисекунд на одно нажатие кнопки. Кэш живёт до ближайшей
+# записи в achievements, поэтому устаревших чисел показать не может.
+_ach_data_version = 0
+_ach_top_rows_cache = {}
+ACH_TOP_CACHE_MAX = 32
+
+
 def save_data():
+    # имя и опт-аут участника попадают в строки топа, поэтому их правка тоже
+    # обязана сбрасывать кэш _ach_top_rows — иначе экран покажет старое имя
+    global _ach_data_version
+    _ach_data_version += 1
+    _ach_top_rows_cache.clear()
     return _save_json(DATA_FILE, user_data)
 
 
@@ -325,6 +339,9 @@ ACH_TOP_LIMIT = 15
 # uid админов, у которых сейчас включён режим "показывать скрытых" на экране топа.
 # Это чисто состояние экрана (не персистентное), сбрасывается при рестарте бота.
 _admin_top_hidden_view = set()
+# uid, у которых на экране топа сейчас развёрнут полный список рекордов.
+# Как и _admin_top_hidden_view — состояние экрана, не персистится.
+_top_records_full = set()
 ACH_UNITS_VERSION = 2      # 1 = сессия считалась по URL, 2 = по отправленной пачке
 ACH_WEEK_GOAL = 30         # порог «стабильной недели» в пачках
 ACH_BTN = "🏆 Достижения"
@@ -624,6 +641,10 @@ def load_achievements():
 
 
 def save_achievements():
+    # любая запись инвалидирует кэш строк топа (см. _ach_top_rows)
+    global _ach_data_version
+    _ach_data_version += 1
+    _ach_top_rows_cache.clear()
     return _save_json(ACHIEVEMENTS_FILE, achievements)
 
 
@@ -809,21 +830,31 @@ def _ach_day_int(d, key):
 
 
 def _ach_hour_stats(rec):
-    """(макс. сессий за один час, макс. разных часов в одном дне)."""
-    best_hour = best_spread = 0
+    """(макс. сессий за один час, макс. разных часов в одном дне,
+    макс. часов ПОДРЯД в одном дне).
+
+    spread — сколько разных часов в сутках были рабочими (с дырками),
+    run — самая длинная непрерывная цепочка часов. Это разные величины:
+    отправки в 09 и в 23 дают spread=2, run=1."""
+    best_hour = best_spread = best_run = 0
     for d in (rec.get("days") or {}).values():
         if not isinstance(d, dict):
             continue
-        spread = 0
+        spread = run = 0
         for h in range(24):
             v = _ach_day_int(d, f"h{h}")
             if v > 0:
                 spread += 1
+                run += 1
                 if v > best_hour:
                     best_hour = v
+                if run > best_run:
+                    best_run = run
+            else:
+                run = 0
         if spread > best_spread:
             best_spread = spread
-    return best_hour, best_spread
+    return best_hour, best_spread, best_run
 
 
 def _ach_day_max(rec, field):
@@ -983,7 +1014,7 @@ def _ach_metrics(rec):
             return val
         return prev
 
-    hour_max, day_hours = _ach_hour_stats(rec)
+    hour_max, day_hours, day_hours_run = _ach_hour_stats(rec)
 
     return {
         "sessions_total": _i(c, "sessions"),
@@ -993,6 +1024,7 @@ def _ach_metrics(rec):
         "packs": _i(c, "packs"),
         "sessions_hour": _best("sessions_hour", hour_max),
         "day_hours": _best("day_hours", day_hours),
+        "day_hours_run": _best("day_hours_run", day_hours_run),
         "hours_seen": len(rec.get("hours") or []),
         "weeks_active": _best("weeks_active", _ach_weeks_streak(rec, 1)),
         "month_days": _best("month_days", _ach_month_days_max(rec)),
@@ -4307,7 +4339,14 @@ def _ach_top_rows(uid, include_hidden=False):
     """Строки топа. Обычному участнику чужие скрытые не показываются, но свою
     собственную строку он видит всегда — так можно сравнить себя с топом,
     как если бы участвовал, оставаясь при этом невидимым для остальных.
-    include_hidden=True (только для админа) показывает вообще всех."""
+    include_hidden=True (только для админа) показывает вообще всех.
+
+    Результат кэшируется до следующей записи в achievements — см. комментарий
+    у _ach_top_rows_cache."""
+    ck = (uid, bool(include_hidden), _ach_data_version)
+    hit = _ach_top_rows_cache.get(ck)
+    if hit is not None:
+        return hit
     rows = []
     for other_uid, rec in achievements.items():
         if not isinstance(rec, dict):
@@ -4340,54 +4379,196 @@ def _ach_top_rows(uid, include_hidden=False):
                      "partner_counts": rec.get("partner_counts") or {},
                      "tenure_days": m["tenure_days"],
                      "urls_total": m["urls_total"], "final_votes": m["final_votes"],
-                     "partners_unique": m["partners_unique"], "day_hours": m["day_hours"]})
+                     "partners_unique": m["partners_unique"], "day_hours": m["day_hours"],
+                     "day_hours_run": m["day_hours_run"],
+                     "sessions_hour": m["sessions_hour"], "sessions_week": m["sessions_week"],
+                     "sessions_month": m["sessions_month"], "matches_day": m["matches_day"],
+                     "votes_day": m["votes_day"], "full_packs": m["full_packs"],
+                     "full_streak": m["full_streak"], "fast_votes": m["fast_votes"],
+                     "skill_ups": m["skill_ups"], "skill90_streak": m["skill90_streak"],
+                     "skill_hi_days": m["skill_hi_days"], "weekend_days": m["weekend_days"],
+                     "hours_seen": m["hours_seen"], "night_streak": m["night_streak"],
+                     "month_days": m["month_days"], "active_days": m["active_days"],
+                     "vote_streak_days": m["vote_streak_days"]})
     rows.sort(key=lambda r: (-r["xp"], -r["tiers"], r["name"].lower()))
     my_place = next((i for i, r in enumerate(rows, start=1) if r["uid"] == uid), None)
+    if len(_ach_top_rows_cache) >= ACH_TOP_CACHE_MAX:
+        _ach_top_rows_cache.clear()
+    _ach_top_rows_cache[ck] = (rows, my_place)
     return rows, my_place
 
 
+# Каталог рекордов.
+#   key   — поле строки топа (см. _ach_top_rows)
+#   min   — порог показа: рекорд из одного дня/одной штуки никому не интересен
+#   core  — попадает в короткий блок; остальное открывается кнопкой "Все рекорды"
 ACH_RECORD_CATS = [
-    ("sessions", "📦 Больше всего сессий за всё время", "{v}"),
-    ("matches", "🎯 Больше всего совпадений найдено", "{v}"),
-    ("votes", "⚖️ Больше всего оценок выставлено", "{v}"),
-    ("sessions_day", "🔥 Рекорд сессий за один день", "{v}"),
-    ("streak_days", "📅 Самая длинная серия дней подряд", "{v} дн."),
-    ("skill_peak", "📈 Самый высокий пик навыка", "{v}"),
-    ("lightning_votes", "⚡ Больше всего молниеносных оценок", "{v}"),
-    ("comebacks", "🔄 Больше всего камбэков навыка", "{v}"),
-    ("night_days", "🦉 Больше всего ночных дней (00–05)", "{v}"),
-    ("early_days", "🌅 Больше всего раннего старта (до 07)", "{v}"),
-    ("matches_burst", "🎯 Залп совпадений за одну проверку", "{v}"),
-    ("clean_streak", "🧹 Самая длинная серия без единой отмены", "{v}"),
-    ("skill_nofall", "📈 Дольше всех держал навык без падения", "{v} дн."),
-    ("urls_total", "🔗 Больше всего размечено ссылок всего", "{v}"),
-    ("final_votes", "🏁 Больше всего финальных вердиктов", "{v}"),
-    ("partners_unique", "🧩 Самый широкий круг совпадений", "{v} чел."),
-    ("day_hours", "⏱ Самый длинный рабочий день", "{v} ч. подряд"),
+    {"key": "sessions", "label": "\U0001F4E6 Больше всего сессий за всё время",
+     "fmt": "{v}", "min": 1, "core": True},
+    {"key": "matches", "label": "\U0001F3AF Больше всего совпадений найдено",
+     "fmt": "{v}", "min": 1, "core": True},
+    {"key": "votes", "label": "\u2696\ufe0f Больше всего оценок выставлено",
+     "fmt": "{v}", "min": 1, "core": True},
+    {"key": "urls_total", "label": "\U0001F517 Больше всего размечено ссылок всего",
+     "fmt": "{v}", "min": 1, "core": True},
+    {"key": "sessions_day", "label": "\U0001F525 Рекорд сессий за один день",
+     "fmt": "{v}", "min": 3, "core": True},
+    {"key": "streak_days", "label": "\U0001F4C5 Самая длинная серия дней подряд",
+     "fmt": "{v} дн.", "min": 3, "core": True},
+    {"key": "skill_peak", "label": "\U0001F4C8 Самый высокий пик навыка",
+     "fmt": "{v}", "min": 1, "core": True},
+    {"key": "matches_burst", "label": "\U0001F3AF Залп совпадений за одну проверку",
+     "fmt": "{v}", "min": 3, "core": True},
+    {"key": "lightning_votes", "label": "\u26A1 Больше всего молниеносных оценок",
+     "fmt": "{v}", "min": 3, "core": True},
+    {"key": "partners_unique", "label": "\U0001F9E9 Самый широкий круг совпадений",
+     "fmt": "{v} чел.", "min": 3, "core": True},
+
+    # --- полный список -----------------------------------------------------
+    {"key": "sessions_hour", "label": "\U0001F680 Больше всего сессий за один час",
+     "fmt": "{v}", "min": 3},
+    {"key": "sessions_week", "label": "\U0001F4C6 Рекорд сессий за неделю",
+     "fmt": "{v}", "min": 10},
+    {"key": "sessions_month", "label": "\U0001F5D3 Рекорд сессий за 30 дней",
+     "fmt": "{v}", "min": 30},
+    {"key": "full_packs", "label": "\U0001F590 Больше всего полных пачек по 5",
+     "fmt": "{v}", "min": 5},
+    {"key": "full_streak", "label": "\U0001F590 Самая длинная серия полных пачек",
+     "fmt": "{v} подряд", "min": 5},
+    {"key": "matches_day", "label": "\U0001F3AF Больше всего совпадений за день",
+     "fmt": "{v}", "min": 3},
+    {"key": "votes_day", "label": "\u2696\ufe0f Больше всего оценок за один день",
+     "fmt": "{v}", "min": 5},
+    {"key": "final_votes", "label": "\U0001F3C1 Больше всего финальных вердиктов",
+     "fmt": "{v}", "min": 3},
+    {"key": "fast_votes", "label": "\u23E9 Больше всего быстрых оценок",
+     "fmt": "{v}", "min": 5},
+    {"key": "vote_streak_days", "label": "\u2696\ufe0f Дней подряд с оценками",
+     "fmt": "{v} дн.", "min": 3},
+    {"key": "skill_ups", "label": "\U0001F4C8 Больше всего подъёмов навыка",
+     "fmt": "{v}", "min": 3},
+    {"key": "skill90_streak", "label": "\U0001F3C6 Дольше всех держал навык 90+",
+     "fmt": "{v} дн.", "min": 2},
+    {"key": "skill_hi_days", "label": "\U0001F48E Больше всего дней целиком на 90+",
+     "fmt": "{v} дн.", "min": 2},
+    {"key": "skill_nofall", "label": "\U0001F4C8 Дольше всех держал навык без падения",
+     "fmt": "{v} дн.", "min": 3},
+    {"key": "comebacks", "label": "\U0001F504 Больше всего камбэков навыка",
+     "fmt": "{v}", "min": 1},
+    {"key": "clean_streak", "label": "\U0001F9F9 Самая длинная серия без единой отмены",
+     "fmt": "{v}", "min": 5},
+    {"key": "night_days", "label": "\U0001F989 Больше всего ночных дней (00–05)",
+     "fmt": "{v}", "min": 2},
+    {"key": "night_streak", "label": "\U0001F319 Самая длинная серия ночей подряд",
+     "fmt": "{v} дн.", "min": 2},
+    {"key": "early_days", "label": "\U0001F305 Больше всего раннего старта (до 07)",
+     "fmt": "{v}", "min": 2},
+    {"key": "weekend_days", "label": "\U0001F3D6 Больше всех работал в выходные",
+     "fmt": "{v} дн.", "min": 2},
+    {"key": "day_hours", "label": "\U0001F550 Больше всего рабочих часов за день",
+     "fmt": "{v} ч.", "min": 4},
+    {"key": "day_hours_run", "label": "\u23F1 Самый длинный день без перерыва",
+     "fmt": "{v} ч. подряд", "min": 3},
+    {"key": "hours_seen", "label": "\U0001F55B Самый широкий охват суток",
+     "fmt": "{v} ч. из 24", "min": 6},
+    {"key": "month_days", "label": "\U0001F5D3 Больше всего активных дней в месяце",
+     "fmt": "{v} дн.", "min": 5},
+    {"key": "active_days", "label": "\u26F3 Больше всего активных дней всего",
+     "fmt": "{v}", "min": 3},
+    {"key": "tenure_days", "label": "\U0001F396 Ветеран: дольше всех в системе",
+     "fmt": "{v} дн.", "min": 3},
 ]
 
+# Производные рекорды: считаются на лету из тех же полей, ничего не хранят.
+# den_min — минимальный знаменатель, иначе новичок с 2 сессиями и 2 совпадениями
+# заберёт 100% КПД у того, кто работает месяцами.
+ACH_DERIVED_RECS = [
+    {"label": "\U0001F441 Самый глазастый (совпадений на сессию)",
+     "num": "matches", "den": "sessions", "den_min": 20, "kind": "ratio",
+     "min": 0.01, "core": True},
+    {"label": "\U0001F3C1 Самая высокая доля финальных вердиктов",
+     "num": "final_votes", "den": "votes", "den_min": 20, "kind": "pct", "min": 1},
+    {"label": "\U0001F525 Самый плотный темп (сессий в активный день)",
+     "num": "sessions", "den": "active_days", "den_min": 3, "kind": "ratio", "min": 0.01},
+    {"label": "\U0001F4E6 Самые полные пачки (ссылок на сессию)",
+     "num": "urls_total", "den": "sessions", "den_min": 20, "kind": "ratio", "min": 0.01},
+]
 
-def _ach_top_records(rows):
-    out = []
-    for key, label, fmt in ACH_RECORD_CATS:
-        best_v = None
-        winners = []
-        for r in rows:
-            v = r.get(key) or 0
-            try:
-                v = float(v)
-            except (TypeError, ValueError):
-                continue
-            if v <= 0:
-                continue
-            if best_v is None or v > best_v:
-                best_v = v
-                winners = [r]
-            elif v == best_v:
-                winners.append(r)
-        if best_v is None:
+ACH_REC_MAX_WINNERS = 3   # рекорд с 4+ обладателями — не рекорд, а общее место
+ACH_REC_TIE_MIN_ROWS = 4  # правило "половина топа поделила рекорд" ниже смысла не имеет
+
+
+def _ach_rec_winners(rows, valfn, min_val):
+    """Лидеры по одной категории или (None, []) если показывать нечего.
+
+    Отсекаем два вида мусора:
+      1) значение ниже порога (серия из 2 дней у всех подряд — не достижение);
+      2) массовая ничья — если рекорд поделили больше ACH_REC_MAX_WINNERS
+         человек или как минимум половина топа, строка ничего не сообщает.
+    """
+    best = None
+    winners = []
+    for r in rows:
+        v = valfn(r)
+        if v is None or v < min_val:
             continue
-        out.append((label, winners, fmt.format(v=_ach_fmt_val(best_v))))
+        if best is None or v > best:
+            best, winners = v, [r]
+        elif v == best:
+            winners.append(r)
+    if best is None:
+        return None, []
+    if len(winners) > ACH_REC_MAX_WINNERS:
+        return None, []
+    if len(rows) >= ACH_REC_TIE_MIN_ROWS and len(winners) > 1 and len(winners) * 2 >= len(rows):
+        return None, []
+    return best, winners
+
+
+def _ach_rec_plain_val(r, key):
+    try:
+        return float(r.get(key) or 0)
+    except (TypeError, ValueError):
+        return None
+
+
+def _ach_rec_derived_val(r, c):
+    try:
+        den = float(r.get(c["den"]) or 0)
+        num = float(r.get(c["num"]) or 0)
+    except (TypeError, ValueError):
+        return None
+    if den <= 0 or den < c["den_min"]:
+        return None
+    val = num / den
+    # округляем ДО сравнения, иначе 0.9999999 и 1.0 разъедут ничью на пустом месте
+    return round(val * 100) if c["kind"] == "pct" else round(val, 2)
+
+
+def _ach_fmt_ratio(v):
+    return f"{v:.2f}".rstrip("0").rstrip(".").replace(".", ",") or "0"
+
+
+def _ach_top_records(rows, full=False):
+    out = []
+    for c in ACH_RECORD_CATS:
+        if not full and not c.get("core"):
+            continue
+        key = c["key"]
+        best, winners = _ach_rec_winners(rows, lambda r, k=key: _ach_rec_plain_val(r, k),
+                                         c.get("min", 1))
+        if best is None:
+            continue
+        out.append((c["label"], winners, c["fmt"].format(v=_ach_fmt_val(best))))
+    for c in ACH_DERIVED_RECS:
+        if not full and not c.get("core"):
+            continue
+        best, winners = _ach_rec_winners(rows, lambda r, c=c: _ach_rec_derived_val(r, c),
+                                         c.get("min", 0))
+        if best is None:
+            continue
+        val = f"{int(best)}%" if c["kind"] == "pct" else _ach_fmt_ratio(best)
+        out.append((c["label"], winners, val))
     return out
 
 
@@ -4431,7 +4612,29 @@ def _ach_top_best_pair(rows, viewer_uid=None):
     return name_a, uid_a, name_b, uid_b, n
 
 
-def _ach_top_text(uid, include_hidden=False):
+def _ach_fit(lines, limit=SAFE_LIMIT):
+    """Склеивает строки, не вылезая за лимит Telegram.
+
+    Экран топа редактируется одним сообщением — разбить на несколько нельзя,
+    а edit_message_text на 4096+ символов упадёт BadRequest. Полный список
+    рекордов при большом составе участников как раз способен туда упереться."""
+    out = []
+    total = 0
+    cut = False
+    for ln in lines:
+        add = len(ln) + 1
+        if total + add > limit - 40:
+            cut = True
+            break
+        out.append(ln)
+        total += add
+    if cut:
+        out.append("")
+        out.append("<i>…список обрезан, чтобы влезть в одно сообщение.</i>")
+    return "\n".join(out)
+
+
+def _ach_top_text(uid, include_hidden=False, full_records=False):
     rows, my_place = _ach_top_rows(uid, include_hidden=include_hidden)
     if not rows:
         return "🏆 <b>ТОП УЧАСТНИКОВ</b>\n\nПока пусто — статистика копится с этого момента."
@@ -4462,7 +4665,7 @@ def _ach_top_text(uid, include_hidden=False):
         lines.append("<i>Ты скрыт из топа — эту сводку с твоим местом видишь только ты, "
                       "остальные тебя здесь не увидят.</i>")
     rows_by_uid = {r["uid"]: r for r in rows}
-    records = _ach_top_records(rows)
+    records = _ach_top_records(rows, full=full_records)
     pair = _ach_top_best_pair(rows, viewer_uid=uid)
     my_rec = _ach_rec(uid)
     my_p_uid, my_p_n = _ach_partner_best_uid(my_rec)
@@ -4487,10 +4690,13 @@ def _ach_top_text(uid, include_hidden=False):
             )
         if my_p_line:
             lines.append(f"👤 Ты чаще всего совпадаешь с: {my_p_line}")
-    return "\n".join(lines)
+        if not full_records:
+            lines.append("")
+            lines.append("<i>Это главные категории. «📜 Все рекорды» — полный список.</i>")
+    return _ach_fit(lines)
 
 
-def _ach_top_kb(uid, include_hidden=False):
+def _ach_top_kb(uid, include_hidden=False, full_records=False):
     rows, _my_place = _ach_top_rows(uid, include_hidden=include_hidden)
     medals = ["🥇", "🥈", "🥉"]
     kb_rows = []
@@ -4503,6 +4709,9 @@ def _ach_top_kb(uid, include_hidden=False):
             label += " 🙈"
         label = label[:60]
         kb_rows.append([InlineKeyboardButton(label, callback_data=f"ach:home:{r['uid']}")])
+    kb_rows.append([InlineKeyboardButton(
+        "📉 Свернуть рекорды" if full_records else "📜 Все рекорды",
+        callback_data="ach:recfull")])
     if uid in ADMIN_IDS:
         kb_rows.append([InlineKeyboardButton(
             "🙈 Скрыть скрытых из списка" if include_hidden else "👁 Показать скрытых (админ)",
@@ -4622,7 +4831,9 @@ async def _ach_callback_render(uid, action, parts, q):
     elif action == "top":
         await tg_answer(q)
         show_hidden = uid in ADMIN_IDS and uid in _admin_top_hidden_view
-        text, kb = _ach_top_text(uid, include_hidden=show_hidden), _ach_top_kb(uid, include_hidden=show_hidden)
+        full_rec = uid in _top_records_full
+        text = _ach_top_text(uid, include_hidden=show_hidden, full_records=full_rec)
+        kb = _ach_top_kb(uid, include_hidden=show_hidden, full_records=full_rec)
     elif action == "toptoggle":
         # тумблер "показать скрытых" на экране топа — доступен только админу
         if uid in ADMIN_IDS:
@@ -4632,7 +4843,20 @@ async def _ach_callback_render(uid, action, parts, q):
                 _admin_top_hidden_view.add(uid)
         await tg_answer(q)
         show_hidden = uid in ADMIN_IDS and uid in _admin_top_hidden_view
-        text, kb = _ach_top_text(uid, include_hidden=show_hidden), _ach_top_kb(uid, include_hidden=show_hidden)
+        full_rec = uid in _top_records_full
+        text = _ach_top_text(uid, include_hidden=show_hidden, full_records=full_rec)
+        kb = _ach_top_kb(uid, include_hidden=show_hidden, full_records=full_rec)
+    elif action == "recfull":
+        # разворот/сворачивание блока "Рекордсмены"
+        if uid in _top_records_full:
+            _top_records_full.discard(uid)
+        else:
+            _top_records_full.add(uid)
+        await tg_answer(q)
+        show_hidden = uid in ADMIN_IDS and uid in _admin_top_hidden_view
+        full_rec = uid in _top_records_full
+        text = _ach_top_text(uid, include_hidden=show_hidden, full_records=full_rec)
+        kb = _ach_top_kb(uid, include_hidden=show_hidden, full_records=full_rec)
     elif action == "home":
         raw_target = parts[2] if len(parts) > 2 else None
         target, ok = _ach_resolve_target(uid, raw_target)
