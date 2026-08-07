@@ -1222,6 +1222,23 @@ def _ach_is_optout(uid):
     return bool((user_data.get(uid, {}) or {}).get("ach_optout"))
 
 
+# Участники, которым весь интерфейс достижений просто не показывается: нет кнопки,
+# нет команды /ach, не приходят уведомления о новых ачивках. Это НЕ ach_optout —
+# статистика и достижения считаются как обычно, и остальные видят их в топе.
+ACH_UI_HIDDEN_IDS = {1252967508}
+
+
+def _ach_ui_hidden(uid) -> bool:
+    """Спрятан ли от участника раздел достижений."""
+    try:
+        uid = int(uid)
+    except (TypeError, ValueError):
+        return False
+    if uid in ACH_UI_HIDDEN_IDS:
+        return True
+    return bool((user_data.get(uid, {}) or {}).get("ach_ui_hidden"))
+
+
 async def ach_award(bot, uid):
     """Проверить пороги и уведомить. Работает и в режиме скрытости — данные и ачивки
     не должны теряться, пока пользователь не участвует в топе/просмотре. Никогда не роняет вызывающий код."""
@@ -1231,6 +1248,8 @@ async def ach_award(bot, uid):
         logger.warning(f"Ачивки: ошибка проверки ({uid}): {e}")
         return
     if not fired:
+        return
+    if _ach_ui_hidden(uid):
         return
     if not (user_data.get(uid, {}) or {}).get("ach_notify", True):
         return
@@ -1851,8 +1870,7 @@ def get_main_keyboard(user_id=None):
             KeyboardButton("🔄 Новая сессия"),
             KeyboardButton("↩️ Отменить отправку"),
             KeyboardButton(auto_btn),
-            KeyboardButton(ACH_BTN),
-        ],
+        ] + ([] if _ach_ui_hidden(user_id) else [KeyboardButton(ACH_BTN)]),
         [
             KeyboardButton(skill_btn),
             KeyboardButton("✏️ Сменить имя"),
@@ -3981,7 +3999,9 @@ def _skill_notify_on(user_id) -> bool:
 
 async def _sync_skill_commands(bot, user_id: int, enabled: bool) -> bool:
     tail = SKILL_OFF_COMMAND if enabled else SKILL_ON_COMMAND
-    commands = [BotCommand(c, d) for (c, d) in [*BASE_COMMANDS, tail]]
+    base = [c for c in BASE_COMMANDS
+            if not (c[0] == "ach" and _ach_ui_hidden(user_id))]
+    commands = [BotCommand(c, d) for (c, d) in [*base, tail]]
     try:
         await tg(bot.set_my_commands, commands=commands,
                  scope=BotCommandScopeChat(chat_id=user_id))
@@ -4192,7 +4212,7 @@ def _ach_home_kb(uid, viewer_uid=None):
         rows = [[InlineKeyboardButton("🏅 Все достижения", callback_data="ach:cat:0"),
                  InlineKeyboardButton("📊 Статистика", callback_data="ach:stats")],
                 [InlineKeyboardButton("🏆 Топ участников", callback_data="ach:top"),
-                 InlineKeyboardButton("🔔 Уведомления: вкл" if on else "🔕 Уведомления: выкл",
+                 InlineKeyboardButton("🔔 Ачивки: вкл" if on else "🔕 Ачивки: выкл",
                                       callback_data="ach:ntf")],
                 [InlineKeyboardButton("🙈 Скрыть себя из топа" if not optout
                                       else "👁 Скрыт из топа — нажми, чтобы показаться",
@@ -4719,6 +4739,9 @@ def _ach_back_kb(uid=None, viewer_uid=None):
 
 async def show_achievements(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
+    if _ach_ui_hidden(user_id):
+        # раздела для этого участника как будто не существует
+        return
     if not is_user_active(user_id):
         await tg(update.message.reply_text, "❌ Ты ещё не зарегистрирован!",
                  reply_markup=get_start_keyboard())
@@ -4753,6 +4776,9 @@ async def achievements_callback(update: Update, context: ContextTypes.DEFAULT_TY
     uid = q.from_user.id
     parts = (q.data or "").split(":")
     action = parts[1] if len(parts) > 1 else "home"
+    if _ach_ui_hidden(uid):
+        await tg_answer(q)
+        return
     await ach_award(context.bot, uid)
 
     try:
@@ -5439,6 +5465,30 @@ def _broadcast_is_duplicate(kind: str, payload) -> bool:
     return False
 
 
+def _broadcast_recipients(tag: str):
+    """Кому реально уйдёт рассылка.
+
+    Раньше три цикла молча делали continue, и понять, почему конкретному
+    человеку не пришло уведомление, можно было только руками в data-файле.
+    Теперь каждый пропуск попадает в лог с причиной.
+    """
+    targets, skipped = [], []
+    for uid, data in list(user_data.items()):
+        if not isinstance(data, dict) or not data.get("registered"):
+            skipped.append(f"{uid}: не зарегистрирован")
+            continue
+        if not is_approved(uid):
+            skipped.append(f"{uid}: нет доступа ({access_status(uid)})")
+            continue
+        if not data.get("notify", True):
+            skipped.append(f"{uid}: notify off")
+            continue
+        targets.append(uid)
+    if skipped:
+        logger.info(f"{tag}: пропущено {len(skipped)} — " + "; ".join(skipped))
+    return targets
+
+
 _search_session_active = _load_session_active()
 
 
@@ -5468,13 +5518,7 @@ async def broadcast_search_session(payload: dict):
     text = "\n".join(lines)
 
     sent, failed = 0, 0
-    for uid, data in list(user_data.items()):
-        if not isinstance(data, dict) or not data.get("registered"):
-            continue
-        if not is_approved(uid):
-            continue
-        if not data.get("notify", True):
-            continue
+    for uid in _broadcast_recipients("broadcast"):
         try:
             await tg(bot.send_message,
                 chat_id=uid, text=text,
@@ -5510,13 +5554,7 @@ async def broadcast_session_ended():
     )
 
     sent, failed = 0, 0
-    for uid, data in list(user_data.items()):
-        if not isinstance(data, dict) or not data.get("registered"):
-            continue
-        if not is_approved(uid):
-            continue
-        if not data.get("notify", True):
-            continue
+    for uid in _broadcast_recipients("session_ended"):
         try:
             await tg(bot.send_message,
                 chat_id=uid, text=text,
@@ -5556,13 +5594,7 @@ async def broadcast_session_price_changed(payload: dict):
     text = "\n".join(lines)
 
     sent, failed = 0, 0
-    for uid, data in list(user_data.items()):
-        if not isinstance(data, dict) or not data.get("registered"):
-            continue
-        if not is_approved(uid):
-            continue
-        if not data.get("notify", True):
-            continue
+    for uid in _broadcast_recipients("price_changed"):
         try:
             await tg(bot.send_message,
                 chat_id=uid, text=text,
