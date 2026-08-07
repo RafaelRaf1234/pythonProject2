@@ -1338,20 +1338,49 @@ def ach_on_skill(uid, value):
 
 
 def ach_on_vote(uid, is_final, created_at=None):
+    """Возвращает, что именно было зачислено — нужно для точного отката
+    (ach_on_vote_undo), если матч потом инвалидируется отменой отправки."""
     rec = _ach_rec(uid)
     day = _ach_day_key(uid)
+    credit = {"votes": 1, "final_votes": 0, "fast_votes": 0, "lightning_votes": 0}
     _ach_bump(rec, "votes", 1)
     _ach_day_bump(rec, day, "votes", 1)
     if is_final:
         _ach_bump(rec, "final_votes", 1)
+        credit["final_votes"] = 1
     started = _parse_added_at(created_at) if created_at else None
     if started:
         delta = (datetime.now() - started).total_seconds()
         if 0 <= delta <= ACH_FAST_VOTE_SECONDS:
             _ach_bump(rec, "fast_votes", 1)
+            credit["fast_votes"] = 1
         if 0 <= delta <= ACH_LIGHTNING_SECONDS:
             _ach_bump(rec, "lightning_votes", 1)
+            credit["lightning_votes"] = 1
     _ach_prune(rec)
+    save_achievements()
+    return credit
+
+
+def ach_on_vote_undo(uid, credit):
+    """Обратная к ach_on_vote — снимает ровно то, что было начислено этим
+    конкретным голосом (votes/final_votes/fast_votes/lightning_votes),
+    когда матч, к которому голос относился, инвалидирован отменой отправки.
+    День намеренно не трогаем — как и с matches, дневные рекорды в этой
+    системе принципиально только растут (см. _best())."""
+    if not credit:
+        return
+    rec = _ach_rec(uid)
+    c = rec["counters"]
+    for key in ("votes", "final_votes", "fast_votes", "lightning_votes"):
+        n = int(credit.get(key, 0) or 0)
+        if n <= 0:
+            continue
+        try:
+            cur = int(c.get(key, 0) or 0)
+        except (TypeError, ValueError):
+            cur = 0
+        c[key] = max(0, cur - n)
     save_achievements()
 
 
@@ -1381,6 +1410,45 @@ def ach_on_matches(uid, count, partner_uids=()):
             pc[key] = int(pc.get(key, 0) or 0) + 1
         except (TypeError, ValueError):
             pc[key] = 1
+        changed = True
+    if count > 0 or changed:
+        _ach_prune(rec)
+        save_achievements()
+
+
+def ach_on_matches_undo(uid, count, partner_uids=()):
+    """Обратная операция к ach_on_matches — снимает зачёт ровно одного совпадения
+    (и связанных партнёров), когда матч оказался инвалидирован отменой отправки.
+    Никогда не уходит в минус. Дневной бакет matches намеренно не трогаем —
+    он влияет только на 'рекорд за день', а рекорды в этой системе принципиально
+    никогда не понижаются (см. _best())."""
+    if count <= 0 and not partner_uids:
+        return
+    rec = _ach_rec(uid)
+    if count > 0:
+        c = rec["counters"]
+        try:
+            cur = int(c.get("matches", 0) or 0)
+        except (TypeError, ValueError):
+            cur = 0
+        c["matches"] = max(0, cur - count)
+    partners = rec["partners"]
+    pc = rec["partner_counts"]
+    changed = False
+    for p in partner_uids:
+        if p == uid:
+            continue
+        key = str(p)
+        try:
+            new_v = max(0, int(pc.get(key, 0) or 0) - 1)
+        except (TypeError, ValueError):
+            new_v = 0
+        if new_v > 0:
+            pc[key] = new_v
+        else:
+            pc.pop(key, None)
+            if key in partners:
+                partners.remove(key)
         changed = True
     if count > 0 or changed:
         _ach_prune(rec)
@@ -2067,6 +2135,44 @@ def _extract_skill_value(text):
     return value, batch_yang, cleaned
 
 
+def _ach_skill_snapshot(uid):
+    """Снимок ach-состояния навыка ДО применения нового значения — нужен, чтобы
+    отмена отправки могла откатить peak/skill_ups/comebacks/hi_days так же
+    точно, как откатывает matches и votes, а не оставляла их зачисленными
+    навсегда, пока пользователь не отправит что-то ещё."""
+    rec = _ach_rec(uid)
+    day = _ach_day_key(uid)
+    return {
+        "day": day,
+        "skill": dict(rec.get("skill") or {}),
+        "day_state": dict(rec.get("days", {}).get(day) or {}),
+        "skill_ups": int((rec.get("counters") or {}).get("skill_ups", 0) or 0),
+        "comebacks": int((rec.get("counters") or {}).get("comebacks", 0) or 0),
+    }
+
+
+def _ach_skill_restore(uid, snap):
+    if not snap:
+        return
+    rec = _ach_rec(uid)
+    rec["skill"] = dict(snap.get("skill") or {})
+    day = snap.get("day")
+    if day:
+        prev_day_state = snap.get("day_state") or {}
+        # день мог обзавестись другими полями (сессии/матчи) уже после снимка —
+        # трогаем только skill-related ключи, остальное дня не откатываем.
+        d = _ach_day(rec, day)
+        for key in ("skill_last", "skill_n", "skill_min", "skill_max", "hi_counted"):
+            if key in prev_day_state:
+                d[key] = prev_day_state[key]
+            else:
+                d.pop(key, None)
+    c = rec["counters"]
+    c["skill_ups"] = max(0, int(snap.get("skill_ups", 0) or 0))
+    c["comebacks"] = max(0, int(snap.get("comebacks", 0) or 0))
+    save_achievements()
+
+
 def _apply_skill_value(user_id, value):
     if value is None:
         return
@@ -2207,6 +2313,7 @@ def _restore_skill_snapshot(user_id: int, snap: dict) -> None:
             d.pop(key, None)
         else:
             d[key] = snap[key]
+    _ach_skill_restore(user_id, snap.get("ach"))
 
 
 async def my_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -2275,6 +2382,7 @@ async def _save_links_from_text(update: Update, context: ContextTypes.DEFAULT_TY
     if not entries:
         if skill_value is not None:
             skill_snapshot = _capture_skill_snapshot(user_id)
+            skill_snapshot["ach"] = _ach_skill_snapshot(user_id)
             _apply_skill_value(user_id, skill_value)
             _push_submission(user_id, {
                 "added_urls": [],
@@ -2309,6 +2417,7 @@ async def _save_links_from_text(update: Update, context: ContextTypes.DEFAULT_TY
     skill_snapshot = None
     if skill_value is not None:
         skill_snapshot = _capture_skill_snapshot(user_id)
+        skill_snapshot["ach"] = _ach_skill_snapshot(user_id)
         _apply_skill_value(user_id, skill_value)
 
     try:
@@ -3160,7 +3269,10 @@ async def vote_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         voter = user_data[target_uid]["name"]
     _record_vote(state, target_uid, val, is_final, voter)
     if ach_vote_counted(state, target_uid, is_final):
-        ach_on_vote(target_uid, is_final, state.get("created_at"))
+        credit = ach_on_vote(target_uid, is_final, state.get("created_at"))
+        phase_key = "final" if is_final else "init"
+        vc = state.setdefault("vote_credit", {}).setdefault(phase_key, {})
+        vc[str(target_uid)] = credit
         save_match_votes()
     await _clear_reminder_msg(context.bot, state, target_uid)
     note = "Финальная оценка учтена ✅" if is_final else "Первичная оценка учтена ✅"
@@ -3199,7 +3311,10 @@ async def proxy_vote_callback(update: Update, context: ContextTypes.DEFAULT_TYPE
         target_name = user_data[target_uid]["name"]
     _record_vote(state, target_uid, val, is_final, target_name)
     if ach_vote_counted(state, target_uid, is_final):
-        ach_on_vote(target_uid, is_final, state.get("created_at"))
+        credit = ach_on_vote(target_uid, is_final, state.get("created_at"))
+        phase_key = "final" if is_final else "init"
+        vc = state.setdefault("vote_credit", {}).setdefault(phase_key, {})
+        vc[str(target_uid)] = credit
     state.setdefault("token", token)
     await _clear_reminder_msg(context.bot, state, target_uid)
     await refresh_match_message(context.bot, state)
@@ -3370,6 +3485,7 @@ async def _check_matches_impl(update: Update, context: ContextTypes.DEFAULT_TYPE
                 unreachable = {}
                 for idx, m in enumerate(new_matches, start=1):
                     token = next_vote_token()
+                    m["_token"] = token
                     if user_id in {u["uid"] for u in m["users"]}:
                         per_head = (
                             f"🔔 Новое совпадение • запустил: {html.escape(initiator_name)} "
@@ -3446,6 +3562,7 @@ async def _check_matches_impl(update: Update, context: ContextTypes.DEFAULT_TYPE
                 status = format_status_block(all_users, new_match_uids, mention=True)
                 for idx, m in enumerate(new_matches, start=1):
                     token = next_vote_token()
+                    m["_token"] = token
                     pre_ratings, pre_finals = carried_ratings_for(
                         m["link"], [u["uid"] for u in m["users"]])
                     state = {
@@ -3524,6 +3641,9 @@ async def _ach_credit_matches(bot, new_matches):
             continue
         prev_sig = m.get("_prev_sig") or set()
         uids = [u["uid"] for u in m["users"]]
+        token = m.get("_token")
+        state = match_votes.get(token) if token else None
+        credit_map = {}
         for u in m["users"]:
             own_key = f"{u['uid']}@{u.get('added_at', '')}"
             if own_key in prev_sig:
@@ -3531,7 +3651,13 @@ async def _ach_credit_matches(bot, new_matches):
             muid = u["uid"]
             agg = per_uid.setdefault(muid, {"n": 0, "p": []})
             agg["n"] += 1
-            agg["p"].extend(x for x in uids if x != muid)
+            partners_for_this_match = [x for x in uids if x != muid]
+            agg["p"].extend(partners_for_this_match)
+            # запоминаем ровно за этот матч/токен, кому и с кем начислено —
+            # без этого отмена отправки не может откатить зачёт совпадения.
+            credit_map[str(muid)] = partners_for_this_match
+        if state is not None and credit_map:
+            state["match_credit"] = credit_map
     for muid, agg in per_uid.items():
         try:
             ach_on_matches(muid, agg["n"], agg["p"])
@@ -3634,6 +3760,8 @@ async def undo_last_submission(update: Update, context: ContextTypes.DEFAULT_TYP
                 state = match_votes.get(token)
                 if not state or state.get("link") != link:
                     continue
+                credit_map = state.get("match_credit") or {}
+                vote_credit = state.get("vote_credit") or {}
                 users = [u for u in state.get("users", []) if u.get("uid") != user_id]
                 if still_match and len(users) >= 2:
                     state["users"] = users
@@ -3644,10 +3772,41 @@ async def undo_last_submission(update: Update, context: ContextTypes.DEFAULT_TYP
                             d.pop(str(user_id), None)
                             d.pop(user_id, None)
                     state["token"] = token
+                    # матч остался жив для остальных — снимаем зачёт совпадения
+                    # только у того, кто отменил отправку (его строки в матче больше нет).
+                    my_partners = credit_map.pop(str(user_id), None)
+                    if my_partners is not None:
+                        ach_on_matches_undo(user_id, 1, my_partners)
+                    # его же оценки на этот матч (ratings.pop выше) больше не валидны —
+                    # снимаем зачёт голосов ровно за них, по обеим фазам.
+                    for phase_key in ("init", "final"):
+                        ph = vote_credit.get(phase_key) or {}
+                        my_vote_credit = ph.pop(str(user_id), None)
+                        if my_vote_credit:
+                            ach_on_vote_undo(user_id, my_vote_credit)
                     await refresh_match_message(context.bot, state)
                 else:
                     deleted_msgs += await delete_match_copies(context.bot, state)
                     match_votes.pop(token, None)
+                    # матч целиком инвалидирован (меньше 2 участников осталось) —
+                    # снимаем зачёт совпадения у ВСЕХ, кому он был начислен по этому
+                    # токену, а не только у того, кто нажал "отменить".
+                    for uid_s, partners in credit_map.items():
+                        try:
+                            c_uid = int(uid_s)
+                        except (TypeError, ValueError):
+                            continue
+                        ach_on_matches_undo(c_uid, 1, partners)
+                    # матча больше нет вообще — все голоса по нему (обе фазы, все,
+                    # кто голосовал) тоже больше не за что засчитывать.
+                    for phase_key in ("init", "final"):
+                        ph = vote_credit.get(phase_key) or {}
+                        for uid_s, credit in ph.items():
+                            try:
+                                c_uid = int(uid_s)
+                            except (TypeError, ValueError):
+                                continue
+                            ach_on_vote_undo(c_uid, credit)
 
         save_reported_matches(reported_matches)
         save_link_verdicts()
@@ -4211,7 +4370,8 @@ ACH_RECORD_CATS = [
 def _ach_top_records(rows):
     out = []
     for key, label, fmt in ACH_RECORD_CATS:
-        best = None
+        best_v = None
+        winners = []
         for r in rows:
             v = r.get(key) or 0
             try:
@@ -4220,12 +4380,14 @@ def _ach_top_records(rows):
                 continue
             if v <= 0:
                 continue
-            if best is None or v > best[0]:
-                best = (v, r)
-        if best is None:
+            if best_v is None or v > best_v:
+                best_v = v
+                winners = [r]
+            elif v == best_v:
+                winners.append(r)
+        if best_v is None:
             continue
-        v, r = best
-        out.append((label, r["name"], r["uid"], fmt.format(v=_ach_fmt_val(v))))
+        out.append((label, winners, fmt.format(v=_ach_fmt_val(best_v))))
     return out
 
 
@@ -4308,9 +4470,13 @@ def _ach_top_text(uid, include_hidden=False):
     if records or pair or my_p_line:
         lines.append("")
         lines.append("🏅 <b>РЕКОРДСМЕНЫ</b>")
-        for label, name, r_uid, val in records:
-            me = " (ты)" if r_uid == uid else (" 🙈" if rows_by_uid.get(r_uid, {}).get("optout") else "")
-            lines.append(f"{label}: <b>{html.escape(str(name))}</b>{me} — {val}")
+        for label, winners, val in records:
+            names = []
+            for r in winners:
+                r_uid = r["uid"]
+                me = " (ты)" if r_uid == uid else (" 🙈" if rows_by_uid.get(r_uid, {}).get("optout") else "")
+                names.append(f"<b>{html.escape(str(r['name']))}</b>{me}")
+            lines.append(f"{label}: {', '.join(names)} — {val}")
         if pair:
             name_a, uid_a, name_b, uid_b, n = pair
             you_a = " (ты)" if uid_a == uid else (" 🙈" if _ach_is_optout(uid_a) else "")
