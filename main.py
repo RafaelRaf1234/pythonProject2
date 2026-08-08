@@ -236,18 +236,12 @@ def load_data():
     return result
 
 
-# Кэш строк топа. Экран собирается дважды подряд (текст + клавиатура), а каждая
-# сборка пересчитывает метрики всем участникам по 120 дням истории — на полном
-# составе это сотни миллисекунд на одно нажатие кнопки. Кэш живёт до ближайшей
-# записи в achievements, поэтому устаревших чисел показать не может.
 _ach_data_version = 0
 _ach_top_rows_cache = {}
 ACH_TOP_CACHE_MAX = 32
 
 
 def save_data():
-    # имя и опт-аут участника попадают в строки топа, поэтому их правка тоже
-    # обязана сбрасывать кэш _ach_top_rows — иначе экран покажет старое имя
     global _ach_data_version
     _ach_data_version += 1
     _ach_top_rows_cache.clear()
@@ -323,24 +317,35 @@ match_votes: Dict[str, dict] = load_match_votes()
 link_verdicts: Dict[str, dict] = load_link_verdicts()
 
 
-# ===================== ДОСТИЖЕНИЯ ====================
-
-ACH_TIER_ICONS = ["🥉", "🥈", "🥇", "💎"]
-ACH_TIER_NAMES = ["Бронза", "Серебро", "Золото", "Платина"]
-ACH_XP_BY_TIER = [10, 25, 60, 150]
+ACH_TIER_ICONS = ["🥉", "🥈", "🥇", "💎", "👑"]
+ACH_TIER_NAMES = ["Бронза", "Серебро", "Золото", "Платина", "Легенда"]
+ACH_XP_BY_TIER = [10, 25, 60, 150, 400]
 ACH_HIDDEN_XP = 100
-ACH_DAYS_KEEP = 120
+ACH_DAYS_KEEP = 400
 ACH_FAST_VOTE_SECONDS = 120
 ACH_LIGHTNING_SECONDS = 30
 ACH_SKILL_HI = 90.0
 ACH_SKILL_LOW = 80.0
 ACH_SKILL_MIN_SAMPLES = 2
+ACH_DAY_START_HOUR = 6
+ACH_SHIFT_GAP_HOURS = 5
+ACH_TOP_WINDOW_DAYS = 2
 ACH_TOP_LIMIT = 15
-# uid админов, у которых сейчас включён режим "показывать скрытых" на экране топа.
-# Это чисто состояние экрана (не персистентное), сбрасывается при рестарте бота.
+ACH_NOTIFY_DEFAULT = False
+ACH_NOTIFY_RESET_VERSION = 1
 _admin_top_hidden_view = set()
-ACH_UNITS_VERSION = 2      # 1 = сессия считалась по URL, 2 = по отправленной пачке
-ACH_WEEK_GOAL = 90         # порог «стабильной недели» в пачках
+_ach_top_window_view = {}
+ACH_UNITS_VERSION = 4
+ACH_RANKS = [
+    (0, "🌱", "Новичок"),
+    (300, "📋", "Разметчик"),
+    (900, "🔎", "Опытный"),
+    (1800, "🎯", "Эксперт"),
+    (3200, "🏅", "Мастер"),
+    (5500, "🛡", "Ветеран"),
+    (9000, "👑", "Легенда"),
+]
+ACH_WEEK_GOAL = 55
 ACH_BTN = "🏆 Достижения"
 
 ACH_CATEGORIES = [
@@ -357,140 +362,143 @@ ACH_CATEGORIES = [
 ACHIEVEMENTS_DEF = [
     {"code": "sess_total", "cat": "vol", "name": "Конвейер",
      "desc": "Отправлено сессий всего", "metric": "sessions_total",
-     "tiers": [15, 75, 300, 1500], "unit": "сессий"},
+     "tiers": [50, 250, 800, 2500, 6000, 12000], "unit": "сессий"},
     {"code": "sess_day", "cat": "vol", "name": "Спринтер",
-     "desc": "Сессий за один день", "metric": "sessions_day",
-     "tiers": [5, 12, 20, 30], "unit": "за день"},
+     "desc": "Сессий за одну смену", "metric": "sessions_day",
+     "tiers": [12, 20, 28, 34, 40], "unit": "за смену"},
     {"code": "sess_week", "cat": "vol", "name": "Марафонец",
      "desc": "Сессий за 7 дней подряд", "metric": "sessions_week",
-     "tiers": [35, 80, 150, 250], "unit": "за неделю"},
+     "tiers": [50, 100, 160, 220, 270], "unit": "за неделю"},
     {"code": "full_pack", "cat": "vol", "name": "Полная пачка",
-     "desc": "Сессий, отправленных сразу по 5 ссылок", "metric": "full_packs",
-     "tiers": [25, 100, 500], "unit": "сессий"},
+     "desc": f"Сессий, отправленных сразу по {MAX_LINKS} ссылок", "metric": "full_packs",
+     "tiers": [40, 200, 700, 2000, 5000, 10000], "unit": "сессий"},
     {"code": "sess_month", "cat": "vol", "name": "Месячная норма",
      "desc": "Сессий за 30 дней подряд", "metric": "sessions_month",
-     "tiers": [120, 300, 550, 800], "unit": "за 30 дней"},
+     "tiers": [200, 400, 650, 850, 1000], "unit": "за 30 дней"},
     {"code": "urls_total", "cat": "vol", "name": "Разметчик",
      "desc": "Размечено ссылок всего (по всем сессиям)", "metric": "urls_total",
-     "tiers": [100, 500, 2000, 8000], "unit": "ссылок"},
+     "tiers": [250, 1200, 4000, 12000, 30000, 60000], "unit": "ссылок"},
     {"code": "pack_avg", "cat": "vol", "name": "Под завязку",
-     "desc": "Сессий подряд по 5 ссылок без неполных", "metric": "full_streak",
-     "tiers": [10, 30, 80], "unit": "подряд"},
+     "desc": f"Сессий подряд по {MAX_LINKS} ссылок без неполных", "metric": "full_streak",
+     "tiers": [10, 18, 26, 32, 40], "unit": "подряд"},
     {"code": "sess_hour", "cat": "vol", "name": "Турбо-час",
      "desc": "Сессий за один час", "metric": "sessions_hour",
-     "tiers": [2, 3, 4, 6], "unit": "за час"},
+     "tiers": [2, 3, 4, 5, 6], "unit": "за час"},
 
     {"code": "day_streak", "cat": "streak", "name": "Не пропускаю",
      "desc": "Дней подряд минимум с одной сессией", "metric": "streak_days",
-     "tiers": [3, 7, 21, 60], "unit": "дней"},
+     "tiers": [5, 10, 16, 23, 30], "unit": "дней"},
     {"code": "week_100", "cat": "streak", "name": "Стабильная неделя",
      "desc": f"Недель подряд с {ACH_WEEK_GOAL}+ сессиями", "metric": "weeks_100",
-     "tiers": [2, 4, 12], "unit": "недель"},
+     "tiers": [2, 6, 12, 24, 40], "unit": "недель"},
     {"code": "weeks_active", "cat": "streak", "name": "В обойме",
      "desc": "Недель подряд хотя бы с одной сессией", "metric": "weeks_active",
-     "tiers": [4, 12, 26, 52], "unit": "недель"},
+     "tiers": [4, 12, 26, 40, 52], "unit": "недель"},
     {"code": "month_full", "cat": "streak", "name": "Полный месяц",
      "desc": "Активных дней в одном календарном месяце", "metric": "month_days",
-     "tiers": [15, 22, 28], "unit": "дней"},
+     "tiers": [14, 19, 24, 28], "unit": "дней"},
     {"code": "vote_streak", "cat": "streak", "name": "Дежурный судья",
      "desc": "Дней подряд минимум с одной оценкой", "metric": "vote_streak_days",
-     "tiers": [3, 7, 21], "unit": "дней"},
+     "tiers": [5, 12, 24, 34, 45], "unit": "дней"},
 
     {"code": "vote_total", "cat": "vote", "name": "Арбитр",
      "desc": "Выставлено оценок всего", "metric": "votes_total",
-     "tiers": [50, 250, 1000, 3000], "unit": "оценок"},
+     "tiers": [60, 300, 1000, 3000, 8000, 16000], "unit": "оценок"},
     {"code": "vote_2d", "cat": "vote", "name": "Судейский заплыв",
      "desc": "Оценок за 2 дня", "metric": "votes_2d",
-     "tiers": [25, 55, 85, 120], "unit": "за 2 дня"},
+     "tiers": [40, 75, 110, 145, 175], "unit": "за 2 дня"},
     {"code": "vote_final", "cat": "vote", "name": "Последнее слово",
      "desc": "Финальных вердиктов", "metric": "final_votes",
-     "tiers": [25, 100, 500], "unit": "финалок"},
+     "tiers": [30, 150, 500, 1500, 3500, 6500], "unit": "финалок"},
     {"code": "vote_fast", "cat": "vote", "name": "Реакция",
      "desc": f"Оценок быстрее чем за {ACH_FAST_VOTE_SECONDS // 60} мин после уведомления",
-     "metric": "fast_votes", "tiers": [10, 50, 200], "unit": "раз"},
+     "metric": "fast_votes", "tiers": [30, 180, 700, 2200, 5500, 11000], "unit": "раз"},
     {"code": "vote_day", "cat": "vote", "name": "Разбор полётов",
-     "desc": "Оценок за один день", "metric": "votes_day",
-     "tiers": [12, 25, 45, 75], "unit": "за день"},
+     "desc": "Оценок за одну смену", "metric": "votes_day",
+     "tiers": [20, 40, 65, 90, 120], "unit": "за смену"},
     {"code": "vote_light", "cat": "vote", "name": "Молния",
      "desc": f"Оценок быстрее {ACH_LIGHTNING_SECONDS} сек после уведомления",
-     "metric": "lightning_votes", "tiers": [5, 25, 100], "unit": "раз"},
+     "metric": "lightning_votes", "tiers": [15, 80, 350, 1200, 3000, 6000], "unit": "раз"},
+    {"code": "vote_first", "cat": "vote", "name": "Первый голос",
+     "desc": "Совпадений, где ты оценил раньше партнёра", "metric": "first_votes",
+     "tiers": [20, 100, 400, 1400, 3500, 8000], "unit": "раз"},
 
     {"code": "skill_peak", "cat": "skill", "name": "Планка",
      "desc": "Максимальный навык за всё время", "metric": "skill_peak",
-     "tiers": [90, 95, 98], "unit": "навык"},
+     "tiers": [88, 92, 95, 98], "unit": "навык"},
     {"code": "skill_hi", "cat": "skill", "name": "Держу 90+",
-     "desc": "Дней, где навык не опускался ниже 90", "metric": "skill_hi_days",
-     "tiers": [1, 3, 7, 30], "unit": "дней"},
+     "desc": "Смен, где навык закрылся не ниже 90", "metric": "skill_hi_days",
+     "tiers": [3, 15, 50, 120, 220], "unit": "смен"},
     {"code": "skill_nofall", "cat": "skill", "name": "Только вверх",
-     "desc": "Дней подряд без падения навыка", "metric": "skill_nofall",
-     "tiers": [3, 7, 21], "unit": "дней"},
+     "desc": "Смен подряд без падения навыка", "metric": "skill_nofall",
+     "tiers": [3, 6, 10, 14, 18], "unit": "смен"},
     {"code": "skill_comeback", "cat": "skill", "name": "Камбэк",
      "desc": "Подъёмов навыка с 80− обратно на 90+", "metric": "comebacks",
-     "tiers": [1, 3], "unit": "раз"},
-    {"code": "skill_ups", "cat": "skill", "name": "По ступенькам",
-     "desc": "Сколько раз навык вырос", "metric": "skill_ups",
-     "tiers": [10, 50, 200], "unit": "подъёмов"},
+     "tiers": [1, 2, 3], "unit": "раз"},
+    {"code": "skill_gain", "cat": "skill", "name": "По ступенькам",
+     "desc": "Суммарно набрано навыка (по сменам, только рост)", "metric": "skill_gain",
+     "tiers": [30, 70, 110, 160, 220], "unit": "пунктов"},
     {"code": "skill_zone", "cat": "skill", "name": "Зона 90+",
-     "desc": "Дней подряд с навыком 90 и выше", "metric": "skill90_streak",
-     "tiers": [3, 7, 21, 60], "unit": "дней"},
+     "desc": "Смен подряд с навыком 90 и выше", "metric": "skill90_streak",
+     "tiers": [3, 6, 10, 14, 18], "unit": "смен"},
 
     {"code": "match_total", "cat": "match", "name": "Пересечение",
      "desc": "Найдено совпадений", "metric": "matches_total",
-     "tiers": [10, 50, 200, 500], "unit": "совпадений"},
+     "tiers": [60, 300, 1000, 3500, 9000, 18000], "unit": "совпадений"},
     {"code": "match_people", "cat": "match", "name": "Свой круг",
      "desc": "Разных участников в твоих совпадениях", "metric": "partners_unique",
-     "tiers": [3, 6, 10], "unit": "человек"},
+     "tiers": [3, 6, 9, 12], "unit": "человек"},
     {"code": "match_day", "cat": "match", "name": "Час пик",
-     "desc": "Совпадений за один день", "metric": "matches_day",
-     "tiers": [3, 10, 25, 40], "unit": "за день"},
+     "desc": "Совпадений за одну смену", "metric": "matches_day",
+     "tiers": [10, 30, 55, 90, 130], "unit": "за смену"},
     {"code": "match_soul", "cat": "match", "name": "Родственная душа",
      "desc": "Совпадений с одним и тем же участником", "metric": "partner_best",
-     "tiers": [10, 50, 150], "unit": "с одним"},
+     "tiers": [30, 130, 400, 900, 1700, 2600], "unit": "с одним"},
     {"code": "match_burst", "cat": "match", "name": "Залп",
      "desc": "Совпадений за одну проверку", "metric": "matches_burst",
-     "tiers": [3, 6, 10], "unit": "за проверку"},
+     "tiers": [4, 7, 10, 14], "unit": "за проверку"},
 
     {"code": "night", "cat": "style", "name": "Ночная смена",
-     "desc": "Дней с сессиями между 00:00 и 05:00", "metric": "night_days",
-     "tiers": [5, 25, 100], "unit": "дней"},
+     "desc": "Смен с сессиями между 00:00 и 05:00", "metric": "night_days",
+     "tiers": [10, 40, 100, 200], "unit": "смен"},
     {"code": "early", "cat": "style", "name": "Ранняя пташка",
-     "desc": "Дней с сессиями до 07:00", "metric": "early_days",
-     "tiers": [5, 25, 100], "unit": "дней"},
+     "desc": "Смен с сессиями до 07:00", "metric": "early_days",
+     "tiers": [10, 40, 100, 200], "unit": "смен"},
     {"code": "clean", "cat": "style", "name": "Без брака",
      "desc": "Отправок подряд без отмены", "metric": "clean_streak",
-     "tiers": [20, 100, 500], "unit": "отправок"},
+     "tiers": [40, 150, 300, 550, 900], "unit": "отправок"},
     {"code": "weekend", "cat": "style", "name": "Выходной не помеха",
-     "desc": "Дней с сессиями в субботу или воскресенье", "metric": "weekend_days",
-     "tiers": [5, 25, 100], "unit": "дней"},
+     "desc": "Смен с сессиями в субботу или воскресенье", "metric": "weekend_days",
+     "tiers": [8, 30, 65, 100], "unit": "смен"},
     {"code": "long_day", "cat": "style", "name": "Длинный день",
-     "desc": "Разных часов с отправками за один день", "metric": "day_hours",
-     "tiers": [4, 6, 9], "unit": "часов"},
+     "desc": "Разных часов с отправками за одну смену", "metric": "day_hours",
+     "tiers": [4, 6, 8, 10], "unit": "часов"},
     {"code": "nonstop", "cat": "style", "name": "Без передышки",
-     "desc": "Часов подряд без перерыва (в одном дне)", "metric": "day_hours_run",
-     "tiers": [3, 5, 7], "unit": "часов подряд"},
+     "desc": "Часов подряд без перерыва (в одной смене)", "metric": "day_hours_run",
+     "tiers": [3, 5, 7, 9], "unit": "часов подряд"},
 
     {"code": "veteran", "cat": "time", "name": "Ветеран",
-     "desc": "Активных дней всего", "metric": "active_days",
-     "tiers": [30, 100, 250, 500], "unit": "дней"},
+     "desc": "Активных смен всего", "metric": "active_days",
+     "tiers": [25, 75, 150, 250, 350], "unit": "смен"},
     {"code": "tenure", "cat": "time", "name": "Стаж",
-     "desc": "Дней с первой отправки", "metric": "tenure_days",
-     "tiers": [30, 180, 365], "unit": "дней"},
+     "desc": "Дней в системе с момента регистрации", "metric": "tenure_days",
+     "tiers": [30, 120, 270, 450, 730], "unit": "дней"},
     {"code": "hours_map", "cat": "time", "name": "Карта суток",
      "desc": "Разных часов суток, в которые ты отправлял сессии",
-     "metric": "hours_seen", "tiers": [8, 16, 24], "unit": "часов"},
+     "metric": "hours_seen", "tiers": [8, 12, 15, 17], "unit": "часов"},
 
     {"code": "first_match", "cat": "secret", "name": "Первый контакт",
      "desc": "Первое в жизни совпадение", "metric": "matches_total",
      "tiers": [1], "hidden": True, "xp": 20, "unit": ""},
     {"code": "century", "cat": "secret", "name": "Сотка",
-     "desc": "100 дней серии подряд", "metric": "streak_days",
-     "tiers": [100], "hidden": True, "unit": ""},
+     "desc": "40 дней серии подряд", "metric": "streak_days",
+     "tiers": [40], "hidden": True, "unit": ""},
     {"code": "perfect", "cat": "secret", "name": "Идеал",
-     "desc": "Навык 100", "metric": "skill_peak",
-     "tiers": [100], "hidden": True, "unit": ""},
+     "desc": "22 смены подряд с навыком 90+", "metric": "skill90_streak",
+     "tiers": [22], "hidden": True, "unit": ""},
     {"code": "month_clean", "cat": "secret", "name": "Хирург",
-     "desc": "30 дней без единой отмены", "metric": "no_undo_days",
-     "tiers": [30], "hidden": True, "unit": ""},
+     "desc": "40 рабочих смен без единой отмены", "metric": "no_undo_days",
+     "tiers": [40], "hidden": True, "unit": ""},
     {"code": "first_step", "cat": "secret", "name": "Начало положено",
      "desc": "Первая отправленная сессия", "metric": "sessions_total",
      "tiers": [1], "hidden": True, "xp": 20, "unit": ""},
@@ -498,24 +506,27 @@ ACHIEVEMENTS_DEF = [
      "desc": "777 размеченных ссылок", "metric": "urls_total",
      "tiers": [777], "hidden": True, "unit": ""},
     {"code": "owl", "cat": "secret", "name": "Сова",
-     "desc": "7 ночных дней подряд", "metric": "night_streak",
-     "tiers": [7], "hidden": True, "unit": ""},
+     "desc": "10 ночных смен подряд", "metric": "night_streak",
+     "tiers": [10], "hidden": True, "unit": ""},
     {"code": "deep_night", "cat": "secret", "name": "Глубокая ночь",
-     "desc": "10 дней с отправками между 03:00 и 05:00",
-     "metric": "deep_night_days", "tiers": [10], "hidden": True, "unit": ""},
+     "desc": "20 смен с отправками между 03:00 и 05:00",
+     "metric": "deep_night_days", "tiers": [30], "hidden": True, "unit": ""},
     {"code": "first_vote", "cat": "secret", "name": "Голос отдан",
      "desc": "Первая выставленная оценка", "metric": "votes_total",
      "tiers": [1], "hidden": True, "xp": 20, "unit": ""},
     {"code": "iron", "cat": "secret", "name": "Железный человек",
-     "desc": "Серия 30 дней подряд", "metric": "streak_days",
-     "tiers": [30], "hidden": True, "unit": ""},
+     "desc": "Серия 25 дней подряд", "metric": "streak_days",
+     "tiers": [25], "hidden": True, "unit": ""},
+    {"code": "trio", "cat": "secret", "name": "Тройник",
+     "desc": "Совпадений сразу на троих и больше", "metric": "multi_matches",
+     "tiers": [100, 700, 2500], "hidden": True, "unit": ""},
 ]
+
 
 ACH_BY_CODE = {a["code"]: a for a in ACHIEVEMENTS_DEF}
 
 
 def _ach_need_key(need):
-    """Ключ тира — по значению порога, не по индексу: правка тиров не ломает историю."""
     try:
         f = float(need)
     except (TypeError, ValueError):
@@ -528,7 +539,6 @@ def _ach_unlock_key(code, need):
 
 
 def _ach_tier_xp(a, ti):
-    """Явный "xp" в описании перебивает тир/скрытость — для туториальных ачивок."""
     xp = a.get("xp")
     if xp is not None:
         try:
@@ -541,7 +551,6 @@ def _ach_tier_xp(a, ti):
 
 
 def _ach_unlocked_tiers(rec):
-    """Взятые тиры, которые есть в текущем наборе достижений."""
     got = rec.get("unlocked") or {}
     out = []
     for a in ACHIEVEMENTS_DEF:
@@ -556,20 +565,45 @@ def _ach_tiers_taken(rec):
 
 
 def _ach_xp(rec):
-    """XP считается от текущих порогов, а не копится. Меняешь тиры — XP едет за ними."""
     total = sum(_ach_tier_xp(a, ti) for a, ti, _need in _ach_unlocked_tiers(rec))
     rec["xp"] = total
     return total
 
 
+def _ach_backfill_unlocks(rec):
+    m = _ach_metrics(rec)
+    got = rec.get("unlocked") or {}
+    valid = set()
+    stamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    for a in ACHIEVEMENTS_DEF:
+        val = m.get(a["metric"], 0)
+        for need in a["tiers"]:
+            key = _ach_unlock_key(a["code"], need)
+            valid.add(key)
+            if key not in got:
+                try:
+                    reached = float(val or 0) >= float(need)
+                except (TypeError, ValueError):
+                    reached = False
+                if reached:
+                    got[key] = stamp
+    for key in [k for k in got if k not in valid]:
+        got.pop(key, None)
+    rec["unlocked"] = got
+
+
 def _ach_migrate(rec):
-    """v1 -> v2: сессия = пачка (а не URL) + ключи тиров по значению порога."""
     try:
         ver = int(rec.get("v", 1) or 1)
     except (TypeError, ValueError):
         ver = 1
     if ver >= ACH_UNITS_VERSION:
         return False
+    if ver >= 2:
+        _ach_backfill_unlocks(rec)
+        rec["v"] = ACH_UNITS_VERSION
+        _ach_xp(rec)
+        return True
 
     def _i(src, key):
         try:
@@ -582,7 +616,6 @@ def _ach_migrate(rec):
     packs = _i(c, "packs")
     c["urls"] = urls
     c["sessions"] = packs if packs > 0 else urls
-    # старая посуточная статистика в URL — сжимаем средним размером пачки
     ratio = 1.0
     if urls > 0 and 0 < packs <= urls:
         ratio = packs / float(urls)
@@ -624,6 +657,7 @@ def _ach_migrate(rec):
         if 0 <= ti < len(a["tiers"]):
             new[_ach_unlock_key(code, a["tiers"][ti])] = when
     rec["unlocked"] = new
+    _ach_backfill_unlocks(rec)
     rec["v"] = ACH_UNITS_VERSION
     _ach_xp(rec)
     return True
@@ -645,7 +679,6 @@ def load_achievements():
 
 
 def save_achievements():
-    # любая запись инвалидирует кэш строк топа (см. _ach_top_rows)
     global _ach_data_version
     _ach_data_version += 1
     _ach_top_rows_cache.clear()
@@ -680,6 +713,11 @@ def _ach_rec(uid):
         rec["xp"] = int(rec.get("xp", 0) or 0)
     except (TypeError, ValueError):
         rec["xp"] = 0
+    if not rec.get("join_day"):
+        created = (user_data.get(uid) or {}).get("created_at") or ""
+        day = str(created)[:10]
+        if _ach_parse_day(day):
+            rec["join_day"] = day
     _ach_migrate(rec)
     if is_new:
         save_achievements()
@@ -692,8 +730,27 @@ def _ach_local_dt(uid, dt=None):
     return dt + timedelta(hours=off) if off else dt
 
 
+def _ach_shift_dt(local):
+    return local - timedelta(hours=ACH_DAY_START_HOUR)
+
+
 def _ach_day_key(uid, dt=None):
-    return _ach_local_dt(uid, dt).strftime("%Y-%m-%d")
+    return _ach_shift_dt(_ach_local_dt(uid, dt)).strftime("%Y-%m-%d")
+
+
+def _ach_shift_key(rec, uid, dt=None, advance=False):
+    local = _ach_local_dt(uid, dt)
+    key = _ach_shift_dt(local).strftime("%Y-%m-%d")
+    cur = rec.get("shift_key")
+    last = _parse_added_at(rec.get("shift_last") or "")
+    if cur and last:
+        gap = (local - last).total_seconds() / 3600.0
+        if 0 <= gap < ACH_SHIFT_GAP_HOURS and str(cur) <= key:
+            key = str(cur)
+    if advance:
+        rec["shift_key"] = key
+        rec["shift_last"] = local.strftime("%Y-%m-%d %H:%M:%S")
+    return key
 
 
 def _ach_day(rec, day):
@@ -762,6 +819,99 @@ def _ach_window_max(rec, field, window):
     return best
 
 
+def _ach_window_days(rec, days_n, today_key):
+    today = _ach_parse_day(today_key)
+    if today is None:
+        return []
+    days = rec.get("days") or {}
+    out = []
+    for i in range(days_n):
+        d = days.get((today - timedelta(days=i)).strftime("%Y-%m-%d"))
+        if isinstance(d, dict):
+            out.append(d)
+    return out
+
+
+def _ach_window_stats(rec, days_n, today_key):
+    wd = _ach_window_days(rec, days_n, today_key)
+    out = {"sessions_day": 0, "votes_day": 0, "matches_day": 0, "urls_day": 0,
+           "sessions_hour": 0, "hours": 0, "skill_peak": 0.0,
+           "night": 0, "early": 0, "active_days": 0,
+           "final_votes": 0, "fast_votes": 0, "lightning_votes": 0,
+           "first_votes": 0, "full_packs": 0, "multi_matches": 0,
+           "burst": 0, "wknd": 0, "deep_night": 0, "hi_days": 0,
+           "skill_gain": 0.0}
+    hours = set()
+    skill_lo = None
+    skill_hi = None
+    w_pc = {}
+    for d in wd:
+        s = _ach_day_int(d, "sessions")
+        out["sessions_day"] = max(out["sessions_day"], s)
+        out["votes_day"] = max(out["votes_day"], _ach_day_int(d, "votes"))
+        out["matches_day"] = max(out["matches_day"], _ach_day_int(d, "matches"))
+        out["urls_day"] = max(out["urls_day"], _ach_day_int(d, "urls"))
+        if s > 0:
+            out["active_days"] += 1
+        out["night"] += _ach_day_int(d, "night")
+        out["early"] += _ach_day_int(d, "early")
+        for k in ("final_votes", "fast_votes", "lightning_votes", "first_votes",
+                  "full_packs", "multi_matches"):
+            out[k] += _ach_day_int(d, k)
+        out["burst"] = max(out["burst"], _ach_day_int(d, "burst"))
+        d_pc = d.get("pc")
+        if isinstance(d_pc, dict):
+            for k, v in d_pc.items():
+                try:
+                    w_pc[k] = w_pc.get(k, 0) + int(v or 0)
+                except (TypeError, ValueError):
+                    continue
+        out["wknd"] += _ach_day_int(d, "wknd")
+        out["deep_night"] += _ach_day_int(d, "deep_night")
+        out["hi_days"] += _ach_day_int(d, "hi_counted")
+        try:
+            v_lo = d.get("skill_min")
+            if v_lo is not None:
+                v_lo = float(v_lo)
+                skill_lo = v_lo if skill_lo is None else min(skill_lo, v_lo)
+            v_hi = d.get("skill_max")
+            if v_hi is not None:
+                v_hi = float(v_hi)
+                skill_hi = v_hi if skill_hi is None else max(skill_hi, v_hi)
+        except (TypeError, ValueError):
+            pass
+        for h in range(24):
+            n = _ach_day_int(d, f"h{h}")
+            if n > 0:
+                hours.add(h)
+                out["sessions_hour"] = max(out["sessions_hour"], n)
+        try:
+            v = d.get("skill_max")
+            if v is not None:
+                out["skill_peak"] = max(out["skill_peak"], float(v))
+        except (TypeError, ValueError):
+            pass
+    out["hours"] = len(hours)
+    out["partner_counts"] = w_pc
+    if skill_lo is not None and skill_hi is not None and skill_hi > skill_lo:
+        out["skill_gain"] = round(skill_hi - skill_lo, 1)
+    return out
+
+
+def _ach_recent_sum(rec, field, days_n, today_key):
+    today = _ach_parse_day(today_key)
+    if today is None:
+        return 0
+    days = rec.get("days") or {}
+    total = 0
+    for i in range(days_n):
+        k = (today - timedelta(days=i)).strftime("%Y-%m-%d")
+        d = days.get(k)
+        if isinstance(d, dict):
+            total += _ach_day_int(d, field)
+    return total
+
+
 def _ach_weeks_streak(rec, need=100):
     weeks = {}
     for k, d in (rec.get("days") or {}).items():
@@ -816,14 +966,14 @@ def _ach_skill_nofall(rec):
 
 def _ach_no_undo_days(rec):
     days = rec.get("days") or {}
-    keys = sorted(k for k in days if _ach_parse_day(k))
-    if not keys:
-        return 0
-    last = _ach_parse_day(keys[-1])
-    base = _ach_parse_day(rec.get("last_undo_day") or "") or _ach_parse_day(keys[0])
-    if last is None or base is None:
-        return 0
-    return max(0, (last - base).days)
+    base = rec.get("last_undo_day") or ""
+    n = 0
+    for k in sorted(k for k in days if _ach_parse_day(k)):
+        if base and k <= str(base):
+            continue
+        if _ach_day_int(days.get(k), "sessions") > 0:
+            n += 1
+    return n
 
 
 def _ach_day_int(d, key):
@@ -834,12 +984,6 @@ def _ach_day_int(d, key):
 
 
 def _ach_hour_stats(rec):
-    """(макс. сессий за один час, макс. разных часов в одном дне,
-    макс. часов ПОДРЯД в одном дне).
-
-    spread — сколько разных часов в сутках были рабочими (с дырками),
-    run — самая длинная непрерывная цепочка часов. Это разные величины:
-    отправки в 09 и в 23 дают spread=2, run=1."""
     best_hour = best_spread = best_run = 0
     for d in (rec.get("days") or {}).values():
         if not isinstance(d, dict):
@@ -872,7 +1016,6 @@ def _ach_day_max(rec, field):
 
 
 def _ach_day_streak(rec, field=None, flag=None):
-    """Максимум идущих подряд дней, где field > 0 (или выставлен flag)."""
     days = rec.get("days") or {}
     keys = sorted(k for k in days if _ach_parse_day(k))
     best = cur = 0
@@ -916,8 +1059,28 @@ def _ach_skill90_streak(rec):
     return best
 
 
+def _ach_skill_delta(rec):
+    days = rec.get("days") or {}
+    seq = []
+    for k in sorted(k for k in days if _ach_parse_day(k)):
+        v = (days.get(k) or {}).get("skill_last")
+        if v is None:
+            continue
+        try:
+            seq.append(float(v))
+        except (TypeError, ValueError):
+            continue
+    gain = drop = 0.0
+    for i in range(1, len(seq)):
+        d = seq[i] - seq[i - 1]
+        if d > 0:
+            gain += d
+        else:
+            drop -= d
+    return int(round(gain)), int(round(drop))
+
+
 def _ach_month_days_max(rec):
-    """Больше всего активных дней внутри одного календарного месяца."""
     months = {}
     for k, d in (rec.get("days") or {}).items():
         if not isinstance(d, dict) or _ach_day_int(d, "sessions") <= 0:
@@ -941,7 +1104,6 @@ def _ach_partner_best(rec):
 
 
 def _ach_partner_best_uid(rec):
-    """Возвращает (uid_партнёра, кол-во) для самой частой пары — или (None, 0)."""
     pc = rec.get("partner_counts") or {}
     best_uid, best_n = None, 0
     for k, v in pc.items():
@@ -959,9 +1121,6 @@ def _ach_partner_best_uid(rec):
 
 
 def _ach_partner_best_line(rec, count):
-    """Строка "Имя — N" для личной статистики самого участника: это его собственные
-    данные о себе, поэтому имя партнёра показывается честно, даже если тот скрыт
-    из топа — сокрытие касается видимости для ДРУГИХ, а не своей же статистики."""
     if not count:
         return "0"
     p_uid, _n = _ach_partner_best_uid(rec)
@@ -974,13 +1133,29 @@ def _ach_partner_best_line(rec, count):
 
 def _ach_tenure_days(rec):
     first = _ach_parse_day(rec.get("first_day") or "")
+    join = _ach_parse_day(rec.get("join_day") or "")
+    if first is None or (join is not None and join < first):
+        first = join
     if first is None:
         return 0
     keys = sorted(k for k in (rec.get("days") or {}) if _ach_parse_day(k))
     last = _ach_parse_day(keys[-1]) if keys else None
+    today = _ach_parse_day(datetime.now().strftime("%Y-%m-%d"))
+    if last is None or (today is not None and today > last):
+        last = today
     if last is None or last < first:
         return 0
     return (last - first).days + 1
+
+
+_ach_bests_dirty = False
+
+
+def _ach_flush_bests():
+    global _ach_bests_dirty
+    if _ach_bests_dirty:
+        _ach_bests_dirty = False
+        save_achievements()
 
 
 def _ach_metrics(rec):
@@ -1007,18 +1182,20 @@ def _ach_metrics(rec):
         rec["bests"] = bests
 
     def _best(key, val):
-        """Рекорд за всё время: обрезка старых дней не должна откатывать прогресс."""
         try:
             prev = int(bests.get(key, 0) or 0)
         except (TypeError, ValueError):
             prev = 0
         val = int(val or 0)
         if val > prev:
+            global _ach_bests_dirty
             bests[key] = val
+            _ach_bests_dirty = True
             return val
         return prev
 
     hour_max, day_hours, day_hours_run = _ach_hour_stats(rec)
+    skill_gain, skill_drop = _ach_skill_delta(rec)
 
     return {
         "sessions_total": _i(c, "sessions"),
@@ -1036,6 +1213,10 @@ def _ach_metrics(rec):
         "votes_day": _best("votes_day", _ach_day_max(rec, "votes")),
         "lightning_votes": _i(c, "lightning_votes"),
         "skill_ups": _i(c, "skill_ups"),
+        "skill_gain": _best("skill_gain", skill_gain),
+        "skill_drop": _best("skill_drop", skill_drop),
+        "first_votes": _i(c, "first_votes"),
+        "multi_matches": _i(c, "multi_matches"),
         "skill90_streak": _best("skill90_streak", _ach_skill90_streak(rec)),
         "matches_day": _best("matches_day", _ach_day_max(rec, "matches")),
         "matches_burst": _i(c, "burst_best"),
@@ -1070,7 +1251,6 @@ def _ach_metrics(rec):
 
 
 def _ach_scan(uid):
-    """Проверяет все пороги. Возвращает список сработавших тиров."""
     rec = _ach_rec(uid)
     m = _ach_metrics(rec)
     fired = []
@@ -1090,6 +1270,26 @@ def _ach_scan(uid):
     if fired or new_xp != prev_xp:
         save_achievements()
     return fired
+
+
+def _plural(n, one, few, many):
+    try:
+        n = abs(int(n))
+    except (TypeError, ValueError):
+        return many
+    if n % 10 == 1 and n % 100 != 11:
+        return one
+    if 2 <= n % 10 <= 4 and not (12 <= n % 100 <= 14):
+        return few
+    return many
+
+
+def _ach_stat_line(sessions, matches, votes, urls, tiers=None):
+    head = "" if tiers is None else f"🏅 {tiers} • "
+    return f"{head}📦 {sessions} • 🎯 {matches} • ⚖️ {votes} • 🔗 {urls}"
+
+
+ACH_STAT_LEGEND = ("<i>🏅 тиры • 📦 сессии • 🎯 совпадения • ⚖️ оценки • 🔗 ссылки</i>")
 
 
 def _ach_fmt_val(v):
@@ -1125,23 +1325,35 @@ def _ach_tier_name(a, ti):
 
 
 def _ach_level(xp):
-    """Возвращает (уровень, xp внутри уровня, сколько нужно на уровень)."""
     try:
         xp = int(xp or 0)
     except (TypeError, ValueError):
         xp = 0
-    lvl, step, base = 1, 100, 0
-    while True:
-        need = step
-        if xp - base < need:
-            return lvl, xp - base, need
-        base += need
-        lvl += 1
-        step += 50
+    idx = 0
+    for i, (need, _icon, _name) in enumerate(ACH_RANKS):
+        if xp >= need:
+            idx = i
+    base = ACH_RANKS[idx][0]
+    if idx + 1 >= len(ACH_RANKS):
+        return idx, xp - base, 0
+    return idx, xp - base, ACH_RANKS[idx + 1][0] - base
+
+
+def _ach_rank_label(idx):
+    idx = max(0, min(int(idx), len(ACH_RANKS) - 1))
+    _need, icon, name = ACH_RANKS[idx]
+    return f"{icon} {name}"
+
+
+def _ach_rank_line(rec_xp, idx, cur, need):
+    head = f"{_ach_rank_label(idx)} • {rec_xp} XP"
+    if need <= 0:
+        return head, "▓▓▓▓▓▓▓▓▓▓ максимальное звание"
+    nxt = _ach_rank_label(idx + 1)
+    return head, f"{_ach_bar(cur, need)} {cur}/{need} до звания «{nxt}»"
 
 
 def _ach_state(uid):
-    """Сводка по юзеру для экранов: список ачивок с текущим тиром и прогрессом."""
     rec = _ach_rec(uid)
     m = _ach_metrics(rec)
     items = []
@@ -1157,6 +1369,7 @@ def _ach_state(uid):
             "a": a, "val": val, "done": done,
             "next": nxt, "max": len(a["tiers"]),
         })
+    _ach_flush_bests()
     return rec, m, items
 
 
@@ -1168,11 +1381,9 @@ def _ach_nearest(items, limit=3):
 
 
 def _ach_unlock_block(uid, fired):
-    """Одно сообщение на пачку разблокировок — без спама по сообщению на тир."""
     rec, m, items = _ach_state(uid)
     lvl, cur_xp, need_xp = _ach_level(_ach_xp(rec))
     gained = sum(f["xp"] for f in fired)
-    # несколько тиров одной ачивки схлопываем в одну строку — показываем верхний
     merged = {}
     for f in fired:
         code = f["a"]["code"]
@@ -1181,8 +1392,8 @@ def _ach_unlock_block(uid, fired):
             merged[code] = dict(f)
         merged[code]["xp"] = (prev["xp"] if prev else 0) + f["xp"]
     fired = list(merged.values())
-    tail = (f"\n⭐ Уровень {lvl} • +{gained} XP • всего {rec.get('xp', 0)}\n"
-            f"{_ach_bar(cur_xp, need_xp)} {cur_xp}/{need_xp} до {lvl + 1} уровня")
+    rank_head, rank_bar = _ach_rank_line(rec.get("xp", 0), lvl, cur_xp, need_xp)
+    tail = f"\n⭐ {rank_head} (+{gained} XP)\n{rank_bar}"
 
     if len(fired) == 1:
         f = fired[0]
@@ -1218,18 +1429,13 @@ def _ach_unlock_block(uid, fired):
 
 
 def _ach_is_optout(uid):
-    """Скрытость: не участвует в топе, чужой профиль недоступен. Данные и XP всё равно копятся."""
     return bool((user_data.get(uid, {}) or {}).get("ach_optout"))
 
 
-# Участники, которым весь интерфейс достижений просто не показывается: нет кнопки,
-# нет команды /ach, не приходят уведомления о новых ачивках. Это НЕ ach_optout —
-# статистика и достижения считаются как обычно, и остальные видят их в топе.
 ACH_UI_HIDDEN_IDS = {1252967508}
 
 
 def _ach_ui_hidden(uid) -> bool:
-    """Спрятан ли от участника раздел достижений."""
     try:
         uid = int(uid)
     except (TypeError, ValueError):
@@ -1240,18 +1446,16 @@ def _ach_ui_hidden(uid) -> bool:
 
 
 async def ach_award(bot, uid):
-    """Проверить пороги и уведомить. Работает и в режиме скрытости — данные и ачивки
-    не должны теряться, пока пользователь не участвует в топе/просмотре. Никогда не роняет вызывающий код."""
     try:
         fired = _ach_scan(uid)
     except Exception as e:
         logger.warning(f"Ачивки: ошибка проверки ({uid}): {e}")
-        return
+        fired = []
     if not fired:
         return
     if _ach_ui_hidden(uid):
         return
-    if not (user_data.get(uid, {}) or {}).get("ach_notify", True):
+    if not (user_data.get(uid, {}) or {}).get("ach_notify", ACH_NOTIFY_DEFAULT):
         return
     try:
         await send_blocks(bot, uid, _ach_unlock_block(uid, fired))
@@ -1259,17 +1463,14 @@ async def ach_award(bot, uid):
         logger.warning(f"Ачивки: не удалось отправить уведомление {uid}: {e}")
 
 
-# ---------- события ----------
-
 def ach_on_links(uid, added_count, batch_size, at_str=None):
     if added_count <= 0 and batch_size <= 0:
         return
     rec = _ach_rec(uid)
     dt = _parse_added_at(at_str) if at_str else None
-    day = _ach_day_key(uid, dt)
+    day = _ach_shift_key(rec, uid, dt, advance=True)
     local = _ach_local_dt(uid, dt)
     if added_count > 0:
-        # одна отправленная пачка (1-5 ссылок) = одна выполненная сессия
         _ach_bump(rec, "sessions", 1)
         _ach_day_bump(rec, day, "sessions", 1)
         _ach_bump(rec, "urls", added_count)
@@ -1279,7 +1480,6 @@ def ach_on_links(uid, added_count, batch_size, at_str=None):
         prev = _ach_parse_day(last)
         cur_day = _ach_parse_day(day)
         if last != day and not (prev and cur_day and cur_day < prev):
-            # задним числом серию не пересчитываем — только вперёд
             if prev and cur_day and (cur_day - prev).days == 1:
                 st["cur"] = int(st.get("cur", 0) or 0) + 1
             else:
@@ -1298,13 +1498,14 @@ def ach_on_links(uid, added_count, batch_size, at_str=None):
         if 3 <= local.hour < 5 and not d.get("deep_night"):
             d["deep_night"] = 1
             _ach_bump(rec, "deep_night_days", 1)
-        if local.weekday() >= 5 and not d.get("wknd"):
+        if _ach_shift_dt(local).weekday() >= 5 and not d.get("wknd"):
             d["wknd"] = 1
             _ach_bump(rec, "weekend_days", 1)
         if not d.get("counted_day"):
             d["counted_day"] = 1
             _ach_bump(rec, "active_days", 1)
         _ach_day_bump(rec, day, f"h{local.hour}", 1)
+        _ach_bump(rec, f"hh{local.hour}", 1)
         hours = rec["hours"]
         if local.hour not in hours:
             hours.append(local.hour)
@@ -1314,6 +1515,7 @@ def ach_on_links(uid, added_count, batch_size, at_str=None):
         _ach_bump(rec, "packs", 1)
     if batch_size >= MAX_LINKS:
         _ach_bump(rec, "full_packs", 1)
+        _ach_day_bump(rec, day, "full_packs", 1)
         full = _ach_bump(rec, "full_streak", 1)
         rec["counters"]["full_best"] = max(
             int(rec["counters"].get("full_best", 0) or 0), full)
@@ -1329,7 +1531,7 @@ def ach_on_links(uid, added_count, batch_size, at_str=None):
 def ach_on_undo(uid, removed_count, at_str=None):
     rec = _ach_rec(uid)
     dt = _parse_added_at(at_str) if at_str else None
-    day = _ach_day_key(uid, dt)
+    day = _ach_shift_key(rec, uid, dt)
     if removed_count > 0:
         _ach_bump(rec, "sessions", -1)
         _ach_day_bump(rec, day, "sessions", -1)
@@ -1337,17 +1539,18 @@ def ach_on_undo(uid, removed_count, at_str=None):
         _ach_day_bump(rec, day, "urls", -removed_count)
     rec["counters"]["clean_streak"] = 0
     _ach_bump(rec, "undo_total", 1)
-    rec["last_undo_day"] = _ach_day_key(uid)
+    rec["last_undo_day"] = day
     save_achievements()
 
 
-def ach_on_skill(uid, value):
+def ach_on_skill(uid, value, at_str=None):
     try:
         val = float(value)
     except (TypeError, ValueError):
         return
     rec = _ach_rec(uid)
-    day = _ach_day_key(uid)
+    dt = _parse_added_at(at_str) if at_str else None
+    day = _ach_shift_key(rec, uid, dt)
     d = _ach_day(rec, day)
     d["skill_last"] = val
     d["skill_n"] = int(d.get("skill_n", 0) or 0) + 1
@@ -1377,14 +1580,10 @@ def ach_on_skill(uid, value):
         sk["below"] = False
         _ach_bump(rec, "comebacks", 1)
 
-    # «весь день 90+» засчитывается один раз на день и только при 2+ замерах
-    if (d.get("skill_n", 0) >= ACH_SKILL_MIN_SAMPLES
-            and float(d.get("skill_min", 0) or 0) >= ACH_SKILL_HI
-            and not d.get("hi_counted")):
+    if val >= ACH_SKILL_HI and not d.get("hi_counted"):
         d["hi_counted"] = 1
         sk["hi_days"] = int(sk.get("hi_days", 0) or 0) + 1
-    elif d.get("hi_counted") and float(d.get("skill_min", 0) or 0) < ACH_SKILL_HI:
-        # навык просел позже в тот же день — день перестаёт считаться
+    elif val < ACH_SKILL_HI and d.get("hi_counted"):
         d.pop("hi_counted", None)
         sk["hi_days"] = max(0, int(sk.get("hi_days", 0) or 0) - 1)
 
@@ -1392,25 +1591,32 @@ def ach_on_skill(uid, value):
     save_achievements()
 
 
-def ach_on_vote(uid, is_final, created_at=None):
-    """Возвращает, что именно было зачислено — нужно для точного отката
-    (ach_on_vote_undo), если матч потом инвалидируется отменой отправки."""
+def ach_on_vote(uid, is_final, created_at=None, is_first=False, at_str=None):
     rec = _ach_rec(uid)
-    day = _ach_day_key(uid)
-    credit = {"votes": 1, "final_votes": 0, "fast_votes": 0, "lightning_votes": 0}
+    now = _parse_added_at(at_str) if at_str else datetime.now()
+    day = _ach_shift_key(rec, uid, now)
+    credit = {"votes": 1, "final_votes": 0, "fast_votes": 0, "lightning_votes": 0,
+              "first_votes": 0}
     _ach_bump(rec, "votes", 1)
     _ach_day_bump(rec, day, "votes", 1)
+    if is_first:
+        _ach_bump(rec, "first_votes", 1)
+        _ach_day_bump(rec, day, "first_votes", 1)
+        credit["first_votes"] = 1
     if is_final:
         _ach_bump(rec, "final_votes", 1)
+        _ach_day_bump(rec, day, "final_votes", 1)
         credit["final_votes"] = 1
     started = _parse_added_at(created_at) if created_at else None
     if started:
-        delta = (datetime.now() - started).total_seconds()
+        delta = (now - started).total_seconds()
         if 0 <= delta <= ACH_FAST_VOTE_SECONDS:
             _ach_bump(rec, "fast_votes", 1)
+            _ach_day_bump(rec, day, "fast_votes", 1)
             credit["fast_votes"] = 1
         if 0 <= delta <= ACH_LIGHTNING_SECONDS:
             _ach_bump(rec, "lightning_votes", 1)
+            _ach_day_bump(rec, day, "lightning_votes", 1)
             credit["lightning_votes"] = 1
     _ach_prune(rec)
     save_achievements()
@@ -1418,16 +1624,11 @@ def ach_on_vote(uid, is_final, created_at=None):
 
 
 def ach_on_vote_undo(uid, credit):
-    """Обратная к ach_on_vote — снимает ровно то, что было начислено этим
-    конкретным голосом (votes/final_votes/fast_votes/lightning_votes),
-    когда матч, к которому голос относился, инвалидирован отменой отправки.
-    День намеренно не трогаем — как и с matches, дневные рекорды в этой
-    системе принципиально только растут (см. _best())."""
     if not credit:
         return
     rec = _ach_rec(uid)
     c = rec["counters"]
-    for key in ("votes", "final_votes", "fast_votes", "lightning_votes"):
+    for key in ("votes", "final_votes", "fast_votes", "lightning_votes", "first_votes"):
         n = int(credit.get(key, 0) or 0)
         if n <= 0:
             continue
@@ -1439,13 +1640,24 @@ def ach_on_vote_undo(uid, credit):
     save_achievements()
 
 
-def ach_on_matches(uid, count, partner_uids=()):
+def ach_on_matches(uid, count, partner_uids=(), multi=0, at_str=None):
     if count <= 0 and not partner_uids:
         return
     rec = _ach_rec(uid)
+    dt = _parse_added_at(at_str) if at_str else None
+    m_day = _ach_shift_key(rec, uid, dt)
+    if multi > 0:
+        _ach_bump(rec, "multi_matches", multi)
+        _ach_day_bump(rec, m_day, "multi_matches", multi)
     if count > 0:
         _ach_bump(rec, "matches", count)
-        _ach_day_bump(rec, _ach_day_key(uid), "matches", count)
+        _ach_day_bump(rec, m_day, "matches", count)
+        d_day = _ach_day(rec, m_day)
+        try:
+            d_best = int(d_day.get("burst", 0) or 0)
+        except (TypeError, ValueError):
+            d_best = 0
+        d_day["burst"] = max(d_best, int(count))
         try:
             best = int(rec["counters"].get("burst_best", 0) or 0)
         except (TypeError, ValueError):
@@ -1453,6 +1665,10 @@ def ach_on_matches(uid, count, partner_uids=()):
         rec["counters"]["burst_best"] = max(best, int(count))
     partners = rec["partners"]
     pc = rec["partner_counts"]
+    d_pc = _ach_day(rec, m_day).setdefault("pc", {})
+    if not isinstance(d_pc, dict):
+        d_pc = {}
+        _ach_day(rec, m_day)["pc"] = d_pc
     changed = False
     for p in partner_uids:
         if p == uid:
@@ -1465,21 +1681,22 @@ def ach_on_matches(uid, count, partner_uids=()):
             pc[key] = int(pc.get(key, 0) or 0) + 1
         except (TypeError, ValueError):
             pc[key] = 1
+        try:
+            d_pc[key] = int(d_pc.get(key, 0) or 0) + 1
+        except (TypeError, ValueError):
+            d_pc[key] = 1
         changed = True
     if count > 0 or changed:
         _ach_prune(rec)
         save_achievements()
 
 
-def ach_on_matches_undo(uid, count, partner_uids=()):
-    """Обратная операция к ach_on_matches — снимает зачёт ровно одного совпадения
-    (и связанных партнёров), когда матч оказался инвалидирован отменой отправки.
-    Никогда не уходит в минус. Дневной бакет matches намеренно не трогаем —
-    он влияет только на 'рекорд за день', а рекорды в этой системе принципиально
-    никогда не понижаются (см. _best())."""
+def ach_on_matches_undo(uid, count, partner_uids=(), multi=0):
     if count <= 0 and not partner_uids:
         return
     rec = _ach_rec(uid)
+    if multi > 0:
+        _ach_bump(rec, "multi_matches", -multi)
     if count > 0:
         c = rec["counters"]
         try:
@@ -1511,7 +1728,6 @@ def ach_on_matches_undo(uid, count, partner_uids=()):
 
 
 def ach_vote_counted(state, target_key, is_final, undo=False):
-    """Один зачёт на связку токен+участник+фаза. Отмена оценки снимает зачёт."""
     marks = state.get("ach_counted")
     if not isinstance(marks, dict):
         marks = {}
@@ -1536,7 +1752,6 @@ achievements: Dict[int, dict] = load_achievements()
 
 
 def _ach_migrate_all() -> int:
-    """Разовый прогон при старте: единицы v1->v2, ключи тиров, пересчёт XP."""
     changed = 0
     for uid in list(achievements.keys()):
         try:
@@ -1558,14 +1773,6 @@ _ach_migrate_all()
 
 
 def _ach_fix_partner_symmetry() -> int:
-    """Разовая починка уже сохранённой статистики после бага рассинхрона зачёта
-    совпадений (partner_counts мог занижаться неравномерно на разных сторонах
-    пары — см. фикс в _ach_credit_matches). Пара всегда взаимна: сколько раз
-    A совпал с B, столько же раз B совпал с A. Поднимаем ОБЕ стороны до
-    максимума из: текущего значения A, текущего значения B, и того, что ещё
-    живо в match_votes (самый надёжный источник, но он режется TTL, поэтому
-    только подстраховка, а не единственный источник). Значения только
-    поднимаются, никогда не занижаются — не теряем то, что уже насчитано."""
     changed = 0
     real_pair = Counter()
     for st in (match_votes or {}).values():
@@ -1618,18 +1825,6 @@ _ach_fix_partner_symmetry()
 
 
 def _ach_fix_vote_pair_misattribution() -> int:
-    """Разовая починка после бага в vote_callback: клик кросс-войсера (VOTE_PAIRS)
-    записывал голос на target_uid, а зачёт ачивки уходил тому, кто физически нажал
-    кнопку — то есть партнёру по паре. В паре Pavel/Элис голоса Элис годами
-    записывались Павлу (ach_vote_counted гейтит по target_uid, а ach_on_vote
-    зачислял по uid — см. фикс в vote_callback).
-
-    Кто именно кликал по каждому историческому голосу — нигде не хранилось
-    (сохранялся только target_uid), поэтому 1-в-1 по всей истории не восстановить.
-    Но в ещё живом match_votes.json отметки ach_counted хранят ПРАВИЛЬНОГО
-    target_uid — берём это как нижнюю границу правды и переносим дефицит от
-    партнёра с избытком, не уходя у него в минус ниже его же нижней границы и
-    ничего не выдумывая сверху."""
     if not VOTE_PAIRS or not match_votes:
         return 0
     changed = 0
@@ -1680,12 +1875,6 @@ _ach_fix_vote_pair_misattribution()
 
 
 def _ach_rescan_after_retrofix() -> int:
-    """Ретро-фиксы выше правят только сырые counters — тиры/бейджи/XP считаются
-    отдельно (_ach_xp читает только rec['unlocked'], который обновляет только
-    _ach_scan на реальном событии). Без этого прогона починенные цифры могли бы
-    молча пересечь порог тира, и никто бы не увидел ни бейджа, ни уведомления,
-    ни правильного XP, пока человек не отправит что-то ещё сам. Тиры отсюда
-    только добавляются (никогда не снимаются) — как и везде в этой системе."""
     total_fired = 0
     for uid_s in list(achievements.keys()):
         try:
@@ -1728,7 +1917,6 @@ access_data: Dict[int, dict] = load_access()
 
 
 def _seed_access() -> int:
-    """Первый запуск: выдать доступ админам, рассыльщикам и всем уже зарегистрированным."""
     added = 0
     now = datetime.now().isoformat()
     for uid in list(ADMIN_IDS) + list(BROADCAST_IDS):
@@ -1822,15 +2010,18 @@ BASE_COMMANDS = [
 SKILL_OFF_COMMAND = ("skill_off", "Выключить уведомления о навыке")
 SKILL_ON_COMMAND = ("skill_on", "Включить уведомления о навыке")
 
+ACH_RESET_BTN = "🧹 Сброс ачивок"
+
 MENU_BUTTONS = [
     "📋 Мои ссылки", "🔥 Актуальные сессии", "👥 Участники", "✅ Проверить совпадения",
     "✏️ Сменить имя", "🔄 Новая сессия", "↩️ Отменить отправку", ACH_BTN,
     NOTIFY_ON_BTN, NOTIFY_OFF_BTN,
     SKILL_ON_BTN, SKILL_OFF_BTN,
     AUTO_ON_BTN, AUTO_OFF_BTN,
-    "📣 Рассылка", "🧽 Очистить старое", "💥 Полный сброс",
+    "📣 Рассылка", "🧽 Очистить старое", "💥 Полный сброс", ACH_RESET_BTN,
 ]
-ADMIN_BUTTONS = ["📣 Рассылка", "🧽 Очистить старое", "💥 Полный сброс"]
+ADMIN_BUTTONS = ["📣 Рассылка", "🧽 Очистить старое", "💥 Полный сброс",
+                 ACH_RESET_BTN]
 ALL_BUTTONS = MENU_BUTTONS + ["🚀 Начать работу", "❌ Отмена"]
 
 
@@ -1840,6 +2031,14 @@ def is_admin(user_id) -> bool:
 
 def can_broadcast(user_id) -> bool:
     return user_id in ADMIN_IDS or user_id in BROADCAST_IDS
+
+
+def get_start_keyboard():
+    keyboard = [
+        [KeyboardButton("🚀 Начать работу")],
+        [KeyboardButton("❌ Отмена")],
+    ]
+    return ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
 
 
 def get_main_keyboard(user_id=None):
@@ -1858,7 +2057,6 @@ def get_main_keyboard(user_id=None):
         auto_on = user_data[user_id].get("auto_check", AUTO_CHECK_DEFAULT)
     auto_btn = AUTO_ON_BTN if auto_on else AUTO_OFF_BTN
 
-    # Новая раскладка: 3 ряда по 4 кнопки
     keyboard = [
         [
             KeyboardButton("📋 Мои ссылки"),
@@ -1878,16 +2076,15 @@ def get_main_keyboard(user_id=None):
         ],
     ]
 
-    # Кнопки для администраторов и рассыльщиков
     extra_buttons = []
     if can_broadcast(user_id):
         extra_buttons.append("📣 Рассылка")
     if is_admin(user_id):
         extra_buttons.append("🧽 Очистить старое")
         extra_buttons.append("💥 Полный сброс")
+        extra_buttons.append(ACH_RESET_BTN)
 
     if extra_buttons:
-        # Добавляем в новый ряд, разбивая по 4 кнопки
         row = []
         for btn in extra_buttons:
             row.append(KeyboardButton(btn))
@@ -2190,10 +2387,6 @@ def _extract_skill_value(text):
 
 
 def _ach_skill_snapshot(uid):
-    """Снимок ach-состояния навыка ДО применения нового значения — нужен, чтобы
-    отмена отправки могла откатить peak/skill_ups/comebacks/hi_days так же
-    точно, как откатывает matches и votes, а не оставляла их зачисленными
-    навсегда, пока пользователь не отправит что-то ещё."""
     rec = _ach_rec(uid)
     day = _ach_day_key(uid)
     return {
@@ -2213,8 +2406,6 @@ def _ach_skill_restore(uid, snap):
     day = snap.get("day")
     if day:
         prev_day_state = snap.get("day_state") or {}
-        # день мог обзавестись другими полями (сессии/матчи) уже после снимка —
-        # трогаем только skill-related ключи, остальное дня не откатываем.
         d = _ach_day(rec, day)
         for key in ("skill_last", "skill_n", "skill_min", "skill_max", "hi_counted"):
             if key in prev_day_state:
@@ -3321,9 +3512,10 @@ async def vote_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     voter = ""
     if target_uid in user_data and user_data[target_uid].get("name"):
         voter = user_data[target_uid]["name"]
+    is_first = (not is_final) and not (state.get("ratings") or {})
     _record_vote(state, target_uid, val, is_final, voter)
     if ach_vote_counted(state, target_uid, is_final):
-        credit = ach_on_vote(target_uid, is_final, state.get("created_at"))
+        credit = ach_on_vote(target_uid, is_final, state.get("created_at"), is_first)
         phase_key = "final" if is_final else "init"
         vc = state.setdefault("vote_credit", {}).setdefault(phase_key, {})
         vc[str(target_uid)] = credit
@@ -3363,9 +3555,10 @@ async def proxy_vote_callback(update: Update, context: ContextTypes.DEFAULT_TYPE
     target_name = ""
     if target_uid in user_data and user_data[target_uid].get("name"):
         target_name = user_data[target_uid]["name"]
+    is_first = (not is_final) and not (state.get("ratings") or {})
     _record_vote(state, target_uid, val, is_final, target_name)
     if ach_vote_counted(state, target_uid, is_final):
-        credit = ach_on_vote(target_uid, is_final, state.get("created_at"))
+        credit = ach_on_vote(target_uid, is_final, state.get("created_at"), is_first)
         phase_key = "final" if is_final else "init"
         vc = state.setdefault("vote_credit", {}).setdefault(phase_key, {})
         vc[str(target_uid)] = credit
@@ -3676,19 +3869,6 @@ async def _check_matches_impl(update: Update, context: ContextTypes.DEFAULT_TYPE
 
 
 async def _ach_credit_matches(bot, new_matches):
-    """Зачёт совпадений участникам доставленных совпадений.
-
-    Зачёт идёт НЕЗАВИСИМО по каждому участнику: считаем совпадение новым для
-    конкретного uid только если именно ЕГО собственная запись (uid@added_at)
-    не встречалась в prev_sig раньше. Иначе, если один участник пересдал сессию
-    (новый added_at того же урла), а у второго ничего не изменилось — второй
-    получал бы повторный зачёт на пустом месте только из-за того, что общая
-    сигнатура пары изменилась. Раньше зачёт шёл по общей сигнатуре на всю пару
-    сразу — отсюда и рассинхрон в счётчиках.
-
-    "p" — список партнёров (не set!) — при нескольких совпадениях с одним и тем
-    же партнёром в одной проверке партнёр должен засчитаться столько раз,
-    сколько было реальных совпадений, а не один раз на всю проверку."""
     per_uid = {}
     for m in new_matches:
         if m["link"] not in reported_matches:
@@ -3703,18 +3883,18 @@ async def _ach_credit_matches(bot, new_matches):
             if own_key in prev_sig:
                 continue
             muid = u["uid"]
-            agg = per_uid.setdefault(muid, {"n": 0, "p": []})
+            agg = per_uid.setdefault(muid, {"n": 0, "p": [], "multi": 0})
             agg["n"] += 1
             partners_for_this_match = [x for x in uids if x != muid]
             agg["p"].extend(partners_for_this_match)
-            # запоминаем ровно за этот матч/токен, кому и с кем начислено —
-            # без этого отмена отправки не может откатить зачёт совпадения.
+            if len(partners_for_this_match) >= 2:
+                agg["multi"] += 1
             credit_map[str(muid)] = partners_for_this_match
         if state is not None and credit_map:
             state["match_credit"] = credit_map
     for muid, agg in per_uid.items():
         try:
-            ach_on_matches(muid, agg["n"], agg["p"])
+            ach_on_matches(muid, agg["n"], agg["p"], agg.get("multi", 0))
             await ach_award(bot, muid)
         except Exception as e:
             logger.warning(f"Ачивки: зачёт совпадений {muid}: {e}")
@@ -3826,13 +4006,10 @@ async def undo_last_submission(update: Update, context: ContextTypes.DEFAULT_TYP
                             d.pop(str(user_id), None)
                             d.pop(user_id, None)
                     state["token"] = token
-                    # матч остался жив для остальных — снимаем зачёт совпадения
-                    # только у того, кто отменил отправку (его строки в матче больше нет).
                     my_partners = credit_map.pop(str(user_id), None)
                     if my_partners is not None:
-                        ach_on_matches_undo(user_id, 1, my_partners)
-                    # его же оценки на этот матч (ratings.pop выше) больше не валидны —
-                    # снимаем зачёт голосов ровно за них, по обеим фазам.
+                        ach_on_matches_undo(user_id, 1, my_partners,
+                                            1 if len(my_partners) >= 2 else 0)
                     for phase_key in ("init", "final"):
                         ph = vote_credit.get(phase_key) or {}
                         my_vote_credit = ph.pop(str(user_id), None)
@@ -3842,17 +4019,13 @@ async def undo_last_submission(update: Update, context: ContextTypes.DEFAULT_TYP
                 else:
                     deleted_msgs += await delete_match_copies(context.bot, state)
                     match_votes.pop(token, None)
-                    # матч целиком инвалидирован (меньше 2 участников осталось) —
-                    # снимаем зачёт совпадения у ВСЕХ, кому он был начислен по этому
-                    # токену, а не только у того, кто нажал "отменить".
                     for uid_s, partners in credit_map.items():
                         try:
                             c_uid = int(uid_s)
                         except (TypeError, ValueError):
                             continue
-                        ach_on_matches_undo(c_uid, 1, partners)
-                    # матча больше нет вообще — все голоса по нему (обе фазы, все,
-                    # кто голосовал) тоже больше не за что засчитывать.
+                        ach_on_matches_undo(c_uid, 1, partners,
+                                            1 if len(partners) >= 2 else 0)
                     for phase_key in ("init", "final"):
                         ph = vote_credit.get(phase_key) or {}
                         for uid_s, credit in ph.items():
@@ -3952,6 +4125,123 @@ async def full_reset_confirm(update: Update, context: ContextTypes.DEFAULT_TYPE)
     except Exception as e:
         logger.error(f"Ошибка в full_reset: {e}")
         await tg(update.message.reply_text, "❌ Ошибка при полном сбросе")
+
+
+def _ach_fresh_rec(uid):
+    achievements[uid] = {
+        "counters": {}, "days": {}, "bests": {}, "unlocked": {},
+        "streak": {"cur": 0, "best": 0, "last_day": ""},
+        "skill": {"peak": 0, "hi_days": 0, "below": False},
+        "partners": [], "hours": [], "partner_counts": {},
+        "xp": 0, "v": ACH_UNITS_VERSION,
+        "join_day": _ach_day_key(uid),
+    }
+
+
+def _ach_reset_all():
+    n = len(achievements)
+    uids = [u for u in list(achievements.keys())
+            if (user_data.get(u) or {}).get("registered")]
+    achievements.clear()
+    for u in uids:
+        _ach_fresh_rec(u)
+    save_achievements()
+    return n
+
+
+def _ach_reset_user(uid):
+    existed = uid in achievements
+    achievements.pop(uid, None)
+    if (user_data.get(uid) or {}).get("registered"):
+        _ach_fresh_rec(uid)
+    save_achievements()
+    return existed
+
+
+async def ach_reset(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+    if user_id not in ADMIN_IDS:
+        await tg(update.message.reply_text, "⛔ У вас нет прав на эту команду.")
+        return
+    args = (context.args or []) if hasattr(context, "args") else []
+    if args:
+        try:
+            target = int(args[0])
+        except (TypeError, ValueError):
+            await tg(update.message.reply_text,
+                     "Формат: /ach_reset — всем, /ach_reset &lt;uid&gt; — одному.",
+                     parse_mode="HTML")
+            return
+        kb = InlineKeyboardMarkup([[
+            InlineKeyboardButton("🧹 Да, сбросить", callback_data=f"ar:one:{target}"),
+            InlineKeyboardButton("↩️ Отмена", callback_data="ar:no"),
+        ]])
+        name = (user_data.get(target) or {}).get("name") or str(target)
+        await tg(update.message.reply_text,
+                 f"⚠️ <b>Сброс достижений и статистики</b>\n\n"
+                 f"Участник: <b>{html.escape(str(name))}</b> (<code>{target}</code>)\n"
+                 f"Будут стёрты: все ачивки, XP, счётчики и история по дням.\n"
+                 f"Ссылки, оценки и совпадения останутся на месте.\n"
+                 f"Отменить будет нельзя.\n\nПродолжаем?",
+                 parse_mode="HTML", reply_markup=kb)
+        return
+    kb = InlineKeyboardMarkup([[
+        InlineKeyboardButton("🧹 Да, сбросить всем", callback_data="ar:all"),
+        InlineKeyboardButton("↩️ Отмена", callback_data="ar:no"),
+    ]])
+    await tg(update.message.reply_text,
+             f"⚠️ <b>Сброс достижений и статистики</b>\n\n"
+             f"Записей в базе достижений: {len(achievements)}.\n"
+             f"Будут стёрты у ВСЕХ: ачивки, XP, счётчики, история по дням, "
+             f"топ и рекорды обнулятся.\n"
+             f"Ссылки, оценки и совпадения останутся на месте.\n"
+             f"Отменить будет нельзя.\n\n"
+             f"Для одного участника: <code>/ach_reset &lt;uid&gt;</code>\n\nПродолжаем?",
+             parse_mode="HTML", reply_markup=kb)
+
+
+async def ach_reset_confirm(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    q = update.callback_query
+    user_id = q.from_user.id
+    if user_id not in ADMIN_IDS:
+        await tg_answer(q, "⛔ Только администратор.", show_alert=True)
+        return
+    data = q.data or ""
+    if data == "ar:no" or not data.startswith("ar:"):
+        await tg_answer(q, "Сброс отменён ✅", show_alert=True)
+        try:
+            await tg(context.bot.edit_message_text,
+                     chat_id=q.message.chat_id, message_id=q.message.message_id,
+                     text="↩️ Сброс достижений отменён. Данные на месте.")
+        except Exception:
+            pass
+        return
+    try:
+        if data == "ar:all":
+            n = _ach_reset_all()
+            txt = (f"🧹 Достижения и статистика сброшены у всех "
+                   f"(было записей: {n}). Всё копится заново с этого момента.")
+        else:
+            try:
+                target = int(data.split(":")[2])
+            except (IndexError, ValueError):
+                await tg_answer(q, "⚠️ Некорректный запрос", show_alert=True)
+                return
+            existed = _ach_reset_user(target)
+            name = (user_data.get(target) or {}).get("name") or str(target)
+            txt = (f"🧹 Достижения и статистика сброшены: {name}"
+                   if existed else f"ℹ️ У {name} записей не было — нечего сбрасывать.")
+        await tg_answer(q, "Готово ✅")
+        try:
+            await tg(context.bot.edit_message_text,
+                     chat_id=q.message.chat_id, message_id=q.message.message_id,
+                     text=txt)
+        except Exception:
+            await tg(context.bot.send_message, chat_id=q.message.chat_id, text=txt)
+        logger.info(f"🧹 Админ {user_id}: {txt}")
+    except Exception as e:
+        logger.error(f"Ошибка в ach_reset_confirm: {e}")
+        await tg_answer(q, "❌ Ошибка при сбросе", show_alert=True)
 
 
 class _ResetUpdateShim:
@@ -4122,6 +4412,8 @@ async def handle_main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await cleanup_now(update, context)
     elif text == "💥 Полный сброс":
         await full_reset(update, context)
+    elif text == ACH_RESET_BTN:
+        await ach_reset(update, context)
     elif text in (NOTIFY_ON_BTN, NOTIFY_OFF_BTN):
         await toggle_notify(update, context)
     elif text in (SKILL_ON_BTN, SKILL_OFF_BTN):
@@ -4155,9 +4447,6 @@ async def handle_free_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await _save_links_from_text(update, context, text)
 
 
-# ---------- экраны ----------
-
-
 def _ach_total_tiers():
     return sum(len(a["tiers"]) for a in ACHIEVEMENTS_DEF)
 
@@ -4173,11 +4462,12 @@ def _ach_home_text(uid, viewer_uid=None):
         title = f"👤 <b>ПРОФИЛЬ</b>"
         if viewer_uid in ADMIN_IDS and _ach_is_optout(uid):
             title += " 🙈 <i>(скрыт из топа)</i>"
+    rank_head, rank_bar = _ach_rank_line(rec.get("xp", 0), lvl, cur_xp, need_xp)
     lines = [
         f"{title} — {html.escape(str(name))}",
         "",
-        f"⭐ Уровень {lvl}  •  {rec.get('xp', 0)} XP",
-        f"{_ach_bar(cur_xp, need_xp)} {cur_xp}/{need_xp} до {lvl + 1} уровня",
+        f"⭐ {rank_head}",
+        rank_bar,
         f"🏅 Взято тиров: {got} из {total}",
         "",
         f"📦 Сессий: {m['sessions_total']}  •  ⚖️ Оценок: {m['votes_total']}  •  "
@@ -4199,7 +4489,6 @@ def _ach_home_text(uid, viewer_uid=None):
 
 
 def _ach_target_suffix(uid, viewer_uid):
-    """Добавляет ':<uid>' к callback_data, если смотрим чужой профиль."""
     return "" if viewer_uid is None or viewer_uid == uid else f":{uid}"
 
 
@@ -4207,7 +4496,7 @@ def _ach_home_kb(uid, viewer_uid=None):
     sfx = _ach_target_suffix(uid, viewer_uid)
     own = viewer_uid is None or viewer_uid == uid
     if own:
-        on = (user_data.get(uid, {}) or {}).get("ach_notify", True)
+        on = (user_data.get(uid, {}) or {}).get("ach_notify", ACH_NOTIFY_DEFAULT)
         optout = _ach_is_optout(uid)
         rows = [[InlineKeyboardButton("🏅 Все достижения", callback_data="ach:cat:0"),
                  InlineKeyboardButton("📊 Статистика", callback_data="ach:stats")],
@@ -4218,8 +4507,6 @@ def _ach_home_kb(uid, viewer_uid=None):
                                       else "👁 Скрыт из топа — нажми, чтобы показаться",
                                       callback_data="ach:optout")]]
         return InlineKeyboardMarkup(rows)
-    # чужой профиль: обычно только достижения с прогресс-барами, без статистики;
-    # админу дополнительно доступна полная статистика — в том числе для скрытых
     top_row = [InlineKeyboardButton("🏅 Достижения", callback_data=f"ach:cat:0{sfx}")]
     if viewer_uid in ADMIN_IDS:
         top_row.append(InlineKeyboardButton("📊 Статистика", callback_data=f"ach:stats{sfx}"))
@@ -4301,6 +4588,10 @@ def _ach_stats_text(uid, viewer_uid=None):
         if v is not None:
             skill_last = v
             break
+    if skill_last is None:
+        skill_last = (rec.get("skill") or {}).get("last")
+    rank_head, rank_bar = _ach_rank_line(rec.get("xp", 0), lvl, cur_xp, need_xp)
+    hours_bar, best_hour = _ach_hours_bar(rec)
     header = "📊 <b>ОБЩАЯ СТАТИСТИКА</b>"
     if viewer_uid is not None and viewer_uid != uid:
         name = (user_data.get(uid, {}) or {}).get("name") or "Участник"
@@ -4308,13 +4599,14 @@ def _ach_stats_text(uid, viewer_uid=None):
     lines = [
         header,
         "",
-        f"⭐ Уровень {lvl} • {rec.get('xp', 0)} XP ({cur_xp}/{need_xp} до следующего)",
+        f"⭐ {rank_head}",
+        rank_bar,
         f"🏅 Тиров взято: {_ach_tiers_taken(rec)} из {_ach_total_tiers()}",
         "",
         "<b>Сессии</b>",
         f"• Всего: {m['sessions_total']}",
-        f"• Сегодня: {int(today_d.get('sessions', 0) or 0)}",
-        f"• Лучший день: {m['sessions_day']}",
+        f"• За текущую смену: {int(today_d.get('sessions', 0) or 0)}",
+        f"• Лучшая смена: {m['sessions_day']}",
         f"• Лучшая неделя: {m['sessions_week']}",
         f"• Лучшие 30 дней: {m['sessions_month']}",
         f"• Лучший час: {m['sessions_hour']}",
@@ -4331,6 +4623,7 @@ def _ach_stats_text(uid, viewer_uid=None):
         "",
         "<b>Оценки</b>",
         f"• Всего: {m['votes_total']}  •  финальных: {m['final_votes']}",
+        f"• Открыл счёт первым: {m['first_votes']}",
         f"• За лучший день: {m['votes_day']} • за лучшие 2 дня: {m['votes_2d']}",
         f"• Быстрых (&lt;{ACH_FAST_VOTE_SECONDS // 60} мин): {m['fast_votes']} • "
         f"молний (&lt;{ACH_LIGHTNING_SECONDS} сек): {m['lightning_votes']}",
@@ -4341,11 +4634,13 @@ def _ach_stats_text(uid, viewer_uid=None):
         + (f"  •  последний: {_ach_fmt_val(skill_last)}" if skill_last is not None else ""),
         f"• Дней целиком на 90+: {m['skill_hi_days']}",
         f"• Дней подряд без падения: {m['skill_nofall']} • дней подряд на 90+: {m['skill90_streak']}",
-        f"• Подъёмов навыка: {m['skill_ups']} • камбэков с 80−: {m['comebacks']}",
+        f"• Набрано за всё время: +{m['skill_gain']} • потеряно: −{m['skill_drop']}",
+        f"• Камбэков с 80−: {m['comebacks']}",
         "",
         "<b>Совпадения</b>",
         f"• Всего: {m['matches_total']}  •  разных участников: {m['partners_unique']}",
-        f"• Лучший день: {m['matches_day']} • лучшая проверка: {m['matches_burst']}",
+        f"• Лучшая смена: {m['matches_day']} • лучшая проверка: {m['matches_burst']}",
+        f"• Совпадений на троих и больше: {m['multi_matches']}",
         f"• Чаще всего с одним участником: {_ach_partner_best_line(rec, m['partner_best'])}",
         "",
         "<b>Режим</b>",
@@ -4353,25 +4648,58 @@ def _ach_stats_text(uid, viewer_uid=None):
         f"• Выходных с работой: {m['weekend_days']} • часов суток освоено: {m['hours_seen']}/24",
         f"• Самый длинный день: {m['day_hours']} разных часов с отправками",
         "",
-        "<i>Счётчики достижений копятся отдельно и автоочисткой ссылок "
-        f"(TTL {LINKS_TTL_DAYS} дн.) не сбрасываются.</i>",
+    ]
+    if hours_bar:
+        lines += [
+            "",
+            "<b>Профиль суток</b>",
+            f"<code>{hours_bar}</code>",
+            "<code>0    4    8   12   16   20  23</code>",
+            f"• Пик активности: {best_hour:02d}:00",
+        ]
+    lines += [
+        "",
+        f"<i>Новая смена открывается после перерыва в {ACH_SHIFT_GAP_HOURS}+ ч "
+        f"(отсчёт от {ACH_DAY_START_HOUR:02d}:00) — работа «вечер → ночь → утро» "
+        "остаётся одной сменой и пополам не режется.</i>",
+        "<i>Вся статистика на этом экране — за всё время. Она копится отдельно "
+        f"от ссылок и автоочисткой (TTL {LINKS_TTL_DAYS} дн.) не сбрасывается; "
+        "по текущей смене здесь только строка «за текущую смену».</i>",
     ]
     return "\n".join(lines)
 
 
-def _ach_top_rows(uid, include_hidden=False):
-    """Строки топа. Обычному участнику чужие скрытые не показываются, но свою
-    собственную строку он видит всегда — так можно сравнить себя с топом,
-    как если бы участвовал, оставаясь при этом невидимым для остальных.
-    include_hidden=True (только для админа) показывает вообще всех.
+def _ach_hours_bar(rec):
+    c = rec.get("counters") or {}
+    totals = [0] * 24
+    for d in (rec.get("days") or {}).values():
+        if not isinstance(d, dict):
+            continue
+        for h in range(24):
+            totals[h] += _ach_day_int(d, f"h{h}")
+    for h in range(24):
+        try:
+            totals[h] = max(totals[h], int(c.get(f"hh{h}", 0) or 0))
+        except (TypeError, ValueError):
+            pass
+    peak = max(totals) if totals else 0
+    if peak <= 0:
+        return None, None
+    blocks = "▁▂▃▄▅▆▇█"
+    bar = "".join(" " if v <= 0 else blocks[min(len(blocks) - 1,
+                  int(round((v / peak) * (len(blocks) - 1))))] for v in totals)
+    best_hour = totals.index(peak)
+    return bar, best_hour
 
-    Результат кэшируется до следующей записи в achievements — см. комментарий
-    у _ach_top_rows_cache."""
-    ck = (uid, bool(include_hidden), _ach_data_version)
+
+def _ach_top_rows(uid, include_hidden=False, window=None):
+    ck = (uid, bool(include_hidden), int(window or 0), _ach_data_version)
     hit = _ach_top_rows_cache.get(ck)
     if hit is not None:
         return hit
+    _ach_flush_bests()
     rows = []
+    today_key = _ach_day_key(uid)
     for other_uid, rec in achievements.items():
         if not isinstance(rec, dict):
             continue
@@ -4407,14 +4735,31 @@ def _ach_top_rows(uid, include_hidden=False):
                      "day_hours_run": m["day_hours_run"],
                      "sessions_hour": m["sessions_hour"], "sessions_week": m["sessions_week"],
                      "sessions_month": m["sessions_month"], "matches_day": m["matches_day"],
-                     "votes_day": m["votes_day"], "full_packs": m["full_packs"],
+                     "votes_day": m["votes_day"], "votes_2d": m["votes_2d"],
+                     "full_packs": m["full_packs"],
                      "full_streak": m["full_streak"], "fast_votes": m["fast_votes"],
                      "skill_ups": m["skill_ups"], "skill90_streak": m["skill90_streak"],
+                     "skill_gain": m["skill_gain"], "skill_drop": m["skill_drop"],
+                     "skill_moves": m["skill_gain"] + m["skill_drop"],
+                     "first_votes": m["first_votes"], "multi_matches": m["multi_matches"],
                      "skill_hi_days": m["skill_hi_days"], "weekend_days": m["weekend_days"],
                      "hours_seen": m["hours_seen"], "night_streak": m["night_streak"],
                      "month_days": m["month_days"], "active_days": m["active_days"],
                      "vote_streak_days": m["vote_streak_days"]})
-    rows.sort(key=lambda r: (-r["xp"], -r["tiers"], r["name"].lower()))
+        if window:
+            row = rows[-1]
+            row["w_sessions"] = _ach_recent_sum(rec, "sessions", window, today_key)
+            row["w_matches"] = _ach_recent_sum(rec, "matches", window, today_key)
+            row["w_votes"] = _ach_recent_sum(rec, "votes", window, today_key)
+            row["w_urls"] = _ach_recent_sum(rec, "urls", window, today_key)
+            for k, v in _ach_window_stats(rec, window, today_key).items():
+                row[f"w_{k}"] = v
+    if window:
+        rows = [r for r in rows if r["w_sessions"] or r["w_matches"] or r["w_votes"]]
+        rows.sort(key=lambda r: (-r["w_sessions"], -r["w_matches"],
+                                 -r["w_votes"], r["name"].lower()))
+    else:
+        rows.sort(key=lambda r: (-r["xp"], -r["tiers"], r["name"].lower()))
     my_place = next((i for i, r in enumerate(rows, start=1) if r["uid"] == uid), None)
     if len(_ach_top_rows_cache) >= ACH_TOP_CACHE_MAX:
         _ach_top_rows_cache.clear()
@@ -4422,10 +4767,6 @@ def _ach_top_rows(uid, include_hidden=False):
     return rows, my_place
 
 
-# Каталог рекордов.
-#   key   — поле строки топа (см. _ach_top_rows)
-#   min   — порог показа: рекорд из одного дня/одной штуки никому не интересен
-# Показываются все категории сразу: отдельного короткого блока больше нет.
 ACH_RECORD_CATS = [
     {"key": "sessions", "label": "\U0001F4E6 Больше всего сессий за всё время",
      "fmt": "{v}", "min": 1},
@@ -4435,7 +4776,9 @@ ACH_RECORD_CATS = [
      "fmt": "{v}", "min": 1},
     {"key": "urls_total", "label": "\U0001F517 Больше всего размечено ссылок всего",
      "fmt": "{v}", "min": 1},
-    {"key": "sessions_day", "label": "\U0001F525 Рекорд сессий за один день",
+    {"key": "sessions_day", "label": "\U0001F525 Рекорд сессий за одну смену",
+     "fmt": "{v}", "min": 5},
+    {"key": "sessions_hour", "label": "\U0001F680 Рекорд сессий за один час",
      "fmt": "{v}", "min": 3},
     {"key": "streak_days", "label": "\U0001F4C5 Самая длинная серия дней подряд",
      "fmt": "{v} дн.", "min": 3},
@@ -4443,6 +4786,8 @@ ACH_RECORD_CATS = [
      "fmt": "{v}", "min": 1},
     {"key": "matches_burst", "label": "\U0001F3AF Залп совпадений за одну проверку",
      "fmt": "{v}", "min": 3},
+    {"key": "multi_matches", "label": "\U0001F465 Больше всего совпадений на троих+",
+     "fmt": "{v}", "min": 2},
     {"key": "lightning_votes", "label": "\u26A1 Больше всего молниеносных оценок",
      "fmt": "{v}", "min": 3},
     {"key": "partners_unique", "label": "\U0001F9E9 Самый широкий круг совпадений",
@@ -4456,9 +4801,13 @@ ACH_RECORD_CATS = [
      "fmt": "{v}", "min": 5},
     {"key": "full_streak", "label": "\U0001F590 Самая длинная серия полных пачек",
      "fmt": "{v} подряд", "min": 5},
-    {"key": "matches_day", "label": "\U0001F3AF Больше всего совпадений за день",
-     "fmt": "{v}", "min": 3},
-    {"key": "votes_day", "label": "\u2696\ufe0f Больше всего оценок за один день",
+    {"key": "matches_day", "label": "\U0001F3AF Больше всего совпадений за смену",
+     "fmt": "{v}", "min": 8},
+    {"key": "votes_day", "label": "\u2696\ufe0f Больше всего оценок за одну смену",
+     "fmt": "{v}", "min": 15},
+    {"key": "votes_2d", "label": "\u2696\ufe0f Больше всего оценок за 2 дня",
+     "fmt": "{v}", "min": 25},
+    {"key": "first_votes", "label": "\u26A1 Чаще всех открывает счёт в совпадении",
      "fmt": "{v}", "min": 5},
     {"key": "final_votes", "label": "\U0001F3C1 Больше всего финальных вердиктов",
      "fmt": "{v}", "min": 3},
@@ -4466,8 +4815,8 @@ ACH_RECORD_CATS = [
      "fmt": "{v}", "min": 5},
     {"key": "vote_streak_days", "label": "\u2696\ufe0f Дней подряд с оценками",
      "fmt": "{v} дн.", "min": 3},
-    {"key": "skill_ups", "label": "\U0001F4C8 Больше всего подъёмов навыка",
-     "fmt": "{v}", "min": 3},
+    {"key": "skill_gain", "label": "\U0001F4C8 Больше всего набрано навыка",
+     "fmt": "+{v}", "min": 4},
     {"key": "skill90_streak", "label": "\U0001F3C6 Дольше всех держал навык 90+",
      "fmt": "{v} дн.", "min": 2},
     {"key": "skill_hi_days", "label": "\U0001F48E Больше всего дней целиком на 90+",
@@ -4500,28 +4849,90 @@ ACH_RECORD_CATS = [
      "fmt": "{v} дн.", "min": 3},
 ]
 
-# Производные рекорды: считаются на лету из тех же полей, ничего не хранят.
-# den_min — минимальный знаменатель, иначе новичок с 2 сессиями и 2 совпадениями
-# заберёт 100% КПД у того, кто работает месяцами.
 ACH_DERIVED_RECS = [
     {"label": "\U0001F3C1 Самая высокая доля финальных вердиктов",
      "num": "final_votes", "den": "votes", "den_min": 20, "kind": "pct", "min": 1},
     {"label": "\U0001F525 Самый плотный темп (сессий в активный день)",
      "num": "sessions", "den": "active_days", "den_min": 3, "kind": "ratio", "min": 0.01},
+    {"label": "\u26A1 Самая высокая доля первых голосов",
+     "num": "first_votes", "den": "votes", "den_min": 25, "kind": "pct", "min": 1},
+    {"label": "\U0001F4E6 Самая полная пачка в среднем (ссылок за отправку)",
+     "num": "urls_total", "den": "sessions", "den_min": 20, "kind": "ratio", "min": 0.01},
+    {"label": "\U0001F6E1 Самый устойчивый навык (доля роста)",
+     "num": "skill_gain", "den": "skill_moves", "den_min": 10, "kind": "pct", "min": 1},
 ]
 
-ACH_REC_MAX_WINNERS = 3   # рекорд с 4+ обладателями — не рекорд, а общее место
-ACH_REC_TIE_MIN_ROWS = 4  # правило "половина топа поделила рекорд" ниже смысла не имеет
+ACH_WINDOW_RECORD_CATS = [
+    {"key": "w_sessions", "label": "📦 Больше всего сессий",
+     "fmt": "{v}", "min": 3},
+    {"key": "w_matches", "label": "🎯 Больше всего совпадений",
+     "fmt": "{v}", "min": 2},
+    {"key": "w_votes", "label": "⚖️ Больше всего оценок",
+     "fmt": "{v}", "min": 3},
+    {"key": "w_urls", "label": "🔗 Больше всего размеченных ссылок",
+     "fmt": "{v}", "min": 10},
+    {"key": "w_sessions_day", "label": "🔥 Лучшая смена по сессиям",
+     "fmt": "{v}", "min": 3},
+    {"key": "w_votes_day", "label": "⚖️ Лучшая смена по оценкам",
+     "fmt": "{v}", "min": 5},
+    {"key": "w_matches_day", "label": "🎯 Лучшая смена по совпадениям",
+     "fmt": "{v}", "min": 3},
+    {"key": "w_urls_day", "label": "🔗 Лучшая смена по ссылкам",
+     "fmt": "{v}", "min": 10},
+    {"key": "w_sessions_hour", "label": "🚀 Рекорд сессий за один час",
+     "fmt": "{v}", "min": 2},
+    {"key": "w_hours", "label": "🕐 Самый широкий охват часов",
+     "fmt": "{v} ч.", "min": 4},
+    {"key": "w_skill_peak", "label": "📈 Самый высокий навык",
+     "fmt": "{v}", "min": 1},
+    {"key": "w_night", "label": "🦉 Ночных смен (00–05)",
+     "fmt": "{v}", "min": 1},
+    {"key": "w_early", "label": "🌅 Ранних стартов (до 07)",
+     "fmt": "{v}", "min": 1},
+    {"key": "w_full_packs", "label": "🖐 Больше всего полных пачек по 5",
+     "fmt": "{v}", "min": 2},
+    {"key": "w_burst", "label": "🎯 Залп совпадений за одну проверку",
+     "fmt": "{v}", "min": 2},
+    {"key": "w_multi_matches", "label": "👥 Совпадений на троих+",
+     "fmt": "{v}", "min": 1},
+    {"key": "w_final_votes", "label": "🏁 Больше всего финальных вердиктов",
+     "fmt": "{v}", "min": 2},
+    {"key": "w_first_votes", "label": "⚡ Чаще всех открывал счёт в совпадении",
+     "fmt": "{v}", "min": 2},
+    {"key": "w_fast_votes", "label": "⏩ Больше всего быстрых оценок",
+     "fmt": "{v}", "min": 3},
+    {"key": "w_lightning_votes", "label": "⚡ Больше всего молниеносных оценок",
+     "fmt": "{v}", "min": 2},
+    {"key": "w_skill_gain", "label": "📈 Больше всего прибавил навыка",
+     "fmt": "+{v}", "min": 2},
+    {"key": "w_hi_days", "label": "💎 Смен целиком на 90+",
+     "fmt": "{v}", "min": 1},
+    {"key": "w_deep_night", "label": "🌙 Смен в глубокую ночь (03–05)",
+     "fmt": "{v}", "min": 1},
+    {"key": "w_wknd", "label": "🏖 Работал в выходные",
+     "fmt": "{v} дн.", "min": 1},
+]
+
+ACH_WINDOW_DERIVED_RECS = [
+    {"label": "📦 Самая полная пачка в среднем (ссылок за отправку)",
+     "num": "w_urls", "den": "w_sessions", "den_min": 5, "kind": "ratio", "min": 0.01},
+    {"label": "🎯 Больше всего совпадений на сессию",
+     "num": "w_matches", "den": "w_sessions", "den_min": 5, "kind": "ratio", "min": 0.01},
+    {"label": "⚖️ Больше всего оценок на сессию",
+     "num": "w_votes", "den": "w_sessions", "den_min": 5, "kind": "ratio", "min": 0.01},
+    {"label": "🏁 Самая высокая доля финальных вердиктов",
+     "num": "w_final_votes", "den": "w_votes", "den_min": 8, "kind": "pct", "min": 1},
+    {"label": "⚡ Самая высокая доля первых голосов",
+     "num": "w_first_votes", "den": "w_votes", "den_min": 8, "kind": "pct", "min": 1},
+    {"label": "🔥 Самый плотный темп (сессий в смену)",
+     "num": "w_sessions", "den": "w_active_days", "den_min": 1, "kind": "ratio", "min": 0.01},
+]
+
+ACH_REC_MAX_WINNERS = 3
+ACH_REC_TIE_MIN_ROWS = 4
 
 
-def _ach_rec_winners(rows, valfn, min_val):
-    """Лидеры по одной категории или (None, []) если показывать нечего.
-
-    Отсекаем два вида мусора:
-      1) значение ниже порога (серия из 2 дней у всех подряд — не достижение);
-      2) массовая ничья — если рекорд поделили больше ACH_REC_MAX_WINNERS
-         человек или как минимум половина топа, строка ничего не сообщает.
-    """
+def _ach_rec_winners(rows, valfn, min_val, strict_tie=True):
     best = None
     winners = []
     for r in rows:
@@ -4536,7 +4947,8 @@ def _ach_rec_winners(rows, valfn, min_val):
         return None, []
     if len(winners) > ACH_REC_MAX_WINNERS:
         return None, []
-    if len(rows) >= ACH_REC_TIE_MIN_ROWS and len(winners) > 1 and len(winners) * 2 >= len(rows):
+    if (strict_tie and len(rows) >= ACH_REC_TIE_MIN_ROWS
+            and len(winners) > 1 and len(winners) * 2 >= len(rows)):
         return None, []
     return best, winners
 
@@ -4557,7 +4969,6 @@ def _ach_rec_derived_val(r, c):
     if den <= 0 or den < c["den_min"]:
         return None
     val = num / den
-    # округляем ДО сравнения, иначе 0.9999999 и 1.0 разъедут ничью на пустом месте
     return round(val * 100) if c["kind"] == "pct" else round(val, 2)
 
 
@@ -4565,18 +4976,21 @@ def _ach_fmt_ratio(v):
     return f"{v:.2f}".rstrip("0").rstrip(".").replace(".", ",") or "0"
 
 
-def _ach_top_records(rows):
+def _ach_top_records(rows, window=None):
     out = []
-    for c in ACH_RECORD_CATS:
+    cats = ACH_WINDOW_RECORD_CATS if window else ACH_RECORD_CATS
+    derived = ACH_WINDOW_DERIVED_RECS if window else ACH_DERIVED_RECS
+    strict = not window
+    for c in cats:
         key = c["key"]
         best, winners = _ach_rec_winners(rows, lambda r, k=key: _ach_rec_plain_val(r, k),
-                                         c.get("min", 1))
+                                         c.get("min", 1), strict_tie=strict)
         if best is None:
             continue
         out.append((c["label"], winners, c["fmt"].format(v=_ach_fmt_val(best))))
-    for c in ACH_DERIVED_RECS:
+    for c in derived:
         best, winners = _ach_rec_winners(rows, lambda r, c=c: _ach_rec_derived_val(r, c),
-                                         c.get("min", 0))
+                                         c.get("min", 0), strict_tie=strict)
         if best is None:
             continue
         val = f"{int(best)}%" if c["kind"] == "pct" else _ach_fmt_ratio(best)
@@ -4584,22 +4998,12 @@ def _ach_top_records(rows):
     return out
 
 
-def _ach_top_best_pair(rows, viewer_uid=None):
-    """Пара участников с наибольшим числом совместных совпадений.
-    Партнёр должен сам входить в текущий (уже отфильтрованный по видимости) rows —
-    иначе скрытый партнёр мог бы "просочиться" в рекорд по имени для третьих лиц.
-    Исключение: если пара — это собственная пара смотрящего (viewer_uid), он видит
-    её честно, даже если сам скрыт и партнёр тоже скрыт — это его личная статистика.
-
-    Для каждой строки перебираем ВСЕХ её партнёров по убыванию числа совпадений
-    (не только персональный топ-1), пока не найдём первого допустимого к показу —
-    иначе если и личный топ-партнёр, и топ-партнёр другой стороны пары оба скрыты,
-    валидная видимая пара рангом ниже терялась бы целиком вместо честного показа."""
+def _ach_top_best_pair(rows, viewer_uid=None, counts_key="partner_counts"):
     allowed = {r["uid"] for r in rows}
     best = None
     for r in rows:
         is_own_pair = viewer_uid is not None and r["uid"] == viewer_uid
-        counts = r.get("partner_counts") or {}
+        counts = r.get(counts_key) or {}
         candidates = []
         for k, v in counts.items():
             try:
@@ -4615,7 +5019,7 @@ def _ach_top_best_pair(rows, viewer_uid=None):
             if p_uid in allowed or is_own_pair:
                 if best is None or n > best[0]:
                     best = (n, r["uid"], r["name"], p_uid)
-                break  # лучший из допустимых для этой строки найден — дальше по строке не идём
+                break
     if best is None:
         return None
     n, uid_a, name_a, uid_b = best
@@ -4625,11 +5029,6 @@ def _ach_top_best_pair(rows, viewer_uid=None):
 
 
 def _ach_fit(lines, limit=SAFE_LIMIT):
-    """Склеивает строки, не вылезая за лимит Telegram.
-
-    Экран топа редактируется одним сообщением — разбить на несколько нельзя,
-    а edit_message_text на 4096+ символов упадёт BadRequest. Полный список
-    рекордов при большом составе участников как раз способен туда упереться."""
     out = []
     total = 0
     cut = False
@@ -4646,15 +5045,22 @@ def _ach_fit(lines, limit=SAFE_LIMIT):
     return "\n".join(out)
 
 
-def _ach_top_text(uid, include_hidden=False):
-    rows, my_place = _ach_top_rows(uid, include_hidden=include_hidden)
+def _ach_top_text(uid, include_hidden=False, window=None):
+    rows, my_place = _ach_top_rows(uid, include_hidden=include_hidden, window=window)
+    head = (f"🏆 <b>ТОП ЗА {window} ДНЯ</b>" if window else "🏆 <b>ТОП УЧАСТНИКОВ</b>")
     if not rows:
-        return "🏆 <b>ТОП УЧАСТНИКОВ</b>\n\nПока пусто — статистика копится с этого момента."
+        empty = ("За последние смены никто ещё ничего не отправлял."
+                 if window else "Пока пусто — статистика копится с этого момента.")
+        return f"{head}\n\n{empty}"
     medals = ["🥇", "🥈", "🥉"]
-    lines = ["🏆 <b>ТОП УЧАСТНИКОВ</b>"]
+    lines = [head]
     if include_hidden:
         lines.append("👁 Режим админа: показаны и скрытые из топа участники (🙈)")
-    lines += ["", "Нажми на участника, чтобы открыть его профиль.", ""]
+    if window:
+        lines.append(f"<i>Новая смена — после перерыва в {ACH_SHIFT_GAP_HOURS}+ ч, "
+                     "ночная работа не режется пополам. Это окно; личная "
+                     "статистика в профиле — за всё время.</i>")
+    lines += ["", ACH_STAT_LEGEND, "Нажми на участника, чтобы открыть его профиль.", ""]
     for i, r in enumerate(rows, start=1):
         if i > ACH_TOP_LIMIT:
             continue
@@ -4663,12 +5069,18 @@ def _ach_top_text(uid, include_hidden=False):
             me = " ← ты (скрыт, видно только тебе)" if r.get("optout") else " ← ты"
         else:
             me = " 🙈" if r.get("optout") else ""
-        lvl, _c, _n = _ach_level(r["xp"])
-        lines.append(
-            f"{mark} <b>{html.escape(str(r['name']))}</b>{me}\n"
-            f"    ⭐ ур. {lvl} • {r['xp']} XP • 🏅 {r['tiers']} • "
-            f"📦 {r['sessions']} • ⚖️ {r['votes']}"
-        )
+        if window:
+            lines.append(
+                f"{mark} <b>{html.escape(str(r['name']))}</b>{me}\n"
+                f"    {_ach_stat_line(r['w_sessions'], r['w_matches'], r['w_votes'], r['w_urls'])}"
+            )
+        else:
+            lvl, _c, _n = _ach_level(r["xp"])
+            lines.append(
+                f"{mark} <b>{html.escape(str(r['name']))}</b>{me}\n"
+                f"    {_ach_rank_label(lvl)} • {r['xp']} XP\n"
+                f"    {_ach_stat_line(r['sessions'], r['matches'], r['votes'], r['urls_total'], tiers=r['tiers'])}"
+            )
     if my_place and my_place > ACH_TOP_LIMIT:
         lines.append("")
         lines.append(f"Твоё место: {my_place} из {len(rows)}")
@@ -4676,6 +5088,42 @@ def _ach_top_text(uid, include_hidden=False):
         lines.append("")
         lines.append("<i>Ты скрыт из топа — эту сводку с твоим местом видишь только ты, "
                       "остальные тебя здесь не увидят.</i>")
+    if window:
+        w_records = _ach_top_records(rows, window=window)
+        w_pair = _ach_top_best_pair(rows, viewer_uid=uid, counts_key="w_partner_counts")
+        my_w_pc = next((r.get("w_partner_counts") or {} for r in rows if r["uid"] == uid), {})
+        my_w_best = None
+        for k, v in (my_w_pc or {}).items():
+            try:
+                n, p_uid = int(v or 0), int(k)
+            except (TypeError, ValueError):
+                continue
+            if n > 0 and (my_w_best is None or n > my_w_best[0]):
+                my_w_best = (n, p_uid)
+        if w_records or w_pair or my_w_best:
+            lines.append("")
+            lines.append(f"🏅 <b>РЕКОРДСМЕНЫ ЗА {window} ДНЯ</b>")
+            for label, winners, val in w_records:
+                names = []
+                for r in winners:
+                    r_uid = r["uid"]
+                    me = " (ты)" if r_uid == uid else (" 🙈" if r.get("optout") else "")
+                    names.append(f"<b>{html.escape(str(r['name']))}</b>{me}")
+                lines.append(f"{label}: {', '.join(names)} — {val}")
+            if w_pair:
+                name_a, uid_a, name_b, uid_b, n = w_pair
+                you_a = " (ты)" if uid_a == uid else (" 🙈" if _ach_is_optout(uid_a) else "")
+                you_b = " (ты)" if uid_b == uid else (" 🙈" if _ach_is_optout(uid_b) else "")
+                lines.append(
+                    f"🤝 Лучшая пара: <b>{html.escape(str(name_a))}</b>{you_a} + "
+                    f"<b>{html.escape(str(name_b))}</b>{you_b} — {n} совпадений вместе"
+                )
+            if my_w_best:
+                n, p_uid = my_w_best
+                p_name = (user_data.get(p_uid) or {}).get("name") or str(p_uid)
+                lines.append(f"👤 Ты чаще всего совпадаешь с: "
+                             f"{html.escape(str(p_name))} — {n}")
+        return _ach_fit(lines)
     rows_by_uid = {r["uid"]: r for r in rows}
     records = _ach_top_records(rows)
     pair = _ach_top_best_pair(rows, viewer_uid=uid)
@@ -4705,10 +5153,16 @@ def _ach_top_text(uid, include_hidden=False):
     return _ach_fit(lines)
 
 
-def _ach_top_kb(uid, include_hidden=False):
-    rows, _my_place = _ach_top_rows(uid, include_hidden=include_hidden)
+def _ach_top_kb(uid, include_hidden=False, window=None):
+    rows, _my_place = _ach_top_rows(uid, include_hidden=include_hidden, window=window)
     medals = ["🥇", "🥈", "🥉"]
-    kb_rows = []
+    kb_rows = [[
+        InlineKeyboardButton(f"📅 За {ACH_TOP_WINDOW_DAYS} дня" if not window
+                             else f"• За {ACH_TOP_WINDOW_DAYS} дня •",
+                             callback_data="ach:top:w"),
+        InlineKeyboardButton("• За всё время •" if not window else "🌐 За всё время",
+                             callback_data="ach:top:all"),
+    ]]
     for i, r in enumerate(rows[:ACH_TOP_LIMIT], start=1):
         mark = medals[i - 1] if i <= 3 else f"{i}."
         label = f"{mark} {r['name']}"
@@ -4740,21 +5194,17 @@ def _ach_back_kb(uid=None, viewer_uid=None):
 async def show_achievements(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     if _ach_ui_hidden(user_id):
-        # раздела для этого участника как будто не существует
         return
     if not is_user_active(user_id):
         await tg(update.message.reply_text, "❌ Ты ещё не зарегистрирован!",
                  reply_markup=get_start_keyboard())
         return
-    # пороги могли поменяться — досчитываем прямо на входе, не ждём следующей отправки
     await ach_award(context.bot, user_id)
     await tg(update.message.reply_text, _ach_home_text(user_id),
              parse_mode="HTML", reply_markup=_ach_home_kb(user_id))
 
 
 def _ach_resolve_target(uid, raw):
-    """Валидирует чужой uid из callback_data. Возвращает (target_uid, ok).
-    Админам разрешён просмотр профилей, даже если участник скрыл себя из топа."""
     if raw is None:
         return uid, True
     try:
@@ -4804,16 +5254,15 @@ async def achievements_callback(update: Update, context: ContextTypes.DEFAULT_TY
 
 async def _ach_callback_render(uid, action, parts, q):
     if action == "ntf":
-        # чужие настройки уведомлений недоступны — эта кнопка есть только у себя
         d = user_data.setdefault(uid, {})
-        new_val = not d.get("ach_notify", True)
+        new_val = not d.get("ach_notify", ACH_NOTIFY_DEFAULT)
         d["ach_notify"] = new_val
+        d["ach_notify_reset_v"] = ACH_NOTIFY_RESET_VERSION
         save_data()
         await tg_answer(q, "Уведомления об ачивках включены 🔔" if new_val
                         else "Уведомления об ачивках выключены 🔕")
         text, kb = _ach_home_text(uid), _ach_home_kb(uid)
     elif action == "optout":
-        # участие/выход из статистики и топа — доступно только себе
         d = user_data.setdefault(uid, {})
         new_val = not d.get("ach_optout", False)
         d["ach_optout"] = new_val
@@ -4832,8 +5281,6 @@ async def _ach_callback_render(uid, action, parts, q):
         await tg_answer(q, None if ok else "Профиль недоступен")
         text, kb = _ach_cat_text(target, idx, viewer_uid=uid), _ach_cat_kb(idx, target, uid)
     elif action == "stats":
-        # подробная статистика — обычно только для себя; админу доступна и чужая,
-        # в т.ч. скрытых из топа участников
         raw_target = parts[2] if len(parts) > 2 else None
         target, ok = _ach_resolve_target(uid, raw_target)
         if target != uid and uid not in ADMIN_IDS:
@@ -4841,12 +5288,17 @@ async def _ach_callback_render(uid, action, parts, q):
         await tg_answer(q, None if ok else "Статистика доступна только для себя")
         text, kb = _ach_stats_text(target, viewer_uid=uid), _ach_back_kb(target, uid)
     elif action == "top":
+        mode = parts[2] if len(parts) > 2 else None
+        if mode == "w":
+            _ach_top_window_view[uid] = ACH_TOP_WINDOW_DAYS
+        elif mode == "all":
+            _ach_top_window_view.pop(uid, None)
         await tg_answer(q)
         show_hidden = uid in ADMIN_IDS and uid in _admin_top_hidden_view
-        text = _ach_top_text(uid, include_hidden=show_hidden)
-        kb = _ach_top_kb(uid, include_hidden=show_hidden)
+        window = _ach_top_window_view.get(uid)
+        text = _ach_top_text(uid, include_hidden=show_hidden, window=window)
+        kb = _ach_top_kb(uid, include_hidden=show_hidden, window=window)
     elif action == "toptoggle":
-        # тумблер "показать скрытых" на экране топа — доступен только админу
         if uid in ADMIN_IDS:
             if uid in _admin_top_hidden_view:
                 _admin_top_hidden_view.discard(uid)
@@ -4854,8 +5306,9 @@ async def _ach_callback_render(uid, action, parts, q):
                 _admin_top_hidden_view.add(uid)
         await tg_answer(q)
         show_hidden = uid in ADMIN_IDS and uid in _admin_top_hidden_view
-        text = _ach_top_text(uid, include_hidden=show_hidden)
-        kb = _ach_top_kb(uid, include_hidden=show_hidden)
+        window = _ach_top_window_view.get(uid)
+        text = _ach_top_text(uid, include_hidden=show_hidden, window=window)
+        kb = _ach_top_kb(uid, include_hidden=show_hidden, window=window)
     elif action == "home":
         raw_target = parts[2] if len(parts) > 2 else None
         target, ok = _ach_resolve_target(uid, raw_target)
@@ -4920,7 +5373,6 @@ async def _is_group_member(bot, uid) -> bool:
 
 
 async def _notify_admins_request(bot, user) -> bool:
-    """Заявка на доступ админам. Повторную не шлём чаще ACCESS_REQUEST_COOLDOWN."""
     uid = user.id
     rec = access_data.get(uid) or {}
     now = time.time()
@@ -4964,7 +5416,6 @@ async def _notify_admins_request(bot, user) -> bool:
 
 
 async def access_gate(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Пропускает только одобренных. Остальным — заявка админу и стоп."""
     if not ACCESS_CONTROL:
         return
     user = update.effective_user
@@ -5353,8 +5804,6 @@ def cleanup_stale_files():
 
     removed_bak = 0
     for path in data_files + [SESSION_STATE_FILE]:
-        # .backup — единственный живой зеркальный файл, его не трогаем.
-        # Накапливаются только .corrupt_<stamp> (и legacy .backup_<stamp>).
         backups = glob.glob(f"{path}.backup_*") + glob.glob(f"{path}.corrupt_*")
         if len(backups) <= BACKUP_KEEP:
             continue
@@ -5375,8 +5824,6 @@ def cleanup_stale_files():
 
 
 async def auto_cleanup_loop():
-    """Фоновая автоочистка TTL. Работает всё время, пока живёт процесс бота.
-    Перезапуск бота и команда /cleanup для этого не нужны."""
     interval = max(300, int(CLEANUP_INTERVAL_HOURS * 3600))
     logger.info(f"🧽 Автоочистка запущена: каждые {CLEANUP_INTERVAL_HOURS} ч, TTL={LINKS_TTL_DAYS} дн.")
     while True:
@@ -5386,8 +5833,6 @@ async def auto_cleanup_loop():
             logger.info("🧽 Автоочистка остановлена.")
             raise
         try:
-            # синхронно, без await внутри: не пересекается с хендлерами,
-            # которые правят те же словари
             st = cleanup_old_links()
             files = cleanup_stale_files()
             logger.info(
@@ -5407,9 +5852,15 @@ def reset_for_new_run():
     changed = False
     kept_links = 0
     kept_subs = 0
+    ntf_reset = 0
     for d in user_data.values():
         if not isinstance(d, dict):
             continue
+        if d.get("ach_notify_reset_v") != ACH_NOTIFY_RESET_VERSION:
+            d["ach_notify_reset_v"] = ACH_NOTIFY_RESET_VERSION
+            d["ach_notify"] = ACH_NOTIFY_DEFAULT
+            ntf_reset += 1
+            changed = True
         if d.pop("last_check_snapshot", None) is not None:
             changed = True
         if _migrate_submission_stack(d):
@@ -5425,6 +5876,10 @@ def reset_for_new_run():
         f"Старт: текущие сессии сохранены у {kept_links} чел., "
         f"отменяемых отправок у {kept_subs} чел. — бот готов к работе."
     )
+    if ntf_reset:
+        logger.info(f"🔕 Уведомления об ачивках сброшены в "
+                    f"{'вкл' if ACH_NOTIFY_DEFAULT else 'выкл'} у {ntf_reset} чел. "
+                    f"(разовая миграция v{ACH_NOTIFY_RESET_VERSION})")
 
 
 _bot_loop = None
@@ -5466,12 +5921,6 @@ def _broadcast_is_duplicate(kind: str, payload) -> bool:
 
 
 def _broadcast_recipients(tag: str):
-    """Кому реально уйдёт рассылка.
-
-    Раньше три цикла молча делали continue, и понять, почему конкретному
-    человеку не пришло уведомление, можно было только руками в data-файле.
-    Теперь каждый пропуск попадает в лог с причиной.
-    """
     targets, skipped = [], []
     for uid, data in list(user_data.items()):
         if not isinstance(data, dict) or not data.get("registered"):
@@ -5795,11 +6244,13 @@ def main():
         application.add_handler(CallbackQueryHandler(participant_history_callback, pattern=r"^ph:"))
         application.add_handler(CallbackQueryHandler(achievements_callback, pattern=r"^ach:"))
         application.add_handler(CallbackQueryHandler(full_reset_confirm, pattern=r"^fr:"))
+        application.add_handler(CallbackQueryHandler(ach_reset_confirm, pattern=r"^ar:"))
         application.add_handler(CallbackQueryHandler(access_decision_callback, pattern=r"^acc:"))
         application.add_handler(CommandHandler("access", access_list_cmd, filters=PRIVATE))
         application.add_handler(CommandHandler("approve", access_approve_cmd, filters=PRIVATE))
         application.add_handler(CommandHandler("deny", access_deny_cmd, filters=PRIVATE))
         application.add_handler(CommandHandler("full_reset", full_reset, filters=PRIVATE))
+        application.add_handler(CommandHandler("ach_reset", ach_reset, filters=PRIVATE))
         application.add_handler(CommandHandler("cleanup", cleanup_now, filters=PRIVATE))
         application.add_handler(CommandHandler("undo", undo_last_submission, filters=PRIVATE))
         application.add_handler(CommandHandler("tz", set_timezone, filters=PRIVATE))
